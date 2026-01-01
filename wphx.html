@@ -54,13 +54,13 @@ body {
 .current-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* space between left section and clock */
+    justify-content: space-between;
 }
 
 .current-left {
     display: flex;
     align-items: center;
-    gap: 40px; /* gap between current temp/condition and High/Low */
+    gap: 40px;
 }
 
 /* Fonts */
@@ -81,24 +81,21 @@ body {
     margin: 6px 0;
 }
 
-/* High/Low horizontal */
-.hilo-horizontal {
+/* High/Low vertical */
+.hilo-vertical {
     display: flex;
-    flex-direction: row;
-    gap: 14px;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
 }
 
-.hilo-horizontal div {
-    display: flex;
-    flex-direction: row;
-    gap: 6px;
+.hilo-vertical div {
     font-size: 2.4rem;
     font-weight: 600;
 }
 
-.hilo-horizontal div span.label {
-    font-size: 1.44rem; /* 40% smaller than 2.4rem */
+.hilo-vertical div span.label {
+    font-size: 1.44rem; /* 40% smaller label */
     font-weight: 500;
 }
 
@@ -114,15 +111,31 @@ body {
 }
 
 /* CLOCK */
-.clock {
+.clock-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     position: absolute;
     top: 8px;
     right: 16px;
+}
+
+.clock {
     font-size: 4rem;
     font-weight: 600;
     line-height: 1;
     color: var(--text);
     pointer-events: none;
+}
+
+.toggle-seconds {
+    margin-top: 4px;
+    font-size: 1rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f1f3f4;
+    cursor: pointer;
 }
 
 /* Hourly forecast (Next 12 hours) */
@@ -145,10 +158,10 @@ body {
     margin: 2px 0;
 }
 
-/* Daily forecast (7 days) */
+/* Daily forecast (8 days) */
 .daily {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr);
     gap: 9px;
     text-align: center;
     font-size: 1.44rem;
@@ -188,12 +201,15 @@ body {
                 <div class="condition" id="condition">☀️</div>
                 <div class="updated" id="updated">Updating…</div>
             </div>
-            <div class="hilo-horizontal">
+            <div class="hilo-vertical">
                 <div><span class="label">High</span> <span id="todayHigh">--°</span></div>
                 <div><span class="label">Low</span> <span id="todayLow">--°</span></div>
             </div>
         </div>
-        <div class="clock" id="clock">--:--:--</div>
+        <div class="clock-container">
+            <div class="clock" id="clock">--:--:--</div>
+            <button class="toggle-seconds" id="toggleSecondsBtn">Hide Seconds</button>
+        </div>
     </div>
 </div>
 
@@ -205,7 +221,7 @@ body {
 
 <!-- DAILY FORECAST -->
 <div class="card">
-    <h3 style="margin:4px 0; font-size:1.6rem;">7-Day Forecast</h3>
+    <h3 style="margin:4px 0; font-size:1.6rem;">8-Day Forecast</h3>
     <div class="daily" id="daily"></div>
 </div>
 
@@ -215,8 +231,8 @@ body {
 </div>
 
 <script>
-const LAT = 33.4484;
-const LON = -112.0740;
+const LAT = 33.4484;   // Phoenix, AZ latitude
+const LON = -112.0740;  // Phoenix, AZ longitude
 const REFRESH_MS = 5 * 60 * 1000;
 
 const icons = {
@@ -254,13 +270,28 @@ function markStale(){
     el.classList.add("stale");
 }
 
-// Clock update
+// CLOCK
+let showSeconds = true;
+const clockEl = document.getElementById("clock");
+const toggleBtn = document.getElementById("toggleSecondsBtn");
+
 function updateClock(){
     const now = new Date();
-    document.getElementById("clock").textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true});
+    clockEl.textContent = now.toLocaleTimeString([], {
+        hour:'2-digit', 
+        minute:'2-digit', 
+        second: showSeconds ? '2-digit' : undefined,
+        hour12:true
+    });
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+toggleBtn.addEventListener("click", ()=>{
+    showSeconds = !showSeconds;
+    toggleBtn.textContent = showSeconds ? "Hide Seconds" : "Show Seconds";
+    updateClock();
+});
 
 async function loadWeather(){
     showUpdating();
@@ -268,7 +299,8 @@ async function loadWeather(){
     tempEl.classList.add("fade");
 
     try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`;
+        // Request 10 days: today + 9 more to ensure 8 days starting from tomorrow
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=10`;
         const res = await fetch(url);
         if(!res.ok) throw new Error();
         const d = await res.json();
@@ -293,18 +325,26 @@ async function loadWeather(){
                 </div>`;
         }
 
-        // Daily 7 days
+        // Daily 8 days starting from tomorrow
         const day = document.getElementById("daily");
         day.innerHTML = "";
-        for(let i=0;i<7;i++){
-            const date = new Date(d.daily.time[i]);
-            day.innerHTML += `
-                <div class="day">
-                    <div>${date.toLocaleDateString([], {weekday:"short"})}</div>
-                    <div class="icon">${icon(d.daily.weathercode[i])}</div>
-                    <div>${Math.round(d.daily.temperature_2m_max[i])}° /
-                         ${Math.round(d.daily.temperature_2m_min[i])}°</div>
-                </div>`;
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        let displayed = 0;
+        for(let i=0;i<d.daily.time.length && displayed<8;i++){
+            const forecastDate = new Date(d.daily.time[i]);
+            forecastDate.setHours(0,0,0,0);
+            if(forecastDate > today){ // strictly after today
+                day.innerHTML += `
+                    <div class="day">
+                        <div>${forecastDate.toLocaleDateString([], {weekday:"short"})}</div>
+                        <div class="icon">${icon(d.daily.weathercode[i])}</div>
+                        <div>${Math.round(d.daily.temperature_2m_max[i])}° /
+                             ${Math.round(d.daily.temperature_2m_min[i])}°</div>
+                    </div>`;
+                displayed++;
+            }
         }
 
         updateTimestamp();

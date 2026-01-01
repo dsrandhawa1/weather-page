@@ -43,9 +43,9 @@ body {
 .card {
     background: var(--card);
     border-radius: 20px;
-    padding: 18px 22px;
+    padding: 20px 24px; /* slightly bigger padding */
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     flex-shrink: 0;
 }
 
@@ -53,56 +53,56 @@ body {
 .current-header {
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 36px; /* increased for spacing */
 }
 
 .current-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .city {
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 4px;
+    font-size: 1.2rem; /* bigger */
+    font-weight: 600;
+    margin-bottom: 6px;
 }
 
 .current-temp {
-    font-size: 3.2rem;
-    font-weight: 500;
+    font-size: 4.2rem; /* bigger */
+    font-weight: 600;
     line-height: 1.2;
 }
 
 .condition {
-    font-size: 2.4rem;
-    margin: 6px 0;
+    font-size: 3rem; /* bigger */
+    margin: 8px 0;
 }
 
 .hilo-vertical {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 18px;
+    gap: 22px; /* bigger spacing */
 }
 
 .hilo-vertical div {
     display: flex;
     justify-content: space-between;
-    width: 80px;
-    font-size: 1.8rem;
-    font-weight: 500;
+    width: 90px;
+    font-size: 2.2rem; /* bigger */
+    font-weight: 600;
 }
 
 .hilo-vertical div span {
-    font-size: 2.4rem;
+    font-size: 2.8rem; /* bigger */
 }
 
 .updated {
-    font-size: .8rem;
+    font-size: .95rem; /* bigger */
     color: var(--sub);
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 .updated.stale {
@@ -113,19 +113,19 @@ body {
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 6px;
+    gap: 8px;
     text-align: center;
-    font-size: .75rem;
+    font-size: .85rem; /* bigger */
 }
 
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 6px 3px;
+    padding: 8px 4px; /* slightly taller */
 }
 
 .icon {
-    font-size: 1.4rem;
+    font-size: 1.6rem; /* bigger */
     margin: 2px 0;
 }
 
@@ -133,22 +133,26 @@ body {
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+    gap: 12px;
     text-align: center;
-    font-size: .8rem;
+    font-size: .9rem; /* bigger */
 }
 
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 10px 6px;
+    padding: 12px 8px; /* taller */
+}
+
+.day .icon {
+    font-size: 1.6rem; /* bigger */
 }
 
 /* Footer */
 .footer {
     text-align: center;
-    margin-top: 12px;
-    font-size: 0.75rem;
+    margin-top: 14px;
+    font-size: 0.85rem; /* bigger */
     color: var(--sub);
     flex-shrink: 0;
 }
@@ -176,13 +180,13 @@ body {
 
 <!-- HOURLY FORECAST -->
 <div class="card">
-    <h3 style="margin:4px 0; font-size:.85rem;">Next 12 Hours</h3>
+    <h3 style="margin:4px 0; font-size:1rem;">Next 12 Hours</h3>
     <div class="hourly" id="hourly"></div>
 </div>
 
 <!-- DAILY FORECAST -->
 <div class="card">
-    <h3 style="margin:4px 0; font-size:.85rem;">7-Day Forecast</h3>
+    <h3 style="margin:4px 0; font-size:1rem;">7-Day Forecast</h3>
     <div class="daily" id="daily"></div>
 </div>
 

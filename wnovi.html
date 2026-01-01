@@ -43,7 +43,7 @@ body {
 .card {
     background: var(--card);
     border-radius: 20px;
-    padding: 20px 24px; /* slightly bigger padding */
+    padding: 20px 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
     margin-bottom: 20px;
     flex-shrink: 0;
@@ -53,7 +53,7 @@ body {
 .current-header {
     display: flex;
     align-items: center;
-    gap: 36px; /* increased for spacing */
+    gap: 36px;
 }
 
 .current-left {
@@ -64,19 +64,19 @@ body {
 }
 
 .city {
-    font-size: 1.2rem; /* bigger */
+    font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 6px;
 }
 
 .current-temp {
-    font-size: 4.2rem; /* bigger */
+    font-size: 4.2rem;
     font-weight: 600;
     line-height: 1.2;
 }
 
 .condition {
-    font-size: 3rem; /* bigger */
+    font-size: 3rem;
     margin: 8px 0;
 }
 
@@ -84,23 +84,23 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 22px; /* bigger spacing */
+    gap: 22px;
 }
 
 .hilo-vertical div {
     display: flex;
     justify-content: space-between;
     width: 90px;
-    font-size: 2.2rem; /* bigger */
+    font-size: 2.2rem;
     font-weight: 600;
 }
 
 .hilo-vertical div span {
-    font-size: 2.8rem; /* bigger */
+    font-size: 2.8rem;
 }
 
 .updated {
-    font-size: .95rem; /* bigger */
+    font-size: .95rem;
     color: var(--sub);
     margin-top: 6px;
 }
@@ -109,50 +109,50 @@ body {
     color: #d93025;
 }
 
-/* Hourly forecast */
+/* Hourly forecast (Next 12 hours) – enlarged by 60% */
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 8px;
     text-align: center;
-    font-size: .85rem; /* bigger */
+    font-size: 1.36rem; /* 0.85rem * 1.6 = 1.36rem */
 }
 
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 8px 4px; /* slightly taller */
+    padding: 12px 6px; /* slightly taller */
 }
 
-.icon {
-    font-size: 1.6rem; /* bigger */
-    margin: 2px 0;
+.hour .icon {
+    font-size: 2.56rem; /* 1.6rem * 1.6 = 2.56rem */
+    margin: 4px 0;
 }
 
-/* Daily forecast */
+/* Daily forecast (7 days) – enlarged by 60% */
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 12px;
     text-align: center;
-    font-size: .9rem; /* bigger */
+    font-size: 1.44rem; /* 0.9rem * 1.6 = 1.44rem */
 }
 
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 12px 8px; /* taller */
+    padding: 19px 13px; /* scaled from 12px/8px *1.6 */
 }
 
 .day .icon {
-    font-size: 1.6rem; /* bigger */
+    font-size: 2.56rem; /* 1.6rem * 1.6 = 2.56rem */
 }
 
 /* Footer */
 .footer {
     text-align: center;
     margin-top: 14px;
-    font-size: 0.85rem; /* bigger */
+    font-size: 0.85rem;
     color: var(--sub);
     flex-shrink: 0;
 }
@@ -180,13 +180,13 @@ body {
 
 <!-- HOURLY FORECAST -->
 <div class="card">
-    <h3 style="margin:4px 0; font-size:1rem;">Next 12 Hours</h3>
+    <h3 style="margin:4px 0; font-size:1.6rem;">Next 12 Hours</h3>
     <div class="hourly" id="hourly"></div>
 </div>
 
 <!-- DAILY FORECAST -->
 <div class="card">
-    <h3 style="margin:4px 0; font-size:1rem;">7-Day Forecast</h3>
+    <h3 style="margin:4px 0; font-size:1.6rem;">7-Day Forecast</h3>
     <div class="daily" id="daily"></div>
 </div>
 

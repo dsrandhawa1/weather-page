@@ -324,18 +324,23 @@ async function loadWeather(){
                 </div>`;
         }
 
-        // Daily 7 days
+        // Daily 7 days starting from tomorrow
         const day = document.getElementById("daily");
         day.innerHTML = "";
-        for(let i=0;i<7;i++){
-            const date = new Date(d.daily.time[i]);
-            day.innerHTML += `
-                <div class="day">
-                    <div>${date.toLocaleDateString([], {weekday:"short"})}</div>
-                    <div class="icon">${icon(d.daily.weathercode[i])}</div>
-                    <div>${Math.round(d.daily.temperature_2m_max[i])}° /
-                         ${Math.round(d.daily.temperature_2m_min[i])}°</div>
-                </div>`;
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        for(let i=0;i<d.daily.time.length && day.children.length<7;i++){
+            const forecastDate = new Date(d.daily.time[i]);
+            forecastDate.setHours(0,0,0,0);
+            if(forecastDate > today){ // strictly after today
+                day.innerHTML += `
+                    <div class="day">
+                        <div>${forecastDate.toLocaleDateString([], {weekday:"short"})}</div>
+                        <div class="icon">${icon(d.daily.weathercode[i])}</div>
+                        <div>${Math.round(d.daily.temperature_2m_max[i])}° /
+                             ${Math.round(d.daily.temperature_2m_min[i])}°</div>
+                    </div>`;
+            }
         }
 
         updateTimestamp();

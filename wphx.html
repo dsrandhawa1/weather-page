@@ -35,17 +35,18 @@ body {
     justify-content: space-between;
     width: 100vw;
     height: 100%;
-    padding: 16px; /* reduced from 20px → 16px */
+    padding: 14px;
     box-sizing: border-box;
 }
 
 /* Cards */
 .card {
+    position: relative;
     background: var(--card);
     border-radius: 20px;
-    padding: 16px 20px; /* reduced padding vertically and horizontally */
+    padding: 14px 18px;
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 16px; /* reduced spacing between cards */
+    margin-bottom: 14px;
     flex-shrink: 0;
 }
 
@@ -53,17 +54,16 @@ body {
 .current-header {
     display: flex;
     align-items: center;
-    gap: 28px; /* reduced gap between current temp and high/low */
+    justify-content: space-between; /* space between left section and clock */
 }
 
 .current-left {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 4px; /* slightly smaller */
+    align-items: center;
+    gap: 40px; /* gap between current temp/condition and High/Low */
 }
 
-/* Fonts remain unchanged */
+/* Fonts */
 .city {
     font-size: 1.2rem;
     font-weight: 600;
@@ -81,40 +81,55 @@ body {
     margin: 6px 0;
 }
 
-.hilo-vertical {
+/* High/Low horizontal */
+.hilo-horizontal {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 18px; /* slightly smaller */
+    flex-direction: row;
+    gap: 14px;
+    align-items: center;
 }
 
-.hilo-vertical div {
+.hilo-horizontal div {
     display: flex;
-    justify-content: space-between;
-    width: 90px;
-    font-size: 2.2rem;
+    flex-direction: row;
+    gap: 6px;
+    font-size: 2.4rem;
     font-weight: 600;
 }
 
-.hilo-vertical div span {
-    font-size: 2.3rem;
+.hilo-horizontal div span.label {
+    font-size: 1.44rem; /* 40% smaller than 2.4rem */
+    font-weight: 500;
 }
 
+/* Last updated */
 .updated {
     font-size: .95rem;
     color: var(--sub);
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .updated.stale {
     color: #d93025;
 }
 
-/* Hourly forecast (Next 12 hours) – fonts unchanged, just reduce padding */
+/* CLOCK */
+.clock {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    font-size: 4rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--text);
+    pointer-events: none;
+}
+
+/* Hourly forecast (Next 12 hours) */
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 6px; /* slightly smaller gap */
+    gap: 5px;
     text-align: center;
     font-size: 1.36rem;
 }
@@ -122,7 +137,7 @@ body {
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 10px 5px; /* reduced padding from 12px/6px */
+    padding: 9px 4px;
 }
 
 .hour .icon {
@@ -130,11 +145,11 @@ body {
     margin: 2px 0;
 }
 
-/* Daily forecast (7 days) – fonts unchanged, reduce padding */
+/* Daily forecast (7 days) */
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px; /* reduced from 12px */
+    gap: 9px;
     text-align: center;
     font-size: 1.44rem;
 }
@@ -142,7 +157,7 @@ body {
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 15px 10px; /* reduced padding from 19px/13px */
+    padding: 14px 9px;
 }
 
 .day .icon {
@@ -152,7 +167,7 @@ body {
 /* Footer */
 .footer {
     text-align: center;
-    margin-top: 10px; /* reduced */
+    margin-top: 8px;
     font-size: 0.85rem;
     color: var(--sub);
     flex-shrink: 0;
@@ -167,15 +182,18 @@ body {
 <div class="card">
     <div class="current-header">
         <div class="current-left">
-            <div class="city">Phoenix, AZ</div>
-            <div class="current-temp" id="currentTemp">--°</div>
-            <div class="condition" id="condition">☀️</div>
-            <div class="updated" id="updated">Updating…</div>
+            <div>
+                <div class="city">Phoenix, AZ</div>
+                <div class="current-temp" id="currentTemp">--°</div>
+                <div class="condition" id="condition">☀️</div>
+                <div class="updated" id="updated">Updating…</div>
+            </div>
+            <div class="hilo-horizontal">
+                <div><span class="label">High</span> <span id="todayHigh">--°</span></div>
+                <div><span class="label">Low</span> <span id="todayLow">--°</span></div>
+            </div>
         </div>
-        <div class="hilo-vertical">
-       <div style="white-space: nowrap;">High &nbsp;<span id="todayHigh">--°</span></div>
-            <div style="white-space: nowrap;">Low &nbsp;  <span id="todayLow">--°</span></div>
-        </div>
+        <div class="clock" id="clock">--:--:--</div>
     </div>
 </div>
 
@@ -236,6 +254,14 @@ function markStale(){
     el.classList.add("stale");
 }
 
+// Clock update
+function updateClock(){
+    const now = new Date();
+    document.getElementById("clock").textContent = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
 async function loadWeather(){
     showUpdating();
     const tempEl = document.getElementById("currentTemp");
@@ -245,25 +271,18 @@ async function loadWeather(){
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`;
         const res = await fetch(url);
         if(!res.ok) throw new Error();
-
         const d = await res.json();
 
-        // Current
-        document.getElementById("currentTemp").textContent =
-            Math.round(d.current_weather.temperature) + "°";
-        document.getElementById("condition").textContent =
-            icon(d.current_weather.weathercode);
-        document.getElementById("todayHigh").textContent =
-            Math.round(d.daily.temperature_2m_max[0]) + "°";
-        document.getElementById("todayLow").textContent =
-            Math.round(d.daily.temperature_2m_min[0]) + "°";
+        document.getElementById("currentTemp").textContent = Math.round(d.current_weather.temperature) + "°";
+        document.getElementById("condition").textContent = icon(d.current_weather.weathercode);
+        document.getElementById("todayHigh").textContent = Math.round(d.daily.temperature_2m_max[0]) + "°";
+        document.getElementById("todayLow").textContent = Math.round(d.daily.temperature_2m_min[0]) + "°";
 
-        // Hourly (next 12 hours from current time)
+        // Hourly next 12 hours
         const h = document.getElementById("hourly");
         h.innerHTML = "";
         const now = new Date();
         const currentHourIndex = d.hourly.time.findIndex(t => new Date(t) >= now);
-
         for(let i=currentHourIndex; i<currentHourIndex+12 && i<d.hourly.time.length; i++){
             const time = new Date(d.hourly.time[i]);
             h.innerHTML += `
@@ -274,7 +293,7 @@ async function loadWeather(){
                 </div>`;
         }
 
-        // Daily (7 days)
+        // Daily 7 days
         const day = document.getElementById("daily");
         day.innerHTML = "";
         for(let i=0;i<7;i++){
@@ -290,18 +309,14 @@ async function loadWeather(){
 
         updateTimestamp();
         setTimeout(()=>tempEl.classList.remove("fade"),200);
-
     } catch {
         markStale();
     }
 }
 
-// Initial load
 loadWeather();
 setInterval(loadWeather, REFRESH_MS);
-document.addEventListener("visibilitychange", ()=>{
-    if(!document.hidden) loadWeather();
-});
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) loadWeather(); });
 </script>
 </body>
 </html>

@@ -35,7 +35,7 @@ body {
     justify-content: space-between;
     width: 100vw;
     height: 100%;
-    padding: 20px;
+    padding: 16px; /* reduced from 20px → 16px */
     box-sizing: border-box;
 }
 
@@ -43,9 +43,9 @@ body {
 .card {
     background: var(--card);
     border-radius: 20px;
-    padding: 20px 24px;
+    padding: 16px 20px; /* reduced padding vertically and horizontally */
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 20px;
+    margin-bottom: 16px; /* reduced spacing between cards */
     flex-shrink: 0;
 }
 
@@ -53,20 +53,21 @@ body {
 .current-header {
     display: flex;
     align-items: center;
-    gap: 36px;
+    gap: 28px; /* reduced gap between current temp and high/low */
 }
 
 .current-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 6px;
+    margin-bottom: 4px; /* slightly smaller */
 }
 
+/* Fonts remain unchanged */
 .city {
     font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .current-temp {
@@ -77,14 +78,14 @@ body {
 
 .condition {
     font-size: 3rem;
-    margin: 8px 0;
+    margin: 6px 0;
 }
 
 .hilo-vertical {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 22px;
+    gap: 18px; /* slightly smaller */
 }
 
 .hilo-vertical div {
@@ -102,56 +103,56 @@ body {
 .updated {
     font-size: .95rem;
     color: var(--sub);
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .updated.stale {
     color: #d93025;
 }
 
-/* Hourly forecast (Next 12 hours) – enlarged by 60% */
+/* Hourly forecast (Next 12 hours) – fonts unchanged, just reduce padding */
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 8px;
+    gap: 6px; /* slightly smaller gap */
     text-align: center;
-    font-size: 1.36rem; /* 0.85rem * 1.6 = 1.36rem */
+    font-size: 1.36rem;
 }
 
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 12px 6px; /* slightly taller */
+    padding: 10px 5px; /* reduced padding from 12px/6px */
 }
 
 .hour .icon {
-    font-size: 2.56rem; /* 1.6rem * 1.6 = 2.56rem */
-    margin: 4px 0;
+    font-size: 2.56rem;
+    margin: 2px 0;
 }
 
-/* Daily forecast (7 days) – enlarged by 60% */
+/* Daily forecast (7 days) – fonts unchanged, reduce padding */
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 12px;
+    gap: 10px; /* reduced from 12px */
     text-align: center;
-    font-size: 1.44rem; /* 0.9rem * 1.6 = 1.44rem */
+    font-size: 1.44rem;
 }
 
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 19px 13px; /* scaled from 12px/8px *1.6 */
+    padding: 15px 10px; /* reduced padding from 19px/13px */
 }
 
 .day .icon {
-    font-size: 2.56rem; /* 1.6rem * 1.6 = 2.56rem */
+    font-size: 2.56rem;
 }
 
 /* Footer */
 .footer {
     text-align: center;
-    margin-top: 14px;
+    margin-top: 10px; /* reduced */
     font-size: 0.85rem;
     color: var(--sub);
     flex-shrink: 0;
@@ -172,8 +173,8 @@ body {
             <div class="updated" id="updated">Updating…</div>
         </div>
         <div class="hilo-vertical">
-            <div style="white-space: nowrap;">High &nbsp;<span id="todayHigh">--°</span></div>
-            <div style="white-space: nowrap;">Low &nbsp;  <span id="todayLow">--°</span></div>
+            <div>High <span id="todayHigh">--°</span></div>
+            <div>Low  <span id="todayLow">--°</span></div>
         </div>
     </div>
 </div>

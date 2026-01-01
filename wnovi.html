@@ -81,7 +81,7 @@ body {
     margin: 6px 0;
 }
 
-/* High/Low vertical */
+/* High/Low vertical with travel time */
 .hilo-vertical {
     display: flex;
     flex-direction: column;
@@ -97,6 +97,12 @@ body {
 .hilo-vertical div span.label {
     font-size: 1.44rem; /* 40% smaller label */
     font-weight: 500;
+}
+
+#travelTime {
+    font-size: 1.36rem;
+    font-weight: 500;
+    color: var(--sub);
 }
 
 /* Last updated */
@@ -204,6 +210,7 @@ body {
             <div class="hilo-vertical">
                 <div><span class="label">High</span> <span id="todayHigh">--°</span></div>
                 <div><span class="label">Low</span> <span id="todayLow">--°</span></div>
+                <div id="travelTime">Loading travel time…</div>
             </div>
         </div>
         <div class="clock-container">
@@ -293,13 +300,13 @@ toggleBtn.addEventListener("click", ()=>{
     updateClock();
 });
 
+// WEATHER
 async function loadWeather(){
     showUpdating();
     const tempEl = document.getElementById("currentTemp");
     tempEl.classList.add("fade");
 
     try {
-        // Request 10 days: today + 9 more to ensure 8 days starting from tomorrow
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=10`;
         const res = await fetch(url);
         if(!res.ok) throw new Error();
@@ -335,7 +342,7 @@ async function loadWeather(){
         for(let i=0;i<d.daily.time.length && displayed<8;i++){
             const forecastDate = new Date(d.daily.time[i]);
             forecastDate.setHours(0,0,0,0);
-            if(forecastDate > today){ // strictly after today
+            if(forecastDate > today){
                 day.innerHTML += `
                     <div class="day">
                         <div>${forecastDate.toLocaleDateString([], {weekday:"short"})}</div>
@@ -354,9 +361,36 @@ async function loadWeather(){
     }
 }
 
+// GOOGLE MAPS TRAVEL TIME
+async function loadTravelTime(){
+    const origin = encodeURIComponent("24010 Greening Dr, Novi, MI");
+    const destination = encodeURIComponent("1051 Oakland Ave, Birmingham, MI 48009");
+    const API_KEY = "AIzaSyCdf0Y6MXleuEFpaBgX-TmCdap_UX_BeBM"; // <-- Replace with your API key
+
+    try {
+        const res = await fetch(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destination}&departure_time=now&key=${API_KEY}`);
+        const data = await res.json();
+        const element = data.rows[0].elements[0];
+        if(element.status === "OK"){
+            document.getElementById("travelTime").textContent =
+              `Travel: ${element.duration_in_traffic.text}`;
+        } else {
+            document.getElementById("travelTime").textContent = "Travel time unavailable";
+        }
+    } catch(err){
+        document.getElementById("travelTime").textContent = "Error loading travel time";
+        console.error(err);
+    }
+}
+
+// Initial load
 loadWeather();
+loadTravelTime();
+
+// Refresh every 5 minutes
 setInterval(loadWeather, REFRESH_MS);
-document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) loadWeather(); });
+setInterval(loadTravelTime, REFRESH_MS);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ loadWeather(); loadTravelTime(); } });
 </script>
 </body>
 </html>

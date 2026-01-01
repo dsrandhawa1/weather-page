@@ -23,63 +23,59 @@ body {
 .container {
     max-width: 900px;
     margin: auto;
-    padding: 24px;
+    padding: 14px;
 }
 
 .card {
     background: var(--card);
     border-radius: 20px;
-    padding: 24px;
+    padding: 14px 18px;
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 24px;
+    margin-bottom: 14px;
 }
 
-/* Current weather layout */
+/* CURRENT WEATHER (top section) */
 .current-header {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 24px; /* reduced gap */
 }
 
 .current-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin-bottom: 0; /* removed extra space */
 }
 
 .city {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 500;
-    margin-bottom: 4px;
+    margin-bottom: 0px; /* reduced */
 }
 
 .current-temp {
-    font-size: 4rem;
+    font-size: 3.2rem;
     font-weight: 500;
-    transition: opacity .4s ease;
+    line-height: 1; /* tighter spacing */
 }
 
 .condition {
-    font-size: 3rem; /* Larger icon */
-    margin: 12px 0;
+    font-size: 2.4rem;
+    margin: 4px 0; /* reduced vertical margin */
 }
 
-.fade {
-    opacity: .4;
-}
-
-/* High/Low vertical stack, horizontal label+value */
 .hilo-vertical {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 20px; /* vertical spacing between High and Low blocks */
+    gap: 12px; /* reduced spacing */
 }
 
 .hilo-vertical div {
     display: flex;
-    justify-content: space-between; /* label and reading horizontal */
-    width: 130px; /* enough width for reading */
+    justify-content: space-between;
+    width: 80px;
     font-size: 1.8rem;
     font-weight: 500;
 }
@@ -91,8 +87,7 @@ body {
 .updated {
     font-size: .8rem;
     color: var(--sub);
-    margin-top: 6px;
-    transition: opacity .4s ease, color .4s ease;
+    margin-top: 2px; /* compact */
 }
 
 .updated.stale {
@@ -103,41 +98,42 @@ body {
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 8px;
+    gap: 4px;
     text-align: center;
-    font-size: .85rem;
+    font-size: .75rem;
 }
 
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 8px 4px;
+    padding: 4px 2px;
 }
 
 .icon {
-    font-size: 1.6rem;
-    margin: 4px 0;
+    font-size: 1.4rem;
+    margin: 1px 0;
 }
 
 /* Daily forecast */
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 12px;
+    gap: 8px;
     text-align: center;
+    font-size: .8rem;
 }
 
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 12px 6px;
+    padding: 8px 4px;
 }
 
 /* Footer */
 .footer {
     text-align: center;
-    margin-top: 24px;
-    font-size: 0.8rem;
+    margin-top: 12px;
+    font-size: 0.75rem;
     color: var(--sub);
 }
 </style>
@@ -164,13 +160,13 @@ body {
 
 <!-- HOURLY FORECAST -->
 <div class="card">
-    <h3>Next 12 Hours</h3>
+    <h3 style="margin:2px 0; font-size:.85rem;">Next 12 Hours</h3>
     <div class="hourly" id="hourly"></div>
 </div>
 
 <!-- DAILY FORECAST -->
 <div class="card">
-    <h3>7-Day Forecast</h3>
+    <h3 style="margin:2px 0; font-size:.85rem;">7-Day Forecast</h3>
     <div class="daily" id="daily"></div>
 </div>
 
@@ -183,7 +179,6 @@ body {
 const LAT = 42.4645;
 const LON = -83.4888;
 const REFRESH_MS = 5 * 60 * 1000;
-let lastSuccessfulUpdate = null;
 
 const icons = {
     0:"☀️",1:"🌤️",2:"⛅",3:"☁️",
@@ -203,10 +198,10 @@ function showUpdating(){
 }
 
 function updateTimestamp(){
-    lastSuccessfulUpdate = new Date();
+    const lastUpdate = new Date();
     const el = document.getElementById("updated");
     el.textContent = "Last updated: " +
-        lastSuccessfulUpdate.toLocaleString([],{
+        lastUpdate.toLocaleString([],{
             weekday:"short",
             hour:"numeric",
             minute:"2-digit",
@@ -282,10 +277,7 @@ async function loadWeather(){
 
 // Initial load
 loadWeather();
-// Refresh every 5 minutes
 setInterval(loadWeather, REFRESH_MS);
-
-// Pause refresh when tab hidden
 document.addEventListener("visibilitychange", ()=>{
     if(!document.hidden) loadWeather();
 });

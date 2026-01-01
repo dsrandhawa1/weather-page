@@ -1,195 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Weather – Novi, MI</title>
+<meta charset="UTF-8">
+<title>Novi MI Weather & Travel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-:root {
-    --bg: #f8f9fa;
-    --card: #ffffff;
-    --text: #202124;
-    --sub: #5f6368;
+html,body{
+  margin:0;
+  height:100%;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:#f1f3f4;
 }
-
-html, body {
-    margin: 0;
-    height: 100%;
-    width: 100%;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: var(--text);
+.container{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  padding:16px;
+  box-sizing:border-box;
 }
-
-body {
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
-
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100vw;
-    height: 100%;
-    padding: 14px;
-    box-sizing: border-box;
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-
-/* Cards */
-.card {
-    position: relative;
-    background: var(--card);
-    border-radius: 20px;
-    padding: 14px 18px;
-    box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 14px;
-    flex-shrink: 0;
+.city{
+  font-size:2.4rem;
+  font-weight:600;
 }
-
-/* CURRENT WEATHER */
-.current-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.clock-wrap{
+  text-align:right;
 }
-
-.current-left {
-    display: flex;
-    align-items: center;
-    gap: 40px;
+.date{
+  font-size:1.2rem;
+  opacity:.7;
 }
-
-/* Fonts */
-.city {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 4px;
+.clock{
+  font-size:2.6rem;
+  white-space:nowrap;
 }
-
-.current-temp {
-    font-size: 4.2rem;
-    font-weight: 600;
-    line-height: 1.2;
+.clock-btn{
+  font-size:0.9rem;
+  padding:6px 10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  background:#888888;
+  color:#fff;
+  margin-top:6px;
 }
-
-.condition {
-    font-size: 3rem;
-    margin: 6px 0;
+.current{
+  display:flex;
+  align-items:center;
+  gap:24px;
+  margin-top:16px;
 }
-
-/* High/Low vertical with travel time */
-.hilo-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
+.icon{
+  font-size:4.5rem;
 }
-
-.hilo-vertical div {
-    font-size: 2.4rem;
-    font-weight: 600;
+.temp{
+  font-size:5.5rem;
+  font-weight:600;
 }
-
-.hilo-vertical div span.label {
-    font-size: 1.44rem; /* 40% smaller label */
-    font-weight: 500;
+.hilo{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
-
-#travelTime {
-    font-size: 1.36rem;
-    font-weight: 500;
-    color: var(--sub);
+.hilo-row{
+  display:flex;
+  gap:10px;
+  align-items:baseline;
 }
-
-/* Last updated */
-.updated {
-    font-size: .95rem;
-    color: var(--sub);
-    margin-top: 3px;
+.hilo-label{
+  font-size:1.2rem;
+  opacity:.6;
 }
-
-.updated.stale {
-    color: #d93025;
+.hilo-value{
+  font-size:2.8rem;
+  font-weight:600;
 }
-
-/* CLOCK */
-.clock-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    position: absolute;
-    top: 8px;
-    right: 16px;
+.travel{
+  font-size:1.15rem;
+  color:#1a73e8;
 }
-
-.clock {
-    font-size: 4rem;
-    font-weight: 600;
-    line-height: 1;
-    color: var(--text);
-    pointer-events: none;
+.section{
+  margin-top:16px;
 }
-
-.toggle-seconds {
-    margin-top: 4px;
-    font-size: 1rem;
-    padding: 3px 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #f1f3f4;
-    cursor: pointer;
+.section-title{
+  font-size:1.6rem;
+  margin-bottom:8px;
 }
-
-/* Hourly forecast (Next 12 hours) */
-.hourly {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 5px;
-    text-align: center;
-    font-size: 1.36rem;
+.hourly,.daily{
+  display:flex;
+  justify-content:space-between;
 }
-
-.hour {
-    background: #f1f3f4;
-    border-radius: 12px;
-    padding: 9px 4px;
+.hour,.day{
+  text-align:center;
+  font-size:1.4rem;
 }
-
-.hour .icon {
-    font-size: 2.56rem;
-    margin: 2px 0;
+.day-date{
+  font-weight:600;
 }
-
-/* Daily forecast (8 days) */
-.daily {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 9px;
-    text-align: center;
-    font-size: 1.44rem;
+.updated{
+  font-size:1rem;
+  opacity:.6;
+  margin-top:4px;
 }
-
-.day {
-    background: #f1f3f4;
-    border-radius: 14px;
-    padding: 14px 9px;
-}
-
-.day .icon {
-    font-size: 2.56rem;
-}
-
-/* Footer */
-.footer {
-    text-align: center;
-    margin-top: 8px;
-    font-size: 0.85rem;
-    color: var(--sub);
-    flex-shrink: 0;
+footer{
+  margin-top:auto;
+  text-align:center;
+  opacity:.6;
 }
 </style>
 </head>
@@ -197,200 +124,162 @@ body {
 <body>
 <div class="container">
 
-<!-- CURRENT WEATHER -->
-<div class="card">
-    <div class="current-header">
-        <div class="current-left">
-            <div>
-                <div class="city">Novi, MI</div>
-                <div class="current-temp" id="currentTemp">--°</div>
-                <div class="condition" id="condition">☀️</div>
-                <div class="updated" id="updated">Updating…</div>
-            </div>
-            <div class="hilo-vertical">
-                <div><span class="label">High</span> <span id="todayHigh">--°</span></div>
-                <div><span class="label">Low</span> <span id="todayLow">--°</span></div>
-                <div id="travelTime">Loading travel time…</div>
-            </div>
-        </div>
-        <div class="clock-container">
-            <div class="clock" id="clock">--:--:--</div>
-            <button class="toggle-seconds" id="toggleSecondsBtn">Hide Seconds</button>
-        </div>
+  <div class="card">
+    <div class="top">
+      <div class="city">Novi, MI</div>
+
+      <div class="clock-wrap">
+        <div class="date" id="dateLine"></div>
+        <div class="clock" id="clock"></div>
+        <button class="clock-btn" onclick="toggleSeconds()" id="secBtn">
+          Hide seconds
+        </button>
+      </div>
     </div>
-</div>
 
-<!-- HOURLY FORECAST -->
-<div class="card">
-    <h3 style="margin:4px 0; font-size:1.6rem;">Next 12 Hours</h3>
+    <div class="current">
+      <div class="icon" id="icon">☀️</div>
+      <div class="temp" id="temp">--°</div>
+
+      <div class="hilo">
+        <div class="hilo-row">
+          <div class="hilo-label">High</div>
+          <div class="hilo-value" id="high">--°</div>
+        </div>
+        <div class="hilo-row">
+          <div class="hilo-label">Low</div>
+          <div class="hilo-value" id="low">--°</div>
+        </div>
+        <div class="travel" id="travel">Loading travel time…</div>
+      </div>
+    </div>
+
+    <div class="updated" id="updated"></div>
+  </div>
+
+  <div class="card section">
+    <div class="section-title">Next 12 Hours</div>
     <div class="hourly" id="hourly"></div>
-</div>
+  </div>
 
-<!-- DAILY FORECAST -->
-<div class="card">
-    <h3 style="margin:4px 0; font-size:1.6rem;">8-Day Forecast</h3>
+  <div class="card section">
+    <div class="section-title">8-Day Forecast</div>
     <div class="daily" id="daily"></div>
+  </div>
+
+  <footer>Powered by Dipu Singh</footer>
 </div>
 
-<!-- Footer -->
-<div class="footer">Powered by Dipu Singh</div>
-
-</div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdf0Y6MXleuEFpaBgX-TmCdap_UX_BeBM"></script>
 
 <script>
-const LAT = 42.4806;   // Novi, MI latitude
-const LON = -83.4750;  // Novi, MI longitude
-const REFRESH_MS = 5 * 60 * 1000;
-
-const icons = {
-    0:"☀️",1:"🌤️",2:"⛅",3:"☁️",
-    45:"🌫️",48:"🌫️",
-    51:"🌦️",53:"🌦️",55:"🌦️",
-    61:"🌧️",63:"🌧️",65:"🌧️",
-    71:"❄️",73:"❄️",75:"❄️",
-    95:"⛈️"
-};
-
-function icon(code){ return icons[code] || "🌡️"; }
-
-function showUpdating(){
-    const el = document.getElementById("updated");
-    el.textContent = "Updating…";
-    el.classList.remove("stale");
-}
-
-function updateTimestamp(){
-    const lastUpdate = new Date();
-    const el = document.getElementById("updated");
-    el.textContent = "Last updated: " +
-        lastUpdate.toLocaleString([],{
-            weekday:"short",
-            hour:"numeric",
-            minute:"2-digit",
-            hour12:true
-        });
-}
-
-function markStale(){
-    const el = document.getElementById("updated");
-    el.textContent = "⚠ Weather data may be out of date";
-    el.classList.add("stale");
-}
-
-// CLOCK
+const LAT = 42.4806;
+const LON = -83.4755;
 let showSeconds = true;
-const clockEl = document.getElementById("clock");
-const toggleBtn = document.getElementById("toggleSecondsBtn");
+
+function toggleSeconds(){
+  showSeconds = !showSeconds;
+  document.getElementById("secBtn").textContent =
+    showSeconds ? "Hide seconds" : "Show seconds";
+  updateClock();
+}
 
 function updateClock(){
-    const now = new Date();
-    clockEl.textContent = now.toLocaleTimeString([], {
-        hour:'2-digit', 
-        minute:'2-digit', 
-        second: showSeconds ? '2-digit' : undefined,
-        hour12:true
-    });
+  const now = new Date();
+  document.getElementById("dateLine").textContent =
+    now.toLocaleDateString([], {weekday:"long", month:"long", day:"numeric", year:"numeric"});
+
+  const opts = showSeconds
+    ? {hour:"numeric",minute:"2-digit",second:"2-digit"}
+    : {hour:"numeric",minute:"2-digit"};
+
+  document.getElementById("clock").textContent =
+    now.toLocaleTimeString([], opts);
 }
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 updateClock();
 
-toggleBtn.addEventListener("click", ()=>{
-    showSeconds = !showSeconds;
-    toggleBtn.textContent = showSeconds ? "Hide Seconds" : "Show Seconds";
-    updateClock();
-});
+function icon(code){
+  if(code<3) return "☀️";
+  if(code<50) return "⛅";
+  if(code<70) return "🌧️";
+  if(code<80) return "❄️";
+  return "🌩️";
+}
 
-// WEATHER
 async function loadWeather(){
-    showUpdating();
-    const tempEl = document.getElementById("currentTemp");
-    tempEl.classList.add("fade");
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=auto&forecast_days=10`;
+  const r = await fetch(url);
+  const d = await r.json();
 
-    try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=10`;
-        const res = await fetch(url);
-        if(!res.ok) throw new Error();
-        const d = await res.json();
+  document.getElementById("temp").textContent =
+    Math.round(d.current_weather.temperature)+"°";
+  document.getElementById("icon").textContent =
+    icon(d.current_weather.weathercode);
+  document.getElementById("high").textContent =
+    Math.round(d.daily.temperature_2m_max[0])+"°";
+  document.getElementById("low").textContent =
+    Math.round(d.daily.temperature_2m_min[0])+"°";
 
-        document.getElementById("currentTemp").textContent = Math.round(d.current_weather.temperature) + "°";
-        document.getElementById("condition").textContent = icon(d.current_weather.weathercode);
-        document.getElementById("todayHigh").textContent = Math.round(d.daily.temperature_2m_max[0]) + "°";
-        document.getElementById("todayLow").textContent = Math.round(d.daily.temperature_2m_min[0]) + "°";
-
-        // Hourly next 12 hours
-        const h = document.getElementById("hourly");
-        h.innerHTML = "";
-        const now = new Date();
-        const currentHourIndex = d.hourly.time.findIndex(t => new Date(t) >= now);
-        for(let i=currentHourIndex; i<currentHourIndex+12 && i<d.hourly.time.length; i++){
-            const time = new Date(d.hourly.time[i]);
-            h.innerHTML += `
-                <div class="hour">
-                    <div>${time.toLocaleString([], {hour:'numeric', hour12:true})}</div>
-                    <div class="icon">${icon(d.hourly.weathercode[i])}</div>
-                    <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
-                </div>`;
-        }
-
-        // Daily 8 days starting from tomorrow
-        const day = document.getElementById("daily");
-        day.innerHTML = "";
-        const today = new Date();
-        today.setHours(0,0,0,0);
-
-        let displayed = 0;
-        for(let i=0;i<d.daily.time.length && displayed<8;i++){
-            const forecastDate = new Date(d.daily.time[i]);
-            forecastDate.setHours(0,0,0,0);
-            if(forecastDate > today){
-                day.innerHTML += `
-                    <div class="day">
-                        <div>${forecastDate.toLocaleDateString([], {weekday:"short"})}</div>
-                        <div class="icon">${icon(d.daily.weathercode[i])}</div>
-                        <div>${Math.round(d.daily.temperature_2m_max[i])}° /
-                             ${Math.round(d.daily.temperature_2m_min[i])}°</div>
-                    </div>`;
-                displayed++;
-            }
-        }
-
-        updateTimestamp();
-        setTimeout(()=>tempEl.classList.remove("fade"),200);
-    } catch {
-        markStale();
+  const h = document.getElementById("hourly");
+  h.innerHTML="";
+  const now = new Date();
+  for(let i=0;i<d.hourly.time.length && h.children.length<12;i++){
+    const t = new Date(d.hourly.time[i]);
+    if(t>=now){
+      h.innerHTML+=`
+        <div class="hour">
+          <div>${t.toLocaleTimeString([], {hour:"numeric",hour12:true})}</div>
+          <div>${icon(d.hourly.weathercode[i])}</div>
+          <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
+        </div>`;
     }
+  }
+
+  const day = document.getElementById("daily");
+  day.innerHTML="";
+  let shown=0;
+  const today = new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<d.daily.time.length && shown<8;i++){
+    const dt = new Date(d.daily.time[i]);
+    if(dt>today){
+      day.innerHTML+=`
+        <div class="day">
+          <div class="day-date">
+            ${dt.toLocaleDateString([], {weekday:"short", month:"numeric", day:"numeric"})}
+          </div>
+          <div>${icon(d.daily.weathercode[i])}</div>
+          <div>${Math.round(d.daily.temperature_2m_max[i])}° /
+               ${Math.round(d.daily.temperature_2m_min[i])}°</div>
+        </div>`;
+      shown++;
+    }
+  }
+
+  document.getElementById("updated").textContent =
+    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 
-// GOOGLE MAPS TRAVEL TIME
-async function loadTravelTime(){
-    const origin = encodeURIComponent("24010 Greening Dr, Novi, MI");
-    const destination = encodeURIComponent("1051 Oakland Ave, Birmingham, MI 48009");
-    const API_KEY = "AIzaSyCdf0Y6MXleuEFpaBgX-TmCdap_UX_BeBM"; // <-- Replace with your API key
-
-    try {
-        const res = await fetch(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destination}&departure_time=now&key=${API_KEY}`);
-        const data = await res.json();
-        const element = data.rows[0].elements[0];
-        if(element.status === "OK"){
-            document.getElementById("travelTime").textContent =
-              `Travel: ${element.duration_in_traffic.text}`;
-        } else {
-            document.getElementById("travelTime").textContent = "Travel time unavailable";
-        }
-    } catch(err){
-        document.getElementById("travelTime").textContent = "Error loading travel time";
-        console.error(err);
+function loadTravelTime(){
+  const service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix({
+    origins:["24010 Greening Dr, Novi, MI"],
+    destinations:["1051 Oakland Ave, Birmingham, MI 48009"],
+    travelMode:"DRIVING",
+    drivingOptions:{ departureTime:new Date(), trafficModel:"bestguess" }
+  }, (res,status)=>{
+    if(status==="OK"){
+      const e = res.rows[0].elements[0];
+      document.getElementById("travel").textContent =
+        `🚗 Time to drive to Roeper School: ${e.duration_in_traffic.text}`;
     }
+  });
 }
 
-// Initial load
 loadWeather();
 loadTravelTime();
-
-// Refresh every 5 minutes
-setInterval(loadWeather, REFRESH_MS);
-setInterval(loadTravelTime, REFRESH_MS);
-document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ loadWeather(); loadTravelTime(); } });
+setInterval(loadWeather,300000);
+setInterval(loadTravelTime,300000);
 </script>
 </body>
 </html>

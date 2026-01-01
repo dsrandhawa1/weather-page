@@ -13,63 +13,78 @@
     --sub: #5f6368;
 }
 
-body {
+html, body {
     margin: 0;
+    height: 100%;
+    width: 100%;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--text);
 }
 
-.container {
-    max-width: 900px;
-    margin: auto;
-    padding: 14px;
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
 }
 
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100vw;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Cards */
 .card {
     background: var(--card);
     border-radius: 20px;
-    padding: 14px 18px;
+    padding: 18px 22px;
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 14px;
+    margin-bottom: 18px;
+    flex-shrink: 0;
 }
 
-/* CURRENT WEATHER (top section) */
+/* CURRENT WEATHER */
 .current-header {
     display: flex;
     align-items: center;
-    gap: 24px; /* reduced gap */
+    gap: 30px;
 }
 
 .current-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 0; /* removed extra space */
+    margin-bottom: 4px;
 }
 
 .city {
     font-size: 1rem;
     font-weight: 500;
-    margin-bottom: 0px; /* reduced */
+    margin-bottom: 4px;
 }
 
 .current-temp {
     font-size: 3.2rem;
     font-weight: 500;
-    line-height: 1; /* tighter spacing */
+    line-height: 1.2;
 }
 
 .condition {
     font-size: 2.4rem;
-    margin: 4px 0; /* reduced vertical margin */
+    margin: 6px 0;
 }
 
 .hilo-vertical {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 12px; /* reduced spacing */
+    gap: 18px;
 }
 
 .hilo-vertical div {
@@ -87,7 +102,7 @@ body {
 .updated {
     font-size: .8rem;
     color: var(--sub);
-    margin-top: 2px; /* compact */
+    margin-top: 4px;
 }
 
 .updated.stale {
@@ -98,7 +113,7 @@ body {
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 4px;
+    gap: 6px;
     text-align: center;
     font-size: .75rem;
 }
@@ -106,19 +121,19 @@ body {
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 4px 2px;
+    padding: 6px 3px;
 }
 
 .icon {
     font-size: 1.4rem;
-    margin: 1px 0;
+    margin: 2px 0;
 }
 
 /* Daily forecast */
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 10px;
     text-align: center;
     font-size: .8rem;
 }
@@ -126,7 +141,7 @@ body {
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 8px 4px;
+    padding: 10px 6px;
 }
 
 /* Footer */
@@ -135,6 +150,7 @@ body {
     margin-top: 12px;
     font-size: 0.75rem;
     color: var(--sub);
+    flex-shrink: 0;
 }
 </style>
 </head>
@@ -160,13 +176,13 @@ body {
 
 <!-- HOURLY FORECAST -->
 <div class="card">
-    <h3 style="margin:2px 0; font-size:.85rem;">Next 12 Hours</h3>
+    <h3 style="margin:4px 0; font-size:.85rem;">Next 12 Hours</h3>
     <div class="hourly" id="hourly"></div>
 </div>
 
 <!-- DAILY FORECAST -->
 <div class="card">
-    <h3 style="margin:2px 0; font-size:.85rem;">7-Day Forecast</h3>
+    <h3 style="margin:4px 0; font-size:.85rem;">7-Day Forecast</h3>
     <div class="daily" id="daily"></div>
 </div>
 

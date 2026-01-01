@@ -158,10 +158,10 @@ body {
     margin: 2px 0;
 }
 
-/* Daily forecast (7 days) */
+/* Daily forecast (8 days) */
 .daily {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(8, 1fr);
     gap: 9px;
     text-align: center;
     font-size: 1.44rem;
@@ -221,7 +221,7 @@ body {
 
 <!-- DAILY FORECAST -->
 <div class="card">
-    <h3 style="margin:4px 0; font-size:1.6rem;">7-Day Forecast</h3>
+    <h3 style="margin:4px 0; font-size:1.6rem;">8-Day Forecast</h3>
     <div class="daily" id="daily"></div>
 </div>
 
@@ -231,8 +231,8 @@ body {
 </div>
 
 <script>
-const LAT = 42.4668;   // Novi, MI latitude
-const LON = -83.4875;  // Novi, MI longitude
+const LAT = 42.4806;   // Novi, MI latitude
+const LON = -83.4750;  // Novi, MI longitude
 const REFRESH_MS = 5 * 60 * 1000;
 
 const icons = {
@@ -299,8 +299,8 @@ async function loadWeather(){
     tempEl.classList.add("fade");
 
     try {
-        // Request 8 days to ensure we can skip today and still have 7
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=8`;
+        // Request 10 days: today + 9 more to ensure 8 days starting from tomorrow
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=10`;
         const res = await fetch(url);
         if(!res.ok) throw new Error();
         const d = await res.json();
@@ -325,14 +325,14 @@ async function loadWeather(){
                 </div>`;
         }
 
-        // Daily 7 days starting from tomorrow
+        // Daily 8 days starting from tomorrow
         const day = document.getElementById("daily");
         day.innerHTML = "";
         const today = new Date();
         today.setHours(0,0,0,0);
 
         let displayed = 0;
-        for(let i=0;i<d.daily.time.length && displayed<7;i++){
+        for(let i=0;i<d.daily.time.length && displayed<8;i++){
             const forecastDate = new Date(d.daily.time[i]);
             forecastDate.setHours(0,0,0,0);
             if(forecastDate > today){ // strictly after today

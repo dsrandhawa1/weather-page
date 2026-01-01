@@ -299,7 +299,8 @@ async function loadWeather(){
     tempEl.classList.add("fade");
 
     try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`;
+        // Request 8 days to ensure we can skip today and still have 7
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto&forecast_days=8`;
         const res = await fetch(url);
         if(!res.ok) throw new Error();
         const d = await res.json();
@@ -329,7 +330,9 @@ async function loadWeather(){
         day.innerHTML = "";
         const today = new Date();
         today.setHours(0,0,0,0);
-        for(let i=0;i<d.daily.time.length && day.children.length<7;i++){
+
+        let displayed = 0;
+        for(let i=0;i<d.daily.time.length && displayed<7;i++){
             const forecastDate = new Date(d.daily.time[i]);
             forecastDate.setHours(0,0,0,0);
             if(forecastDate > today){ // strictly after today
@@ -340,6 +343,7 @@ async function loadWeather(){
                         <div>${Math.round(d.daily.temperature_2m_max[i])}° /
                              ${Math.round(d.daily.temperature_2m_min[i])}°</div>
                     </div>`;
+                displayed++;
             }
         }
 

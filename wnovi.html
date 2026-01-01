@@ -35,7 +35,7 @@ body {
     justify-content: space-between;
     width: 100vw;
     height: 100%;
-    padding: 16px; /* reduced from 20px → 16px */
+    padding: 14px; /* reduced from 16px → 14px */
     box-sizing: border-box;
 }
 
@@ -43,9 +43,9 @@ body {
 .card {
     background: var(--card);
     border-radius: 20px;
-    padding: 16px 20px; /* reduced padding vertically and horizontally */
+    padding: 14px 18px; /* reduced padding vertically/horizontally */
     box-shadow: 0 4px 20px rgba(0,0,0,.06);
-    margin-bottom: 16px; /* reduced spacing between cards */
+    margin-bottom: 14px; /* reduced spacing between cards */
     flex-shrink: 0;
 }
 
@@ -53,14 +53,14 @@ body {
 .current-header {
     display: flex;
     align-items: center;
-    gap: 28px; /* reduced gap between current temp and high/low */
+    gap: 24px; /* reduced from 28px */
 }
 
 .current-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-bottom: 4px; /* slightly smaller */
+    margin-bottom: 3px; /* slightly smaller */
 }
 
 /* Fonts remain unchanged */
@@ -85,7 +85,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 18px; /* slightly smaller */
+    gap: 16px; /* reduced from 18px */
 }
 
 .hilo-vertical div {
@@ -103,18 +103,18 @@ body {
 .updated {
     font-size: .95rem;
     color: var(--sub);
-    margin-top: 4px;
+    margin-top: 3px; /* reduced */
 }
 
 .updated.stale {
     color: #d93025;
 }
 
-/* Hourly forecast (Next 12 hours) – fonts unchanged, just reduce padding */
+/* Hourly forecast (Next 12 hours) – fonts unchanged, reduce padding/gaps slightly */
 .hourly {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 6px; /* slightly smaller gap */
+    gap: 5px; /* reduced from 6px */
     text-align: center;
     font-size: 1.36rem;
 }
@@ -122,7 +122,7 @@ body {
 .hour {
     background: #f1f3f4;
     border-radius: 12px;
-    padding: 10px 5px; /* reduced padding from 12px/6px */
+    padding: 9px 4px; /* slightly smaller */
 }
 
 .hour .icon {
@@ -130,11 +130,11 @@ body {
     margin: 2px 0;
 }
 
-/* Daily forecast (7 days) – fonts unchanged, reduce padding */
+/* Daily forecast (7 days) – fonts unchanged, reduce padding/gaps slightly */
 .daily {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px; /* reduced from 12px */
+    gap: 9px; /* reduced from 10px */
     text-align: center;
     font-size: 1.44rem;
 }
@@ -142,7 +142,7 @@ body {
 .day {
     background: #f1f3f4;
     border-radius: 14px;
-    padding: 15px 10px; /* reduced padding from 19px/13px */
+    padding: 14px 9px; /* reduced from 15px/10px */
 }
 
 .day .icon {
@@ -152,7 +152,7 @@ body {
 /* Footer */
 .footer {
     text-align: center;
-    margin-top: 10px; /* reduced */
+    margin-top: 8px; /* reduced from 10px */
     font-size: 0.85rem;
     color: var(--sub);
     flex-shrink: 0;

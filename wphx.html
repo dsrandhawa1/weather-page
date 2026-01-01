@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Weather – Phoenix, AZ</title>
+
+<style>
+:root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --text: #202124;
+    --sub: #5f6368;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100vw;
+    height: 100%;
+    padding: 16px; /* reduced from 20px → 16px */
+    box-sizing: border-box;
+}
+
+/* Cards */
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px 20px; /* reduced padding vertically and horizontally */
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    margin-bottom: 16px; /* reduced spacing between cards */
+    flex-shrink: 0;
+}
+
+/* CURRENT WEATHER */
+.current-header {
+    display: flex;
+    align-items: center;
+    gap: 28px; /* reduced gap between current temp and high/low */
+}
+
+.current-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 4px; /* slightly smaller */
+}
+
+/* Fonts remain unchanged */
+.city {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.current-temp {
+    font-size: 4.2rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.condition {
+    font-size: 3rem;
+    margin: 6px 0;
+}
+
+.hilo-vertical {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px; /* slightly smaller */
+}
+
+.hilo-vertical div {
+    display: flex;
+    justify-content: space-between;
+    width: 90px;
+    font-size: 2.2rem;
+    font-weight: 600;
+}
+
+.hilo-vertical div span {
+    font-size: 2.3rem;
+}
+
+.updated {
+    font-size: .95rem;
+    color: var(--sub);
+    margin-top: 4px;
+}
+
+.updated.stale {
+    color: #d93025;
+}
+
+/* Hourly forecast (Next 12 hours) – fonts unchanged, just reduce padding */
+.hourly {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px; /* slightly smaller gap */
+    text-align: center;
+    font-size: 1.36rem;
+}
+
+.hour {
+    background: #f1f3f4;
+    border-radius: 12px;
+    padding: 10px 5px; /* reduced padding from 12px/6px */
+}
+
+.hour .icon {
+    font-size: 2.56rem;
+    margin: 2px 0;
+}
+
+/* Daily forecast (7 days) – fonts unchanged, reduce padding */
+.daily {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px; /* reduced from 12px */
+    text-align: center;
+    font-size: 1.44rem;
+}
+
+.day {
+    background: #f1f3f4;
+    border-radius: 14px;
+    padding: 15px 10px; /* reduced padding from 19px/13px */
+}
+
+.day .icon {
+    font-size: 2.56rem;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 10px; /* reduced */
+    font-size: 0.85rem;
+    color: var(--sub);
+    flex-shrink: 0;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- CURRENT WEATHER -->
+<div class="card">
+    <div class="current-header">
+        <div class="current-left">
+            <div class="city">Phoenix, AZ</div>
+            <div class="current-temp" id="currentTemp">--°</div>
+            <div class="condition" id="condition">☀️</div>
+            <div class="updated" id="updated">Updating…</div>
+        </div>
+        <div class="hilo-vertical">
+       <div style="white-space: nowrap;">High &nbsp;<span id="todayHigh">--°</span></div>
+            <div style="white-space: nowrap;">Low &nbsp;  <span id="todayLow">--°</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- HOURLY FORECAST -->
+<div class="card">
+    <h3 style="margin:4px 0; font-size:1.6rem;">Next 12 Hours</h3>
+    <div class="hourly" id="hourly"></div>
+</div>
+
+<!-- DAILY FORECAST -->
+<div class="card">
+    <h3 style="margin:4px 0; font-size:1.6rem;">7-Day Forecast</h3>
+    <div class="daily" id="daily"></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">Powered by Dipu Singh</div>
+
+</div>
+
+<script>
+const LAT = 33.4484;
+const LON = -112.0740;
+const REFRESH_MS = 5 * 60 * 1000;
+
+const icons = {
+    0:"☀️",1:"🌤️",2:"⛅",3:"☁️",
+    45:"🌫️",48:"🌫️",
+    51:"🌦️",53:"🌦️",55:"🌦️",
+    61:"🌧️",63:"🌧️",65:"🌧️",
+    71:"❄️",73:"❄️",75:"❄️",
+    95:"⛈️"
+};
+
+function icon(code){ return icons[code] || "🌡️"; }
+
+function showUpdating(){
+    const el = document.getElementById("updated");
+    el.textContent = "Updating…";
+    el.classList.remove("stale");
+}
+
+function updateTimestamp(){
+    const lastUpdate = new Date();
+    const el = document.getElementById("updated");
+    el.textContent = "Last updated: " +
+        lastUpdate.toLocaleString([],{
+            weekday:"short",
+            hour:"numeric",
+            minute:"2-digit",
+            hour12:true
+        });
+}
+
+function markStale(){
+    const el = document.getElementById("updated");
+    el.textContent = "⚠ Weather data may be out of date";
+    el.classList.add("stale");
+}
+
+async function loadWeather(){
+    showUpdating();
+    const tempEl = document.getElementById("currentTemp");
+    tempEl.classList.add("fade");
+
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`;
+        const res = await fetch(url);
+        if(!res.ok) throw new Error();
+
+        const d = await res.json();
+
+        // Current
+        document.getElementById("currentTemp").textContent =
+            Math.round(d.current_weather.temperature) + "°";
+        document.getElementById("condition").textContent =
+            icon(d.current_weather.weathercode);
+        document.getElementById("todayHigh").textContent =
+            Math.round(d.daily.temperature_2m_max[0]) + "°";
+        document.getElementById("todayLow").textContent =
+            Math.round(d.daily.temperature_2m_min[0]) + "°";
+
+        // Hourly (next 12 hours from current time)
+        const h = document.getElementById("hourly");
+        h.innerHTML = "";
+        const now = new Date();
+        const currentHourIndex = d.hourly.time.findIndex(t => new Date(t) >= now);
+
+        for(let i=currentHourIndex; i<currentHourIndex+12 && i<d.hourly.time.length; i++){
+            const time = new Date(d.hourly.time[i]);
+            h.innerHTML += `
+                <div class="hour">
+                    <div>${time.toLocaleString([], {hour:'numeric', hour12:true})}</div>
+                    <div class="icon">${icon(d.hourly.weathercode[i])}</div>
+                    <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
+                </div>`;
+        }
+
+        // Daily (7 days)
+        const day = document.getElementById("daily");
+        day.innerHTML = "";
+        for(let i=0;i<7;i++){
+            const date = new Date(d.daily.time[i]);
+            day.innerHTML += `
+                <div class="day">
+                    <div>${date.toLocaleDateString([], {weekday:"short"})}</div>
+                    <div class="icon">${icon(d.daily.weathercode[i])}</div>
+                    <div>${Math.round(d.daily.temperature_2m_max[i])}° /
+                         ${Math.round(d.daily.temperature_2m_min[i])}°</div>
+                </div>`;
+        }
+
+        updateTimestamp();
+        setTimeout(()=>tempEl.classList.remove("fade"),200);
+
+    } catch {
+        markStale();
+    }
+}
+
+// Initial load
+loadWeather();
+setInterval(loadWeather, REFRESH_MS);
+document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden) loadWeather();
+});
+</script>
+</body>
+</html>

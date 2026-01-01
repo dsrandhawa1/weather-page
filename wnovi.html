@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Weather – Novi, MI</title>
+
+<style>
+:root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --text: #202124;
+    --sub: #5f6368;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 24px;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    margin-bottom: 24px;
+}
+
+/* Current weather layout */
+.current-header {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.current-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.city {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.current-temp {
+    font-size: 4rem;
+    font-weight: 500;
+    transition: opacity .4s ease;
+}
+
+.condition {
+    font-size: 3rem; /* Larger icon */
+    margin: 12px 0;
+}
+
+.fade {
+    opacity: .4;
+}
+
+/* High/Low vertical stack, horizontal label+value */
+.hilo-vertical {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px; /* vertical spacing between High and Low blocks */
+}
+
+.hilo-vertical div {
+    display: flex;
+    justify-content: space-between; /* label and reading horizontal */
+    width: 130px; /* enough width for reading */
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.hilo-vertical div span {
+    font-size: 2.4rem;
+}
+
+.updated {
+    font-size: .8rem;
+    color: var(--sub);
+    margin-top: 6px;
+    transition: opacity .4s ease, color .4s ease;
+}
+
+.updated.stale {
+    color: #d93025;
+}
+
+/* Hourly forecast */
+.hourly {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 8px;
+    text-align: center;
+    font-size: .85rem;
+}
+
+.hour {
+    background: #f1f3f4;
+    border-radius: 12px;
+    padding: 8px 4px;
+}
+
+.icon {
+    font-size: 1.6rem;
+    margin: 4px 0;
+}
+
+/* Daily forecast */
+.daily {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    text-align: center;
+}
+
+.day {
+    background: #f1f3f4;
+    border-radius: 14px;
+    padding: 12px 6px;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.8rem;
+    color: var(--sub);
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- CURRENT WEATHER -->
+<div class="card">
+    <div class="current-header">
+        <div class="current-left">
+            <div class="city">Novi, MI</div>
+            <div class="current-temp" id="currentTemp">--°</div>
+            <div class="condition" id="condition">☀️</div>
+            <div class="updated" id="updated">Updating…</div>
+        </div>
+        <div class="hilo-vertical">
+            <div>High <span id="todayHigh">--°</span></div>
+            <div>Low  <span id="todayLow">--°</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- HOURLY FORECAST -->
+<div class="card">
+    <h3>Next 12 Hours</h3>
+    <div class="hourly" id="hourly"></div>
+</div>
+
+<!-- DAILY FORECAST -->
+<div class="card">
+    <h3>7-Day Forecast</h3>
+    <div class="daily" id="daily"></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">Powered by Dipu Singh</div>
+
+</div>
+
+<script>
+const LAT = 42.4645;
+const LON = -83.4888;
+const REFRESH_MS = 5 * 60 * 1000;
+let lastSuccessfulUpdate = null;
+
+const icons = {
+    0:"☀️",1:"🌤️",2:"⛅",3:"☁️",
+    45:"🌫️",48:"🌫️",
+    51:"🌦️",53:"🌦️",55:"🌦️",
+    61:"🌧️",63:"🌧️",65:"🌧️",
+    71:"❄️",73:"❄️",75:"❄️",
+    95:"⛈️"
+};
+
+function icon(code){ return icons[code] || "🌡️"; }
+
+function showUpdating(){
+    const el = document.getElementById("updated");
+    el.textContent = "Updating…";
+    el.classList.remove("stale");
+}
+
+function updateTimestamp(){
+    lastSuccessfulUpdate = new Date();
+    const el = document.getElementById("updated");
+    el.textContent = "Last updated: " +
+        lastSuccessfulUpdate.toLocaleString([],{
+            weekday:"short",
+            hour:"numeric",
+            minute:"2-digit",
+            hour12:true
+        });
+}
+
+function markStale(){
+    const el = document.getElementById("updated");
+    el.textContent = "⚠ Weather data may be out of date";
+    el.classList.add("stale");
+}
+
+async function loadWeather(){
+    showUpdating();
+    const tempEl = document.getElementById("currentTemp");
+    tempEl.classList.add("fade");
+
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`;
+        const res = await fetch(url);
+        if(!res.ok) throw new Error();
+
+        const d = await res.json();
+
+        // Current
+        document.getElementById("currentTemp").textContent =
+            Math.round(d.current_weather.temperature) + "°";
+        document.getElementById("condition").textContent =
+            icon(d.current_weather.weathercode);
+        document.getElementById("todayHigh").textContent =
+            Math.round(d.daily.temperature_2m_max[0]) + "°";
+        document.getElementById("todayLow").textContent =
+            Math.round(d.daily.temperature_2m_min[0]) + "°";
+
+        // Hourly (next 12 hours from current time)
+        const h = document.getElementById("hourly");
+        h.innerHTML = "";
+        const now = new Date();
+        const currentHourIndex = d.hourly.time.findIndex(t => new Date(t) >= now);
+
+        for(let i=currentHourIndex; i<currentHourIndex+12 && i<d.hourly.time.length; i++){
+            const time = new Date(d.hourly.time[i]);
+            h.innerHTML += `
+                <div class="hour">
+                    <div>${time.toLocaleString([], {hour:'numeric', hour12:true})}</div>
+                    <div class="icon">${icon(d.hourly.weathercode[i])}</div>
+                    <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
+                </div>`;
+        }
+
+        // Daily (7 days)
+        const day = document.getElementById("daily");
+        day.innerHTML = "";
+        for(let i=0;i<7;i++){
+            const date = new Date(d.daily.time[i]);
+            day.innerHTML += `
+                <div class="day">
+                    <div>${date.toLocaleDateString([], {weekday:"short"})}</div>
+                    <div class="icon">${icon(d.daily.weathercode[i])}</div>
+                    <div>${Math.round(d.daily.temperature_2m_max[i])}° /
+                         ${Math.round(d.daily.temperature_2m_min[i])}°</div>
+                </div>`;
+        }
+
+        updateTimestamp();
+        setTimeout(()=>tempEl.classList.remove("fade"),200);
+
+    } catch {
+        markStale();
+    }
+}
+
+// Initial load
+loadWeather();
+// Refresh every 5 minutes
+setInterval(loadWeather, REFRESH_MS);
+
+// Pause refresh when tab hidden
+document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden) loadWeather();
+});
+</script>
+</body>
+</html>

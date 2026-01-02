@@ -133,9 +133,6 @@ footer{
   </footer>
 </div>
 
-<!-- GOOGLE MAPS SCRIPT -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdf0Y6MXleuEFpaBgX-TmCdap_UX_BeBM&callback=startDashboard" async defer></script>
-
 <script>
 const LAT = 42.4806;
 const LON = -83.4755;
@@ -151,7 +148,7 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-/* ICONS */
+/* WEATHER ICONS */
 function weatherIcon(code){
   if(code<3) return "☀️";
   if(code<50) return "⛅";
@@ -167,6 +164,7 @@ async function loadWeather(){
     `&current_weather=true&hourly=temperature_2m,weathercode`+
     `&daily=temperature_2m_max,temperature_2m_min,weathercode`+
     `&temperature_unit=fahrenheit&timezone=auto`;
+
   const d = await (await fetch(url)).json();
 
   document.getElementById("temp").textContent = Math.round(d.current_weather.temperature)+"°";
@@ -211,6 +209,8 @@ async function loadWeather(){
   document.getElementById("updated").textContent =
     "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
+loadWeather();
+setInterval(loadWeather,300000);
 
 /* LOAD QUOTE */
 async function loadQuote(){
@@ -225,35 +225,28 @@ async function loadQuote(){
     document.getElementById("quote").textContent = "Stay present. Stay kind.";
   }
 }
+loadQuote();
 
-/* LOAD TRAVEL TIME */
-function initTravelTime(){
-  if(!window.google || !google.maps) return;
-  const service = new google.maps.DistanceMatrixService();
-  service.getDistanceMatrix({
-    origins:["24010 Greening Dr, Novi, MI"],
-    destinations:["1051 Oakland Ave, Birmingham, MI 48009"],
-    travelMode:"DRIVING",
-    drivingOptions:{ departureTime: new Date(), trafficModel:"bestguess" }
-  },(res,status)=>{
-    if(status==="OK"){
-      document.getElementById("travel").textContent =
-        "🚗 Time to drive to Roeper School: "+res.rows[0].elements[0].duration_in_traffic.text;
-    } else {
-      document.getElementById("travel").textContent = "🚗 Travel time unavailable";
-      console.error("DistanceMatrix error:", status);
-    }
-  });
-}
+/* SCHOOL TRAVEL TIME USING MAPBOX */
+const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw"; // replace with your Mapbox API token
+const origin = [-83.4755,42.4806]; // [lon, lat] Novi
+const destination = [-83.2205,42.5536]; // [lon, lat] Roeper School
 
-/* START DASHBOARD AFTER GOOGLE MAPS LOADS */
-function startDashboard(){
-  loadWeather();
-  loadQuote();
-  initTravelTime();
-  setInterval(loadWeather,300000);
-  setInterval(initTravelTime,300000);
+async function loadTravelTime(){
+  try{
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/`+
+                `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`+
+                `?access_token=${mapboxKey}`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const minutes = Math.round(d.routes[0].duration / 60);
+    document.getElementById("travel").textContent = `🚗 Estimated drive: ~${minutes} min`;
+  }catch{
+    document.getElementById("travel").textContent = "🚗 Travel time unavailable";
+  }
 }
+loadTravelTime();
+setInterval(loadTravelTime,300000);
 </script>
 </body>
 </html>

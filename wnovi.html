@@ -124,42 +124,42 @@ footer{
 </head>
 
 <body>
-<div style="border: 2px solid blue;" class="container">
+<div  class="container">
 
-  <div style="border: 2px solid blue;" class="card">
-    <div style="border: 2px solid red;" class="current">
+  <div  class="card">
+    <div class="current">
 
 
 <table width=100%> <tr><td width=5%>
-      <div style="border: 2px solid blue;" class="icon" id="icon">☀️</div>
+      <div  class="icon" id="icon">☀️</div>
 </td><td width=15%>
 
-      <div style="border: 2px solid blue;" class="temp" id="temp">--°</div>
+      <div  class="temp" id="temp">--°</div>
 
 </rd>
 
 
 <td>
-      <div style="border: 2px solid blue;" class="hilo">
-        <div style="border: 2px solid blue;" class="hilo-row">
-          <div style="border: 2px solid blue;" class="hilo-label">High</div>
-          <div style="border: 2px solid blue;" class="hilo-value" id="high">--°</div>
+      <div  class="hilo">
+        <div  class="hilo-row">
+          <div  class="hilo-label">High</div>
+          <div  class="hilo-value" id="high">--°</div>
         </div>
       </div>
 
-        <div style="border: 2px solid blue;" class="hilo-row">
-          <div style="border: 2px solid blue;" class="hilo-label">Low</div>
-          <div style="border: 2px solid blue;" class="hilo-value" id="low">--°</div>
+        <div  class="hilo-row">
+          <div  class="hilo-label">Low</div>
+          <div  class="hilo-value" id="low">--°</div>
         </div>
-        <div style="border: 2px solid blue;" class="travel" id="travel"></div>
+        <div  class="travel" id="travel"></div>
 
 </td>
 
 
 <td>
-      <div style="border: 2px solid blue;" class="clock-wrap" style="align:right;border: 2px solid blue;">
-        <div style="border: 2px solid blue;" class="date" id="dateLine"></div>
-        <div style="border: 2px solid blue;" class="clock" id="clock"></div>
+      <div  class="clock-wrap">
+        <div  class="date" id="dateLine"></div>
+        <div  class="clock" id="clock"></div>
         <button class="clock-btn" onclick="toggleSeconds()" id="secBtn">
           Hide seconds
         </button>
@@ -174,17 +174,17 @@ footer{
 
     </div>
 
-    <div style="border: 2px solid blue;" class="updated" id="updated"></div>
+    <div  class="updated" id="updated"></div>
   </div>
 
-  <div style="border: 2px solid blue;" class="card section">
-    <div style="border: 2px solid blue;" class="section-title">Next 12 Hours</div>
-    <div style="border: 2px solid blue;" class="hourly" id="hourly"></div>
+  <div  class="card section">
+    <div  class="section-title">Next 12 Hours</div>
+    <div  class="hourly" id="hourly"></div>
   </div>
 
-  <div style="border: 2px solid blue;" class="card section">
-    <div style="border: 2px solid blue;" class="section-title">8-Day Forecast</div>
-    <div style="border: 2px solid blue;" class="daily" id="daily"></div>
+  <div  class="card section">
+    <div  class="section-title">8-Day Forecast</div>
+    <div  class="daily" id="daily"></div>
   </div>
 
   <footer>Powered by Dipu Singh</footer>
@@ -248,10 +248,10 @@ async function loadWeather(){
     const t = new Date(d.hourly.time[i]);
     if(t>=now){
       h.innerHTML+=`
-        <div style="border: 2px solid blue;" class="hour">
-          <div style="border: 2px solid blue;">${t.toLocaleTimeString([], {hour:"numeric",hour12:true})}</div>
-          <div style="border: 2px solid blue;">${icon(d.hourly.weathercode[i])}</div>
-          <div style="border: 2px solid blue;">${Math.round(d.hourly.temperature_2m[i])}°</div>
+        <div  class="hour">
+          <div >${t.toLocaleTimeString([], {hour:"numeric",hour12:true})}</div>
+          <div >${icon(d.hourly.weathercode[i])}</div>
+          <div >${Math.round(d.hourly.temperature_2m[i])}°</div>
         </div>`;
     }
   }
@@ -264,12 +264,12 @@ async function loadWeather(){
     const dt = new Date(d.daily.time[i]);
     if(dt>today){
       day.innerHTML+=`
-        <div style="border: 2px solid blue;" class="day">
-          <div style="border: 2px solid blue;" class="day-date">
+        <div  class="day">
+          <div  class="day-date">
             ${dt.toLocaleDateString([], {weekday:"short", month:"numeric", day:"numeric"})}
           </div>
-          <div style="border: 2px solid blue;">${icon(d.daily.weathercode[i])}</div>
-          <div style="border: 2px solid blue;">${Math.round(d.daily.temperature_2m_max[i])}° /
+          <div >${icon(d.daily.weathercode[i])}</div>
+          <div >${Math.round(d.daily.temperature_2m_max[i])}° /
                ${Math.round(d.daily.temperature_2m_min[i])}°</div>
         </div>`;
       shown++;

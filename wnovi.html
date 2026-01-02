@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Novi MI Weather</title>
+<title>Novi MI Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -50,6 +50,12 @@ html,body{
 .temp{font-size:8rem;font-weight:600;}
 .hilo{font-size:2.2rem;opacity:.7;}
 
+.travel{
+  margin-top:8px;
+  font-size:1.15rem;
+  color:#1a73e8;
+}
+
 .section{
   margin-top:16px;
 }
@@ -88,6 +94,7 @@ footer{
 <body>
 <div class="container">
 
+  <!-- CURRENT -->
   <div class="card">
     <div class="top">
       <div class="city">Novi, MI</div>
@@ -106,17 +113,21 @@ footer{
       </div>
     </div>
 
+    <div class="travel" id="travel"></div>
+
     <div class="updated">
       <span id="updated"></span>
       <span class="quote" id="quote"></span>
     </div>
   </div>
 
+  <!-- HOURLY -->
   <div class="card section">
     <div class="section-title">Next 12 Hours</div>
     <div class="hourly" id="hourly"></div>
   </div>
 
+  <!-- DAILY -->
   <div class="card section">
     <div class="section-title">8-Day Forecast</div>
     <div class="daily" id="daily"></div>
@@ -128,22 +139,25 @@ footer{
 
 </div>
 
+<!-- GOOGLE MAPS (Safari OK) -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY"></script>
+
 <script>
 const LAT = 42.4806;
 const LON = -83.4755;
 
-/* Clock */
+/* CLOCK */
 function updateClock(){
   const now = new Date();
-  document.getElementById("date").textContent =
+  date.textContent =
     now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
-  document.getElementById("clock").textContent =
+  clock.textContent =
     now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
-/* Weather icons */
+/* ICONS */
 function icon(code){
   if(code<3) return "☀️";
   if(code<50) return "⛅";
@@ -152,37 +166,29 @@ function icon(code){
   return "🌩️";
 }
 
-/* Weather */
+/* WEATHER */
 async function loadWeather(){
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`+
-    `&current_weather=true`+
-    `&hourly=temperature_2m,weathercode`+
+    `&current_weather=true&hourly=temperature_2m,weathercode`+
     `&daily=temperature_2m_max,temperature_2m_min,weathercode`+
     `&temperature_unit=fahrenheit&timezone=auto`;
 
-  const r = await fetch(url);
-  const d = await r.json();
+  const d = await (await fetch(url)).json();
 
-  document.getElementById("temp").textContent =
-    Math.round(d.current_weather.temperature)+"°";
-  document.getElementById("icon").textContent =
-    icon(d.current_weather.weathercode);
-  document.getElementById("high").textContent =
-    Math.round(d.daily.temperature_2m_max[0])+"°";
-  document.getElementById("low").textContent =
-    Math.round(d.daily.temperature_2m_min[0])+"°";
+  temp.textContent = Math.round(d.current_weather.temperature)+"°";
+  iconEl.textContent = icon(d.current_weather.weathercode);
+  high.textContent = Math.round(d.daily.temperature_2m_max[0])+"°";
+  low.textContent = Math.round(d.daily.temperature_2m_min[0])+"°";
 
-  /* 12 hour forecast */
-  const h = document.getElementById("hourly");
-  h.innerHTML="";
-  const now = new Date();
-  let shown = 0;
-
+  /* 12 HOURS */
+  hourly.innerHTML="";
+  let shown=0;
+  const now=new Date();
   for(let i=0;i<d.hourly.time.length && shown<12;i++){
-    const t = new Date(d.hourly.time[i]);
-    if(t > now){
-      h.innerHTML += `
+    const t=new Date(d.hourly.time[i]);
+    if(t>now){
+      hourly.innerHTML+=`
         <div class="hour">
           <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
           <div>${icon(d.hourly.weathercode[i])}</div>
@@ -192,12 +198,11 @@ async function loadWeather(){
     }
   }
 
-  /* 8 day forecast */
-  const day = document.getElementById("daily");
-  day.innerHTML="";
+  /* 8 DAYS */
+  daily.innerHTML="";
   for(let i=1;i<=8;i++){
-    const dt = new Date(d.daily.time[i]);
-    day.innerHTML += `
+    const dt=new Date(d.daily.time[i]);
+    daily.innerHTML+=`
       <div class="day">
         <div class="day-date">
           ${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}
@@ -210,23 +215,45 @@ async function loadWeather(){
       </div>`;
   }
 
-  document.getElementById("updated").textContent =
+  updated.textContent =
     "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 loadWeather();
 setInterval(loadWeather,300000);
 
-/* Quote */
+/* TRAVEL TIME (LIVE TRAFFIC) */
+function loadTravelTime(){
+  const service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix({
+    origins:["24010 Greening Dr, Novi, MI"],
+    destinations:["1051 Oakland Ave, Birmingham, MI 48009"],
+    travelMode:"DRIVING",
+    drivingOptions:{
+      departureTime:new Date(),
+      trafficModel:"bestguess"
+    }
+  },(res,status)=>{
+    if(status==="OK"){
+      travel.textContent =
+        "🚗 Time to drive to Roeper School: "+
+        res.rows[0].elements[0].duration_in_traffic.text;
+    }
+  });
+}
+loadTravelTime();
+setInterval(loadTravelTime,300000);
+
+/* QUOTE */
 async function loadQuote(){
   try{
-    const proxy="https://api.allorigins.win/raw?url=";
-    const r = await fetch(proxy + encodeURIComponent("https://zenquotes.io/api/today"));
-    const d = await r.json();
-    document.getElementById("quote").textContent =
-      `"${d[0].q}" — ${d[0].a}`;
+    const r=await fetch(
+      "https://api.allorigins.win/raw?url="+
+      encodeURIComponent("https://zenquotes.io/api/today")
+    );
+    const d=await r.json();
+    quote.textContent=`"${d[0].q}" — ${d[0].a}`;
   }catch{
-    document.getElementById("quote").textContent =
-      `"Do the next right thing."`;
+    quote.textContent="Stay present. Stay kind.";
   }
 }
 loadQuote();

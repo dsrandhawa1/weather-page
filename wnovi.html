@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-html,body{
+html, body {
   margin:0;
   height:100%;
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
@@ -24,6 +24,7 @@ html,body{
   border-radius:18px;
   padding:16px;
   box-shadow:0 4px 12px rgba(0,0,0,.1);
+  margin-bottom:12px;
 }
 .top{
   display:flex;
@@ -39,7 +40,6 @@ html,body{
 }
 .date{font-size:2rem;}
 .clock{font-size:3.6rem;}
-
 .current{
   display:flex;
   align-items:center;
@@ -49,13 +49,11 @@ html,body{
 .icon{font-size:4.5rem;}
 .temp{font-size:8rem;font-weight:600;}
 .hilo{font-size:2.2rem;opacity:.7;}
-
 .travel{
   margin-top:8px;
   font-size:1.15rem;
   color:#1a73e8;
 }
-
 .section{
   margin-top:16px;
 }
@@ -72,7 +70,6 @@ html,body{
   font-size:1.3rem;
 }
 .day-date{font-weight:600;}
-
 .updated{
   margin-top:12px;
   display:flex;
@@ -82,7 +79,6 @@ html,body{
   opacity:.7;
 }
 .quote{font-style:italic;}
-
 footer{
   margin-top:auto;
   text-align:center;
@@ -94,7 +90,7 @@ footer{
 <body>
 <div class="container">
 
-  <!-- CURRENT -->
+  <!-- CURRENT WEATHER CARD -->
   <div class="card">
     <div class="top">
       <div class="city">Novi, MI</div>
@@ -114,20 +110,19 @@ footer{
     </div>
 
     <div class="travel" id="travel"></div>
-
     <div class="updated">
       <span id="updated"></span>
       <span class="quote" id="quote"></span>
     </div>
   </div>
 
-  <!-- HOURLY -->
+  <!-- HOURLY FORECAST -->
   <div class="card section">
     <div class="section-title">Next 12 Hours</div>
     <div class="hourly" id="hourly"></div>
   </div>
 
-  <!-- DAILY -->
+  <!-- DAILY FORECAST -->
   <div class="card section">
     <div class="section-title">8-Day Forecast</div>
     <div class="daily" id="daily"></div>
@@ -136,10 +131,10 @@ footer{
   <footer>
     Powered by Dipu Singh <b>(father of Avleen the Hun)</b>
   </footer>
-
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY"></script>
+<!-- GOOGLE MAPS SCRIPT -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdf0Y6MXleuEFpaBgX-TmCdap_UX_BeBM&callback=startDashboard" async defer></script>
 
 <script>
 const LAT = 42.4806;
@@ -156,7 +151,7 @@ function updateClock(){
 setInterval(updateClock,1000);
 updateClock();
 
-/* ICON MAP */
+/* ICONS */
 function weatherIcon(code){
   if(code<3) return "☀️";
   if(code<50) return "⛅";
@@ -165,35 +160,29 @@ function weatherIcon(code){
   return "🌩️";
 }
 
-/* WEATHER */
+/* LOAD WEATHER */
 async function loadWeather(){
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`+
     `&current_weather=true&hourly=temperature_2m,weathercode`+
     `&daily=temperature_2m_max,temperature_2m_min,weathercode`+
     `&temperature_unit=fahrenheit&timezone=auto`;
-
   const d = await (await fetch(url)).json();
 
-  document.getElementById("temp").textContent =
-    Math.round(d.current_weather.temperature)+"°";
-  document.getElementById("icon").textContent =
-    weatherIcon(d.current_weather.weathercode);
-  document.getElementById("high").textContent =
-    Math.round(d.daily.temperature_2m_max[0])+"°";
-  document.getElementById("low").textContent =
-    Math.round(d.daily.temperature_2m_min[0])+"°";
+  document.getElementById("temp").textContent = Math.round(d.current_weather.temperature)+"°";
+  document.getElementById("icon").textContent = weatherIcon(d.current_weather.weathercode);
+  document.getElementById("high").textContent = Math.round(d.daily.temperature_2m_max[0])+"°";
+  document.getElementById("low").textContent = Math.round(d.daily.temperature_2m_min[0])+"°";
 
-  /* 12 HOURS */
+  // 12-hour forecast
   const hourly = document.getElementById("hourly");
   hourly.innerHTML="";
   let shown=0;
   const now=new Date();
-
   for(let i=0;i<d.hourly.time.length && shown<12;i++){
-    const t=new Date(d.hourly.time[i]);
+    const t = new Date(d.hourly.time[i]);
     if(t>now){
-      hourly.innerHTML+=`
+      hourly.innerHTML += `
         <div class="hour">
           <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
           <div>${weatherIcon(d.hourly.weathercode[i])}</div>
@@ -203,65 +192,68 @@ async function loadWeather(){
     }
   }
 
-  /* 8 DAYS */
-  const daily=document.getElementById("daily");
+  // 8-day forecast
+  const daily = document.getElementById("daily");
   daily.innerHTML="";
   for(let i=1;i<=8;i++){
-    const dt=new Date(d.daily.time[i]);
-    daily.innerHTML+=`
+    const dt = new Date(d.daily.time[i]);
+    daily.innerHTML += `
       <div class="day">
         <div class="day-date">
           ${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}
         </div>
         <div>${weatherIcon(d.daily.weathercode[i])}</div>
-        <div>
-          ${Math.round(d.daily.temperature_2m_max[i])}° /
-          ${Math.round(d.daily.temperature_2m_min[i])}°
-        </div>
+        <div>${Math.round(d.daily.temperature_2m_max[i])}° /
+             ${Math.round(d.daily.temperature_2m_min[i])}°</div>
       </div>`;
   }
 
   document.getElementById("updated").textContent =
     "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
-loadWeather();
-setInterval(loadWeather,300000);
 
-/* TRAVEL TIME */
-function loadTravelTime(){
+/* LOAD QUOTE */
+async function loadQuote(){
+  try{
+    const r = await fetch(
+      "https://api.allorigins.win/raw?url="+
+      encodeURIComponent("https://zenquotes.io/api/today")
+    );
+    const d = await r.json();
+    document.getElementById("quote").textContent = `"${d[0].q}" — ${d[0].a}`;
+  }catch{
+    document.getElementById("quote").textContent = "Stay present. Stay kind.";
+  }
+}
+
+/* LOAD TRAVEL TIME */
+function initTravelTime(){
+  if(!window.google || !google.maps) return;
   const service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix({
     origins:["24010 Greening Dr, Novi, MI"],
     destinations:["1051 Oakland Ave, Birmingham, MI 48009"],
     travelMode:"DRIVING",
-    drivingOptions:{departureTime:new Date(),trafficModel:"bestguess"}
+    drivingOptions:{ departureTime: new Date(), trafficModel:"bestguess" }
   },(res,status)=>{
     if(status==="OK"){
       document.getElementById("travel").textContent =
-        "🚗 Time to drive to Roeper School: "+
-        res.rows[0].elements[0].duration_in_traffic.text;
+        "🚗 Time to drive to Roeper School: "+res.rows[0].elements[0].duration_in_traffic.text;
+    } else {
+      document.getElementById("travel").textContent = "🚗 Travel time unavailable";
+      console.error("DistanceMatrix error:", status);
     }
   });
 }
-loadTravelTime();
-setInterval(loadTravelTime,300000);
 
-/* QUOTE */
-async function loadQuote(){
-  try{
-    const r=await fetch(
-      "https://api.allorigins.win/raw?url="+
-      encodeURIComponent("https://zenquotes.io/api/today")
-    );
-    const d=await r.json();
-    document.getElementById("quote").textContent =
-      `"${d[0].q}" — ${d[0].a}`;
-  }catch{
-    document.getElementById("quote").textContent =
-      "Stay present. Stay kind.";
-  }
+/* START DASHBOARD AFTER GOOGLE MAPS LOADS */
+function startDashboard(){
+  loadWeather();
+  loadQuote();
+  initTravelTime();
+  setInterval(loadWeather,300000);
+  setInterval(initTravelTime,300000);
 }
-loadQuote();
 </script>
 </body>
 </html>

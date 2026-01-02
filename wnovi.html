@@ -139,7 +139,6 @@ footer{
 
 </div>
 
-<!-- GOOGLE MAPS (Safari OK) -->
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY"></script>
 
 <script>
@@ -149,16 +148,16 @@ const LON = -83.4755;
 /* CLOCK */
 function updateClock(){
   const now = new Date();
-  date.textContent =
+  document.getElementById("date").textContent =
     now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
-  clock.textContent =
+  document.getElementById("clock").textContent =
     now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
-/* ICONS */
-function icon(code){
+/* ICON MAP */
+function weatherIcon(code){
   if(code<3) return "☀️";
   if(code<50) return "⛅";
   if(code<70) return "🌧️";
@@ -176,22 +175,28 @@ async function loadWeather(){
 
   const d = await (await fetch(url)).json();
 
-  temp.textContent = Math.round(d.current_weather.temperature)+"°";
-  iconEl.textContent = icon(d.current_weather.weathercode);
-  high.textContent = Math.round(d.daily.temperature_2m_max[0])+"°";
-  low.textContent = Math.round(d.daily.temperature_2m_min[0])+"°";
+  document.getElementById("temp").textContent =
+    Math.round(d.current_weather.temperature)+"°";
+  document.getElementById("icon").textContent =
+    weatherIcon(d.current_weather.weathercode);
+  document.getElementById("high").textContent =
+    Math.round(d.daily.temperature_2m_max[0])+"°";
+  document.getElementById("low").textContent =
+    Math.round(d.daily.temperature_2m_min[0])+"°";
 
   /* 12 HOURS */
+  const hourly = document.getElementById("hourly");
   hourly.innerHTML="";
   let shown=0;
   const now=new Date();
+
   for(let i=0;i<d.hourly.time.length && shown<12;i++){
     const t=new Date(d.hourly.time[i]);
     if(t>now){
       hourly.innerHTML+=`
         <div class="hour">
           <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
-          <div>${icon(d.hourly.weathercode[i])}</div>
+          <div>${weatherIcon(d.hourly.weathercode[i])}</div>
           <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
         </div>`;
       shown++;
@@ -199,6 +204,7 @@ async function loadWeather(){
   }
 
   /* 8 DAYS */
+  const daily=document.getElementById("daily");
   daily.innerHTML="";
   for(let i=1;i<=8;i++){
     const dt=new Date(d.daily.time[i]);
@@ -207,7 +213,7 @@ async function loadWeather(){
         <div class="day-date">
           ${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}
         </div>
-        <div>${icon(d.daily.weathercode[i])}</div>
+        <div>${weatherIcon(d.daily.weathercode[i])}</div>
         <div>
           ${Math.round(d.daily.temperature_2m_max[i])}° /
           ${Math.round(d.daily.temperature_2m_min[i])}°
@@ -215,26 +221,23 @@ async function loadWeather(){
       </div>`;
   }
 
-  updated.textContent =
+  document.getElementById("updated").textContent =
     "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 loadWeather();
 setInterval(loadWeather,300000);
 
-/* TRAVEL TIME (LIVE TRAFFIC) */
+/* TRAVEL TIME */
 function loadTravelTime(){
   const service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix({
     origins:["24010 Greening Dr, Novi, MI"],
     destinations:["1051 Oakland Ave, Birmingham, MI 48009"],
     travelMode:"DRIVING",
-    drivingOptions:{
-      departureTime:new Date(),
-      trafficModel:"bestguess"
-    }
+    drivingOptions:{departureTime:new Date(),trafficModel:"bestguess"}
   },(res,status)=>{
     if(status==="OK"){
-      travel.textContent =
+      document.getElementById("travel").textContent =
         "🚗 Time to drive to Roeper School: "+
         res.rows[0].elements[0].duration_in_traffic.text;
     }
@@ -251,9 +254,11 @@ async function loadQuote(){
       encodeURIComponent("https://zenquotes.io/api/today")
     );
     const d=await r.json();
-    quote.textContent=`"${d[0].q}" — ${d[0].a}`;
+    document.getElementById("quote").textContent =
+      `"${d[0].q}" — ${d[0].a}`;
   }catch{
-    quote.textContent="Stay present. Stay kind.";
+    document.getElementById("quote").textContent =
+      "Stay present. Stay kind.";
   }
 }
 loadQuote();

@@ -227,26 +227,37 @@ async function loadQuote(){
 }
 loadQuote();
 
-/* SCHOOL TRAVEL TIME USING MAPBOX */
-const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw"; // replace with your Mapbox API token
-const origin = [-83.4755,42.4806]; // [lon, lat] Novi
-const destination = [-83.2205,42.5536]; // [lon, lat] Roeper School
+/* SCHOOL TRAVEL TIME USING MAPBOX (6 AM - 8 AM ONLY) */
+const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw"; // replace with your Mapbox token
+const origin = [-83.4755,42.4806]; // Novi
+const destination = [-83.2205,42.5536]; // Roeper School
 
 async function loadTravelTime(){
-  try{
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/`+
-                `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`+
-                `?access_token=${mapboxKey}`;
-    const r = await fetch(url);
-    const d = await r.json();
-    const minutes = Math.round(d.routes[0].duration / 60);
-    document.getElementById("travel").textContent = `🚗 Estimated drive: ~${minutes} min`;
-  }catch{
-    document.getElementById("travel").textContent = "🚗 Travel time unavailable";
+  const now = new Date();
+  const hour = now.getHours();
+  const travelEl = document.getElementById("travel");
+
+  if(hour >= 6 && hour < 8){
+    // Only show travel time between 6AM and 8AM
+    try{
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/`+
+                  `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`+
+                  `?access_token=${mapboxKey}`;
+      const r = await fetch(url);
+      const d = await r.json();
+      const minutes = Math.round(d.routes[0].duration / 60);
+      travelEl.textContent = `🚗 Estimated drive: ~${minutes} min`;
+    }catch{
+      travelEl.textContent = "🚗 Travel time unavailable";
+    }
+  } else {
+    travelEl.textContent = "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
   }
 }
+
+// Initial load + interval every 10 minutes
 loadTravelTime();
-setInterval(loadTravelTime,300000);
+setInterval(loadTravelTime, 600000); // 600,000ms = 10 minutes
 </script>
 </body>
 </html>

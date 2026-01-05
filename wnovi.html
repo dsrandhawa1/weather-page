@@ -6,150 +6,142 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <style>
-/* Safari Fix: Use -webkit-fill-available for consistent height */
-html, body {
-  margin: 0;
-  height: 100%;
-  height: -webkit-fill-available;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: white;
-  -webkit-font-smoothing: antialiased;
-}
-.container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  padding: 12px;
-  box-sizing: border-box;
-}
-.card {
-  background: #ededed;
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.1);
-  margin-bottom: 12px;
-  /* Safari performance fix */
-  -webkit-transform: translateZ(0);
-}
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.city {
-  font-size: 2.5rem;
-  font-weight: 600;
-}
-.clock-wrap {
-  text-align: right;
-}
-.date { font-size: 2rem; }
-.clock { font-size: 3.6rem; }
-.current {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-top: 16px;
-}
-.icon { font-size: 4.5rem; }
-.temp { font-size: 8rem; font-weight: 600; }
-.hilo { font-size: 2.2rem; opacity: .7; }
-.travel {
-  margin-top: 8px;
-  font-size: 1.15rem;
-  color: #1a73e8;
-}
-.section {
-  margin-top: 16px;
-}
-.section-title {
-  font-size: 1.6rem;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-.hourly, .daily {
-  display: flex;
-  justify-content: space-between;
-  /* Safari fix: ensure flex children don't shrink to 0 */
-  flex-wrap: nowrap;
-  overflow-x: auto;
-}
-.hour, .day {
-  text-align: center;
-  font-size: 1.3rem;
-  flex: 1 0 auto;
-  min-width: 70px;
-}
-.day-date { font-weight: 600; }
-.updated {
-  margin-top: 12px;
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  font-size: 1rem;
-  opacity: .7;
-}
-.quote { font-style: italic; }
-footer {
-  margin-top: auto;
-  padding: 20px 0;
-  text-align: center;
-  opacity: .5;
-}
+  /* iPad/Safari Optimization: Ensures the height is correct and stable */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    min-height: -webkit-fill-available;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #ffffff;
+    overflow-x: hidden;
+  }
 
-.borderdebug { border: 0px solid red; }
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* REPLACING TABLES: Flexbox is significantly more stable for Safari 18+ */
+  .header-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .weather-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .icon { font-size: 5rem; line-height: 1; }
+  .temp { font-size: 7.5rem; font-weight: 700; line-height: 1; letter-spacing: -3px; }
+
+  .hilo-box {
+    font-size: 1.8rem;
+    line-height: 1.2;
+    opacity: 0.8;
+  }
+
+  .clock-wrap {
+    text-align: right;
+  }
+
+  .date { font-size: 1.8rem; margin-bottom: 4px; font-weight: 300; }
+  .clock { font-size: 4rem; font-weight: 700; color: #000; }
+
+  .secondary-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 1.2rem;
+  }
+
+  .travel { color: #1a73e8; font-weight: 500; flex: 1; }
+  .quote { font-style: italic; opacity: 0.6; text-align: right; flex: 1; padding-left: 20px; }
+
+  /* CARDS */
+  .card {
+    background: #f2f2f7; /* Standard Apple Grey */
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .hourly, .daily {
+    display: flex;
+    justify-content: space-between;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll for iPad */
+    gap: 12px;
+  }
+
+  .hour, .day {
+    text-align: center;
+    min-width: 80px;
+    flex: 1;
+  }
+
+  .day-date { font-weight: 600; font-size: 1.1rem; }
+  .updated { font-size: 0.9rem; opacity: 0.5; margin: 8px 0; }
+
+  footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9rem;
+    opacity: 0.4;
+  }
+
+  /* Fixed layout for smaller screens / portrait iPad */
+  @media (max-width: 768px) {
+    .temp { font-size: 5rem; }
+    .clock { font-size: 3rem; }
+    .secondary-info { flex-direction: column; text-align: center; gap: 10px; }
+    .quote { text-align: center; padding-left: 0; }
+  }
 </style>
 </head>
 
 <body>
 <div class="container">
-  <div class="current">
-    <table width="100%">
-      <tr>
-        <td width="10%">
-          <div class="icon" id="icon">☀️</div>
-        </td>
-        <td width="10%">
-          <div class="temp" id="temp">--°</div>
-        </td>
-        <td width="10%">
-          <div class="hilo">
-            <table width="100%">
-              <tr>
-                <td align="right"><div>High11: </div></td>
-                <td align="left"><span id="high">--°</span></td>
-              </tr>
-              <tr>
-                <td align="right"><div>Low: </div></td>
-                <td align="left"><span id="low">--°</span></td>
-              </tr>
-            </table>
-          </div>
-        </td>
-        <td width="70%">
-          <div class="clock-wrap">
-            <div class="date" id="date"></div>
-            <div class="clock" id="clock"></div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="4">
-          <table width="100%" class="borderdebug">
-            <tr>
-              <td align="left" class="borderdebug"><div class="travel" id="travel"></div></td>
-            </tr>
-            <tr>
-              <td align="right" class="borderdebug"><span class="quote" id="quote"></span></td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
+  
+  <div class="header-area">
+    <div class="weather-main">
+      <div class="icon" id="icon">☀️</div>
+      <div class="temp" id="temp">--°</div>
+      <div class="hilo-box">
+        <div>H: <span id="high">--°</span></div>
+        <div>L: <span id="low">--°</span></div>
+      </div>
+    </div>
+    
+    <div class="clock-wrap">
+      <div class="date" id="date"></div>
+      <div class="clock" id="clock"></div>
+    </div>
   </div>
 
-  <div class="updated"><span id="updated"></span></div>
+  <div class="secondary-info">
+    <div class="travel" id="travel"></div>
+    <div class="quote" id="quote"></div>
+  </div>
+
+  <div class="updated" id="updated"></div>
 
   <div class="card section">
     <div class="section-title">Next 12 Hours</div>
@@ -162,7 +154,7 @@ footer {
   </div>
 
   <footer>
-    Powered by Dipu Singh <b>(father of Avleen the Hun)</b>
+    Powered by Dipu Singh — <b>Father of Avleen the Hun</b>
   </footer>
 </div>
 
@@ -170,20 +162,15 @@ footer {
 const LAT = 42.4806;
 const LON = -83.4755;
 
-/* CLOCK */
+// SAFARI FIX: Use explicit locale strings to prevent 'undefined' crashes
 function updateClock(){
   const now = new Date();
-  try {
-    document.getElementById("date").textContent =
-      now.toLocaleDateString('en-US', {weekday:"long", month:"long", day:"numeric", year:"numeric"});
-    document.getElementById("clock").textContent =
-      now.toLocaleTimeString('en-US', {hour:"numeric", minute:"2-digit"});
-  } catch (e) { console.error("Clock error", e); }
+  document.getElementById("date").textContent = 
+    now.toLocaleDateString('en-US', {weekday:"long", month:"long", day:"numeric"});
+  document.getElementById("clock").textContent = 
+    now.toLocaleTimeString('en-US', {hour:"numeric", minute:"2-digit"});
 }
-updateClock();
-setInterval(updateClock, 30000);
 
-/* WEATHER ICONS */
 function weatherIcon(code){
   if(code < 3) return "☀️";
   if(code < 50) return "⛅";
@@ -192,13 +179,10 @@ function weatherIcon(code){
   return "🌩️";
 }
 
-/* LOAD WEATHER */
 async function loadWeather(){
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&temperature_unit=fahrenheit&timezone=auto`;
-
   try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true&hourly=temperature_2m,weathercode,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max&temperature_unit=fahrenheit&timezone=auto`;
     const response = await fetch(url);
-    if (!response.ok) throw new Error('Network response was not ok');
     const d = await response.json();
 
     document.getElementById("temp").textContent = Math.round(d.current_weather.temperature) + "°";
@@ -206,96 +190,73 @@ async function loadWeather(){
     document.getElementById("high").textContent = Math.round(d.daily.temperature_2m_max[0]) + "°";
     document.getElementById("low").textContent = Math.round(d.daily.temperature_2m_min[0]) + "°";
 
-    /* HOURLY */
     const hourly = document.getElementById("hourly");
-    let hourlyHtml = "";
-    let shown = 0;
-    const now = new Date();
-
-    for(let i=0; i<d.hourly.time.length && shown < 12; i++){
+    hourly.innerHTML = "";
+    let count = 0;
+    for(let i=0; i<d.hourly.time.length && count < 12; i++){
       const t = new Date(d.hourly.time[i]);
-      if(t > now){
-        const pop = d.hourly.precipitation_probability?.[i] ?? 0;
-        hourlyHtml += `
+      if(t > new Date()){
+        hourly.innerHTML += `
           <div class="hour">
-            <div>${t.toLocaleTimeString('en-US', {hour:"numeric"})}</div>
-            <div>${weatherIcon(d.hourly.weathercode[i])}</div>
-            <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
-            <div style="font-size:.9em;opacity:.7">💧${pop}%</div>
+            <div style="font-size:0.9rem;opacity:0.6">${t.toLocaleTimeString('en-US', {hour:"numeric"})}</div>
+            <div style="font-size:1.8rem;margin:4px 0">${weatherIcon(d.hourly.weathercode[i])}</div>
+            <div style="font-weight:600">${Math.round(d.hourly.temperature_2m[i])}°</div>
+            <div style="font-size:0.8rem;color:#007aff">💧${d.hourly.precipitation_probability[i]}%</div>
           </div>`;
-        shown++;
+        count++;
       }
     }
-    hourly.innerHTML = hourlyHtml;
 
-    /* DAILY */
     const daily = document.getElementById("daily");
-    let dailyHtml = "";
-    const daysToShow = Math.min(8, d.daily.time.length - 1);
-
-    for(let i=1; i<=daysToShow; i++){
+    daily.innerHTML = "";
+    for(let i=1; i<=7; i++){
       const dt = new Date(d.daily.time[i] + "T12:00:00");
-      const pop = d.daily.precipitation_probability_max?.[i] ?? 0;
-
-      dailyHtml += `
+      daily.innerHTML += `
         <div class="day">
-          <div class="day-date">${dt.toLocaleDateString('en-US', {weekday:"short", month:"numeric", day:"numeric"})}</div>
-          <div>${weatherIcon(d.daily.weathercode[i])}</div>
-          <div>${Math.round(d.daily.temperature_2m_max[i])}°/${Math.round(d.daily.temperature_2m_min[i])}°</div>
-          <div style="font-size:.9em;opacity:.7">💧${pop}%</div>
+          <div class="day-date">${dt.toLocaleDateString('en-US', {weekday:"short"})}</div>
+          <div style="font-size:0.8rem;opacity:0.5">${dt.getMonth()+1}/${dt.getDate()}</div>
+          <div style="font-size:1.8rem;margin:5px 0">${weatherIcon(d.daily.weathercode[i])}</div>
+          <div style="font-weight:600">${Math.round(d.daily.temperature_2m_max[i])}°</div>
+          <div style="font-size:0.8rem;opacity:0.5">${Math.round(d.daily.temperature_2m_min[i])}°</div>
         </div>`;
     }
-    daily.innerHTML = dailyHtml;
 
     document.getElementById("updated").textContent = "Last updated: " + new Date().toLocaleTimeString('en-US', {hour:"numeric", minute:"2-digit"});
-  } catch (err) {
-    console.error("Weather fetch failed", err);
-  }
+  } catch (e) { console.error("Weather failed", e); }
 }
 
-loadWeather();
-setInterval(loadWeather, 300000);
-
-/* QUOTE - Added robust Safari error handling */
 async function loadQuote(){
   try {
     const r = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://zenquotes.io/api/today"));
-    if (!r.ok) throw new Error();
     const d = await r.json();
     document.getElementById("quote").textContent = `"${d[0].q}" — ${d[0].a}`;
-  } catch(e) {
-    document.getElementById("quote").textContent = "Stay present. Stay kind.";
+  } catch(e) { 
+    document.getElementById("quote").textContent = "Stay present. Stay kind."; 
   }
 }
-loadQuote();
-
-/* TRAVEL TIME */
-const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
-const origin = [-83.4755, 42.4806];
-const destination = [-83.2205, 42.5536];
 
 async function loadTravelTime(){
   const hour = new Date().getHours();
   const travelEl = document.getElementById("travel");
-
   if(hour >= 6 && hour < 8){
     try {
-      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?access_token=${mapboxKey}`;
-      const response = await fetch(url);
-      const d = await response.json();
-      if(d.routes && d.routes.length > 0) {
-        travelEl.textContent = `🚗 Estimated drive: ~${Math.round(d.routes[0].duration/60)} min`;
-      }
-    } catch(e) {
-      travelEl.textContent = "🚗 Travel time unavailable";
-    }
+      const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/-83.4755,42.4806;-83.2205,42.5536?access_token=${mapboxKey}`;
+      const res = await fetch(url);
+      const d = await res.json();
+      travelEl.textContent = `🚗 Drive to school: ~${Math.round(d.routes[0].duration/60)} min`;
+    } catch(e) { travelEl.textContent = "🚗 Drive time currently unavailable"; }
   } else {
-    travelEl.textContent = "🚗 Travel time to Avleen school will be displayed between 6 AM and 8 AM";
+    travelEl.textContent = "🚗 School commute window: 6:00 - 8:00 AM";
   }
 }
 
+// Initial Run
+updateClock();
+loadWeather();
+loadQuote();
 loadTravelTime();
-setInterval(loadTravelTime, 600000);
-</script>
-</body>
-</html>
+
+// Loops
+setInterval(updateClock, 10000);
+setInterval(loadWeather, 300000);

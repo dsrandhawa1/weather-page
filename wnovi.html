@@ -106,7 +106,7 @@ footer{
 
 		<table width=100% >
 		<tr>
-			<td align=right><div>High1: </div></td>
+			<td align=right><div>High2: </div></td>
 			<td align=left><span id="high">--°</span></td>
 		</tr>
 		<tr>
@@ -225,15 +225,15 @@ async function loadWeather(){
     }
   }
 
-  // 8-day forecast
-  const daily = document.getElementById("daily");
-  daily.innerHTML="";
-for(let i = 0; i < 8; i++) {
+// 8-day forecast starting from tomorrow
+const daily = document.getElementById("daily");
+daily.innerHTML = "";
+for (let i = 1; i <= 8; i++) { // start at 1 to skip today
   const dt = new Date(d.daily.time[i]);
   daily.innerHTML += `
     <div class="day">
       <div class="day-date">
-        ${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}
+        ${dt.toLocaleDateString([], { weekday: "short", month: "numeric", day: "numeric" })}
       </div>
       <div>${weatherIcon(d.daily.weathercode[i])}</div>
       <div>${Math.round(d.daily.temperature_2m_max[i])}° /
@@ -296,4 +296,5 @@ setInterval(loadTravelTime, 600000); // 600,000ms = 10 minutes
 </script>
 </body>
 </html>
+
 

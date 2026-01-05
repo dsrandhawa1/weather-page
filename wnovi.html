@@ -106,7 +106,7 @@ footer{
 
 		<table width=100% >
 		<tr>
-			<td align=right><div>High2: </div></td>
+			<td align=right><div>High3: </div></td>
 			<td align=left><span id="high">--°</span></td>
 		</tr>
 		<tr>
@@ -228,8 +228,9 @@ async function loadWeather(){
 // 8-day forecast starting from tomorrow
 const daily = document.getElementById("daily");
 daily.innerHTML = "";
-for (let i = 1; i <= 8; i++) { // start at 1 to skip today
-  const dt = new Date(d.daily.time[i]);
+for (let i = 1; i <= 8; i++) { // skip today
+  const [year, month, day] = d.daily.time[i].split("-").map(Number);
+  const dt = new Date(year, month - 1, day); // correct local date
   daily.innerHTML += `
     <div class="day">
       <div class="day-date">
@@ -296,5 +297,6 @@ setInterval(loadTravelTime, 600000); // 600,000ms = 10 minutes
 </script>
 </body>
 </html>
+
 
 

@@ -92,7 +92,7 @@ footer{
 
   <!-- CURRENT WEATHER CARD -->
 
-    <div class="current">
+    <div class="card section"  >
 <table width=100% >
 <tr>
 <td>
@@ -136,7 +136,7 @@ footer{
 
 
 
-<td>
+<td width=30%>
       <div  class="clock-wrap">
         <div  class="date" id="date"></div>
         <div  class="clock" id="clock"></div>
@@ -163,9 +163,6 @@ footer{
     <div  class="daily" id="daily"></div>
   </div>
 
-  <footer>
-    Powered by Dipu Singh <b>(father of Avleen the Hun)</b>
-  </footer>
 </div>
 
 <script>
@@ -225,7 +222,12 @@ async function loadWeather(){
     }
   }
 
+  document.getElementById("updated").textContent =
+    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+
+
 // 8-day forecast starting from tomorrow
+
 const daily = document.getElementById("daily");
 daily.innerHTML = "";
 for (let i = 1; i <= 8; i++) { // skip today
@@ -240,10 +242,9 @@ for (let i = 1; i <= 8; i++) { // skip today
       <div>${Math.round(d.daily.temperature_2m_max[i])}° /
            ${Math.round(d.daily.temperature_2m_min[i])}°</div>
     </div>`;
+
 }
 
-  document.getElementById("updated").textContent =
-    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 loadWeather();
 setInterval(loadWeather,300000);
@@ -291,11 +292,11 @@ async function loadTravelTime(){
   }
 }
 
+// Initial load + interval every 10 minutes
+//loadTravelTime();
+//setInterval(loadTravelTime, 600000); // 600,000ms = 10 minutes
 </script>
 </body>
 </html>
-
-
-
 
 

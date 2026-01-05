@@ -92,7 +92,7 @@ footer{
 
   <!-- CURRENT WEATHER CARD -->
 
-    <div class="current">
+    <div class="card section"  >
 <table width=100% >
 <tr>
 <td>
@@ -106,7 +106,7 @@ footer{
 
 		<table width=100% >
 		<tr>
-			<td align=right><div>Highb: </div></td>
+			<td align=right><div>Highd: </div></td>
 			<td align=left><span id="high">--°</span></td>
 		</tr>
 		<tr>
@@ -225,7 +225,12 @@ async function loadWeather(){
     }
   }
 
+  document.getElementById("updated").textContent =
+    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+
+
 // 8-day forecast starting from tomorrow
+
 const daily = document.getElementById("daily");
 daily.innerHTML = "";
 for (let i = 1; i <= 8; i++) { // skip today
@@ -240,10 +245,9 @@ for (let i = 1; i <= 8; i++) { // skip today
       <div>${Math.round(d.daily.temperature_2m_max[i])}° /
            ${Math.round(d.daily.temperature_2m_min[i])}°</div>
     </div>`;
+
 }
 
-  document.getElementById("updated").textContent =
-    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 loadWeather();
 setInterval(loadWeather,300000);

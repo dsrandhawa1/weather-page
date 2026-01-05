@@ -37,6 +37,7 @@ html, body {
 }
 .clock-wrap{
   text-align:right;
+  min-width:0; /* Safari fix */
 }
 .date{font-size:2rem;}
 .clock{font-size:3.6rem;}
@@ -84,10 +85,17 @@ footer{
   text-align:center;
   opacity:.5;
 }
-
 .borderdebug
 {
    border: 2px solid red;
+}
+
+/* Responsive fixes for smaller screens */
+@media (max-width:768px){
+  .temp{font-size:5rem;}
+  .icon{font-size:3rem;}
+  .clock{font-size:2.5rem;}
+  .date{font-size:1.5rem;}
 }
 </style>
 </head>
@@ -128,8 +136,6 @@ footer{
 </tr>
 <tr>
 <td colspan=4>
-
-
 <table width=100% class="borderdebug">
 <tr >
 <td align=left class="borderdebug"><div  class="travel" id="travel"></div></td>
@@ -138,21 +144,8 @@ footer{
 <td align=right class="borderdebug"><span class="quote" id="quote"></span></td>
 </tr>
 </table>
-
-
-
-
-
-
-
-
-
-
-
-
 </td>
 </tr>
-
 </table>
   </div>
 
@@ -181,140 +174,3 @@ const LON = -83.4755;
 function updateClock(){
   const now = new Date();
   document.getElementById("date").textContent =
-    now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
-  document.getElementById("clock").textContent =
-    now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
-}
-updateClock();
-setInterval(updateClock,60000);
-
-/* WEATHER ICONS */
-function weatherIcon(code){
-  if(code<3) return "☀️";
-  if(code<50) return "⛅";
-  if(code<70) return "🌧️";
-  if(code<80) return "❄️";
-  return "🌩️";
-}
-
-/* LOAD WEATHER */
-async function loadWeather(){
-  const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`+
-    `&current_weather=true`+
-    `&hourly=temperature_2m,weathercode,precipitation_probability`+
-    `&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max`+
-    `&temperature_unit=fahrenheit&timezone=auto`;
-
-  const d = await (await fetch(url)).json();
-
-  document.getElementById("temp").textContent =
-    Math.round(d.current_weather.temperature) + "°";
-  document.getElementById("icon").textContent =
-    weatherIcon(d.current_weather.weathercode);
-  document.getElementById("high").textContent =
-    Math.round(d.daily.temperature_2m_max[0]) + "°";
-  document.getElementById("low").textContent =
-    Math.round(d.daily.temperature_2m_min[0]) + "°";
-
-  /* HOURLY */
-  const hourly = document.getElementById("hourly");
-  hourly.innerHTML = "";
-  let shown = 0;
-  const now = new Date();
-
-  for(let i=0;i<d.hourly.time.length && shown<12;i++){
-    const t = new Date(d.hourly.time[i]);
-    if(t > now){
-      const pop = d.hourly.precipitation_probability?.[i] ?? 0;
-      hourly.innerHTML += `
-        <div  class="hour">
-          <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
-          <div>${weatherIcon(d.hourly.weathercode[i])}</div>
-          <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
-          <div  style="font-size:.9em;opacity:.7">💧${pop}%</div>
-        </div>`;
-      shown++;
-    }
-  }
-
-  /* DAILY (timezone + bounds fixed) */
-  const daily = document.getElementById("daily");
-  daily.innerHTML = "";
-  const daysToShow = Math.min(8, d.daily.time.length - 1);
-
-  for(let i=1;i<=daysToShow;i++){
-    const dt = new Date(d.daily.time[i] + "T12:00:00");
-    const pop = d.daily.precipitation_probability_max?.[i] ?? 0;
-
-    daily.innerHTML += `
-      <div  class="day">
-        <div  class="day-date">
-          ${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}
-        </div>
-        <div>${weatherIcon(d.daily.weathercode[i])}</div>
-        <div>
-          ${Math.round(d.daily.temperature_2m_max[i])}° /
-          ${Math.round(d.daily.temperature_2m_min[i])}°
-        </div>
-        <div  style="font-size:.9em;opacity:.7">💧${pop}%</div>
-      </div>`;
-  }
-
-  document.getElementById("updated").textContent =
-    "Last updated: " +
-    new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
-}
-
-loadWeather();
-setInterval(loadWeather,300000);
-
-/* QUOTE */
-async function loadQuote(){
-  try{
-    const r = await fetch(
-      "https://api.allorigins.win/raw?url="+
-      encodeURIComponent("https://zenquotes.io/api/today")
-    );
-    const d = await r.json();
-    document.getElementById("quote").textContent =
-      `"${d[0].q}" — ${d[0].a}`;
-  }catch{
-    document.getElementById("quote").textContent =
-      "Stay present. Stay kind.";
-  }
-}
-loadQuote();
-
-/* TRAVEL TIME */
-const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
-const origin = [-83.4755,42.4806];
-const destination = [-83.2205,42.5536];
-
-async function loadTravelTime(){
-  const hour = new Date().getHours();
-  const travelEl = document.getElementById("travel");
-
-  if(hour >= 6 && hour < 8){
-    try{
-      const url =
-        `https://api.mapbox.com/directions/v5/mapbox/driving/`+
-        `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`+
-        `?access_token=${mapboxKey}`;
-      const d = await (await fetch(url)).json();
-      travelEl.textContent =
-        `🚗 Estimated drive: ~${Math.round(d.routes[0].duration/60)} min`;
-    }catch{
-      travelEl.textContent = "🚗 Travel time unavailable";
-    }
-  } else {
-    travelEl.textContent =
-      "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
-  }
-}
-
-loadTravelTime();
-setInterval(loadTravelTime,600000);
-</script>
-</body>
-</html>

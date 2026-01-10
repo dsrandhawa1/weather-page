@@ -106,7 +106,7 @@ footer{
 
 		<table width=100% >
 		<tr>
-			<td align=right><div>High1: </div></td>
+			<td align=right><div>High2: </div></td>
 			<td align=left><span id="high">--°</span></td>
 		</tr>
 		<tr>
@@ -191,11 +191,12 @@ function weatherIcon(code){
 
 /* LOAD WEATHER */
 async function loadWeather(){
-  const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`+
-    `&current_weather=true&hourly=temperature_2m,weathercode`+
-    `&daily=temperature_2m_max,temperature_2m_min,weathercode`+
-    `&temperature_unit=fahrenheit&timezone=auto`;
+const url =
+  `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
+  `&current_weather=true` +
+  `&hourly=temperature_2m,weathercode,precipitation_probability` +
+  `&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max` +
+  `&temperature_unit=fahrenheit&timezone=auto`;
 
   const d = await (await fetch(url)).json();
 
@@ -206,22 +207,27 @@ async function loadWeather(){
 
   // 12-hour forecast
   const hourly = document.getElementById("hourly");
-  hourly.innerHTML="";
-  let shown=0;
-  const now=new Date();
-  for(let i=0;i<d.hourly.time.length && shown<12;i++){
-    const t = new Date(d.hourly.time[i]);
-    if(t>now){
-      hourly.innerHTML += `
-        <div  class="hour">
-          <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
-          <div>${weatherIcon(d.hourly.weathercode[i])}</div>
-          <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
-        </div>`;
-      shown++;
-    }
-  }
+  hourly.innerHTML = "";
+let shown = 0;
+const now = new Date();
 
+for (let i = 0; i < d.hourly.time.length && shown < 12; i++) {
+  const t = new Date(d.hourly.time[i]);
+  if (t > now) {
+    const precip = d.hourly.precipitation_probability?.[i];
+    hourly.innerHTML += `
+      <div class="hour">
+        <div>${t.toLocaleTimeString([], { hour: "numeric" })}</div>
+        <div>${weatherIcon(d.hourly.weathercode[i])}</div>
+        <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
+        <div style="font-size:.9em;opacity:.7">
+          ${precip != null ? precip + "% 🌧️" : ""}
+        </div>
+      </div>`;
+    shown++;
+  }
+}
+	
   document.getElementById("updated").textContent =
     "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 
@@ -231,12 +237,10 @@ async function loadWeather(){
 const daily = document.getElementById("daily");
 daily.innerHTML = "";
 
-const daysAvailable = d.daily.time.length;
-
-// We want tomorrow + next 7 days = max index 7
-for (let i = 1; i < daysAvailable; i++) {
+for (let i = 1; i < d.daily.time.length; i++) {
   const [year, month, day] = d.daily.time[i].split("-").map(Number);
   const dt = new Date(year, month - 1, day);
+  const precip = d.daily.precipitation_probability_max?.[i];
 
   daily.innerHTML += `
     <div class="day">
@@ -251,6 +255,9 @@ for (let i = 1; i < daysAvailable; i++) {
       <div>
         ${Math.round(d.daily.temperature_2m_max[i])}° /
         ${Math.round(d.daily.temperature_2m_min[i])}°
+      </div>
+      <div style="font-size:.9em;opacity:.7">
+        ${precip != null ? precip + "% 🌧️" : ""}
       </div>
     </div>`;
 }

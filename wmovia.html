@@ -226,23 +226,33 @@ async function loadWeather(){
     "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 
 
-// 8-day forecast starting from tomorrow
+// 8-day forecast starting from tomorrow (safe bounds)
 
 const daily = document.getElementById("daily");
 daily.innerHTML = "";
-for (let i = 1; i <= 8; i++) { // skip today
+
+const daysAvailable = d.daily.time.length;
+
+// We want tomorrow + next 7 days = max index 7
+for (let i = 1; i < daysAvailable; i++) {
   const [year, month, day] = d.daily.time[i].split("-").map(Number);
-  const dt = new Date(year, month - 1, day); // correct local date
+  const dt = new Date(year, month - 1, day);
+
   daily.innerHTML += `
     <div class="day">
       <div class="day-date">
-        ${dt.toLocaleDateString([], { weekday: "short", month: "numeric", day: "numeric" })}
+        ${dt.toLocaleDateString([], {
+          weekday: "short",
+          month: "numeric",
+          day: "numeric"
+        })}
       </div>
       <div>${weatherIcon(d.daily.weathercode[i])}</div>
-      <div>${Math.round(d.daily.temperature_2m_max[i])}° /
-           ${Math.round(d.daily.temperature_2m_min[i])}°</div>
+      <div>
+        ${Math.round(d.daily.temperature_2m_max[i])}° /
+        ${Math.round(d.daily.temperature_2m_min[i])}°
+      </div>
     </div>`;
-
 }
 
 }

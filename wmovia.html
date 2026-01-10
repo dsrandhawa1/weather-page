@@ -88,80 +88,51 @@ footer{
 </head>
 
 <body>
-<div  class="container">
+<div class="container">
 
-  <!-- CURRENT WEATHER CARD -->
-
-    <div class="card section"  >
-<table width=100% >
+  <div class="card section">
+<table width=100%>
 <tr>
+<td><div class="icon" id="icon">☀️</div></td>
+<td><div class="temp" id="temp">--°</div></td>
+
 <td>
-      <div  class="icon" id="icon">☀️</div>
-</td>
-<td>
-      <div  class="temp" id="temp">--°</div>
-</td>
-<td>
-      <div  class="hilo">
-
-		<table width=100% >
-		<tr>
-			<td align=right><div>High2: </div></td>
-			<td align=left><span id="high">--°</span></td>
-		</tr>
-		<tr>
-			<td align=right><div>Low: </div></td>
-			<td align=left><span id="low">--°</span></td>
-		</tr>
-		</table>
-
-
-
-      </div>
+<div class="hilo">
+<table width=100%>
+<tr><td align=right>Higha:</td><td align=left><span id="high">--°</span></td></tr>
+<tr><td align=right>Low:</td><td align=left><span id="low">--°</span></td></tr>
+</table>
+</div>
 </td>
 
 <td align=center>
-
-<table width=80% >
-		<tr>
-			<td align=right>    <div class="travel" id="travel"></div></td>
-		</tr>
-		<tr>
-			<td align=right>&nbsp;</td>
-		</tr>
-		<tr>
-			<td align=right>      <span class="quote" id="quote"></span></td>
-		</tr>
-		</table>
-
-
+<table width=80%>
+<tr><td align=right><div class="travel" id="travel"></div></td></tr>
+<tr><td>&nbsp;</td></tr>
+<tr><td align=right><span class="quote" id="quote"></span></td></tr>
+</table>
+</td>
 
 <td width=30%>
-      <div  class="clock-wrap">
-        <div  class="date" id="date"></div>
-        <div  class="clock" id="clock"></div>
-      </div>
-
+<div class="clock-wrap">
+<div class="date" id="date"></div>
+<div class="clock" id="clock"></div>
+</div>
 </td>
+</tr>
 </table>
-<div  class="updated"><span id="updated"></span></div>
-  </div>
-    
+<div class="updated"><span id="updated"></span></div>
+</div>
 
-      
+<div class="card section">
+<div class="section-title">Next 12 Hours</div>
+<div class="hourly" id="hourly"></div>
+</div>
 
-
-  <!-- HOURLY FORECAST -->
-  <div  class="card section">
-    <div  class="section-title">Next 12 Hours</div>
-    <div  class="hourly" id="hourly"></div>
-  </div>
-
-  <!-- DAILY FORECAST -->
-  <div  class="card section">
-    <div  class="section-title">8-Day Forecast</div>
-    <div  class="daily" id="daily"></div>
-  </div>
+<div class="card section">
+<div class="section-title">8-Day Forecast</div>
+<div class="daily" id="daily"></div>
+</div>
 
 </div>
 
@@ -172,148 +143,111 @@ const LON = -83.4755;
 /* CLOCK */
 function updateClock(){
   const now = new Date();
-  document.getElementById("date").textContent =
-    now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
-  document.getElementById("clock").textContent =
-    now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  date.textContent = now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  clock.textContent = now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
-/* WEATHER ICONS */
+/* ICONS */
 function weatherIcon(code){
-  if(code<3) return "☀️";
-  if(code<50) return "⛅";
-  if(code<70) return "🌧️";
-  if(code<80) return "❄️";
+  if(code < 3) return "☀️";
+  if(code < 50) return "⛅";
+  if(code < 70) return "🌧️";
+  if(code < 80) return "❄️";
   return "🌩️";
 }
 
-/* LOAD WEATHER */
+function precipIcon(code){
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "❄️";
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return "🌧️";
+  return "";
+}
+
+/* WEATHER */
 async function loadWeather(){
-const url =
-  `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
-  `&current_weather=true` +
-  `&hourly=temperature_2m,weathercode,precipitation_probability` +
-  `&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max` +
-  `&temperature_unit=fahrenheit&timezone=auto`;
+  const url =
+    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
+    `&current_weather=true` +
+    `&hourly=temperature_2m,weathercode,precipitation_probability` +
+    `&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max` +
+    `&temperature_unit=fahrenheit&timezone=auto`;
 
   const d = await (await fetch(url)).json();
 
-  document.getElementById("temp").textContent = Math.round(d.current_weather.temperature)+"°";
-  document.getElementById("icon").textContent = weatherIcon(d.current_weather.weathercode);
-  document.getElementById("high").textContent = Math.round(d.daily.temperature_2m_max[0])+"°";
-  document.getElementById("low").textContent = Math.round(d.daily.temperature_2m_min[0])+"°";
+  temp.textContent = Math.round(d.current_weather.temperature) + "°";
+  icon.textContent = weatherIcon(d.current_weather.weathercode);
+  high.textContent = Math.round(d.daily.temperature_2m_max[0]) + "°";
+  low.textContent = Math.round(d.daily.temperature_2m_min[0]) + "°";
 
-  // 12-hour forecast
-  const hourly = document.getElementById("hourly");
   hourly.innerHTML = "";
-let shown = 0;
-const now = new Date();
+  let shown = 0;
+  const now = new Date();
 
-for (let i = 0; i < d.hourly.time.length && shown < 12; i++) {
-  const t = new Date(d.hourly.time[i]);
-  if (t > now) {
-    const precip = d.hourly.precipitation_probability?.[i];
-    hourly.innerHTML += `
-      <div class="hour">
-        <div>${t.toLocaleTimeString([], { hour: "numeric" })}</div>
-        <div>${weatherIcon(d.hourly.weathercode[i])}</div>
-        <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
+  for(let i=0;i<d.hourly.time.length && shown<12;i++){
+    const t = new Date(d.hourly.time[i]);
+    if(t > now){
+      const precip = d.hourly.precipitation_probability[i];
+      const pIcon = precipIcon(d.hourly.weathercode[i]);
+
+      hourly.innerHTML += `
+        <div class="hour">
+          <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
+          <div>${weatherIcon(d.hourly.weathercode[i])}</div>
+          <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
+          <div style="font-size:.9em;opacity:.7">
+            ${pIcon && precip != null ? precip + "% " + pIcon : ""}
+          </div>
+        </div>`;
+      shown++;
+    }
+  }
+
+  daily.innerHTML = "";
+  for(let i=1;i<d.daily.time.length;i++){
+    const [y,m,da] = d.daily.time[i].split("-").map(Number);
+    const dt = new Date(y,m-1,da);
+    const precip = d.daily.precipitation_probability_max[i];
+    const pIcon = precipIcon(d.daily.weathercode[i]);
+
+    daily.innerHTML += `
+      <div class="day">
+        <div class="day-date">${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}</div>
+        <div>${weatherIcon(d.daily.weathercode[i])}</div>
+        <div>${Math.round(d.daily.temperature_2m_max[i])}° / ${Math.round(d.daily.temperature_2m_min[i])}°</div>
         <div style="font-size:.9em;opacity:.7">
-          ${precip != null ? precip + "% 🌧️" : ""}
+          ${pIcon && precip != null ? precip + "% " + pIcon : ""}
         </div>
       </div>`;
-    shown++;
   }
-}
-	
-  document.getElementById("updated").textContent =
-    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 
-
-// 8-day forecast starting from tomorrow (safe bounds)
-
-const daily = document.getElementById("daily");
-daily.innerHTML = "";
-
-for (let i = 1; i < d.daily.time.length; i++) {
-  const [year, month, day] = d.daily.time[i].split("-").map(Number);
-  const dt = new Date(year, month - 1, day);
-  const precip = d.daily.precipitation_probability_max?.[i];
-
-  daily.innerHTML += `
-    <div class="day">
-      <div class="day-date">
-        ${dt.toLocaleDateString([], {
-          weekday: "short",
-          month: "numeric",
-          day: "numeric"
-        })}
-      </div>
-      <div>${weatherIcon(d.daily.weathercode[i])}</div>
-      <div>
-        ${Math.round(d.daily.temperature_2m_max[i])}° /
-        ${Math.round(d.daily.temperature_2m_min[i])}°
-      </div>
-      <div style="font-size:.9em;opacity:.7">
-        ${precip != null ? precip + "% 🌧️" : ""}
-      </div>
-    </div>`;
+  updated.textContent = "Last updated: " + new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 }
 
-}
 loadWeather();
 setInterval(loadWeather,300000);
 
-/* LOAD QUOTE */
-async function loadQuote(){
-  try{
-    const r = await fetch(
-      "https://api.allorigins.win/raw?url="+
-      encodeURIComponent("https://zenquotes.io/api/today")
-    );
-    const d = await r.json();
-    document.getElementById("quote").textContent = `"${d[0].q}" — ${d[0].a}`;
-  }catch{
-    document.getElementById("quote").textContent = "Stay present. Stay kind.";
-  }
-}
-//loadQuote();
-
-/* SCHOOL TRAVEL TIME USING MAPBOX (6 AM - 8 AM ONLY) */
-const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw"; // replace with your Mapbox token
-const origin = [-83.4755,42.4806]; // Novi
-const destination = [-83.2205,42.5536]; // Roeper School
+/* TRAVEL */
+const mapboxKey="pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
+const origin=[-83.4755,42.4806];
+const destination=[-83.2205,42.5536];
 
 async function loadTravelTime(){
-  const now = new Date();
-  const hour = now.getHours();
-  const travelEl = document.getElementById("travel");
-
-  if(hour >= 6 && hour < 8){
-    // Only show travel time between 6AM and 8AM
+  const h=new Date().getHours();
+  if(h>=6&&h<8){
     try{
-      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/`+
-                  `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`+
-                  `?access_token=${mapboxKey}`;
-      const r = await fetch(url);
-      const d = await r.json();
-      const minutes = Math.round(d.routes[0].duration / 60);
-      travelEl.textContent = `🚗 Estimated drive: ~${minutes} min`;
+      const r=await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${origin.join(",")};${destination.join(",")}?access_token=${mapboxKey}`);
+      const d=await r.json();
+      travel.textContent=`🚗 Estimated drive: ~${Math.round(d.routes[0].duration/60)} min`;
     }catch{
-      travelEl.textContent = "🚗 Travel time unavailable";
+      travel.textContent="🚗 Travel time unavailable";
     }
-  } else {
-    travelEl.textContent = "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
+  }else{
+    travel.textContent="🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
   }
 }
-
-// Initial load + interval every 10 minutes
 loadTravelTime();
-setInterval(loadTravelTime, 600000); // 600,000ms = 10 minutes
+setInterval(loadTravelTime,600000);
 </script>
 </body>
 </html>
-
-

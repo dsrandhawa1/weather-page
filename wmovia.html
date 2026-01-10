@@ -90,30 +90,30 @@ footer{
 <body>
 <div class="container">
 
-  <div class="card section">
-<table width=100%>
+<div class="card section">
+<table width="100%">
 <tr>
 <td><div class="icon" id="icon">☀️</div></td>
 <td><div class="temp" id="temp">--°</div></td>
 
 <td>
 <div class="hilo">
-<table width=100%>
-<tr><td align=right>Higha:</td><td align=left><span id="high">--°</span></td></tr>
-<tr><td align=right>Low:</td><td align=left><span id="low">--°</span></td></tr>
+<table width="100%">
+<tr><td align="right">Highb:</td><td align="left"><span id="high">--°</span></td></tr>
+<tr><td align="right">Low:</td><td align="left"><span id="low">--°</span></td></tr>
 </table>
 </div>
 </td>
 
-<td align=center>
-<table width=80%>
-<tr><td align=right><div class="travel" id="travel"></div></td></tr>
+<td align="center">
+<table width="80%">
+<tr><td align="right"><div class="travel" id="travel"></div></td></tr>
 <tr><td>&nbsp;</td></tr>
-<tr><td align=right><span class="quote" id="quote"></span></td></tr>
+<tr><td align="right"><span class="quote" id="quote"></span></td></tr>
 </table>
 </td>
 
-<td width=30%>
+<td width="30%">
 <div class="clock-wrap">
 <div class="date" id="date"></div>
 <div class="clock" id="clock"></div>
@@ -140,13 +140,20 @@ footer{
 const LAT = 42.4806;
 const LON = -83.4755;
 
+/* ELEMENT LOOKUPS (Safari-safe) */
+const el = id => document.getElementById(id);
+
 /* CLOCK */
 function updateClock(){
   const now = new Date();
-  date.textContent = now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
-  clock.textContent = now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  el("date").textContent = now.toLocaleDateString([], {
+    weekday:"long", month:"long", day:"numeric", year:"numeric"
+  });
+  el("clock").textContent = now.toLocaleTimeString([], {
+    hour:"numeric", minute:"2-digit"
+  });
 }
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 updateClock();
 
 /* ICONS */
@@ -167,87 +174,105 @@ function precipIcon(code){
 /* WEATHER */
 async function loadWeather(){
   const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
-    `&current_weather=true` +
-    `&hourly=temperature_2m,weathercode,precipitation_probability` +
-    `&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max` +
-    `&temperature_unit=fahrenheit&timezone=auto`;
+    "https://api.open-meteo.com/v1/forecast" +
+    "?latitude=" + LAT +
+    "&longitude=" + LON +
+    "&current_weather=true" +
+    "&hourly=temperature_2m,weathercode,precipitation_probability" +
+    "&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_probability_max" +
+    "&temperature_unit=fahrenheit&timezone=auto";
 
   const d = await (await fetch(url)).json();
 
-  temp.textContent = Math.round(d.current_weather.temperature) + "°";
-  icon.textContent = weatherIcon(d.current_weather.weathercode);
-  high.textContent = Math.round(d.daily.temperature_2m_max[0]) + "°";
-  low.textContent = Math.round(d.daily.temperature_2m_min[0]) + "°";
+  el("temp").textContent = Math.round(d.current_weather.temperature) + "°";
+  el("icon").textContent = weatherIcon(d.current_weather.weathercode);
+  el("high").textContent = Math.round(d.daily.temperature_2m_max[0]) + "°";
+  el("low").textContent = Math.round(d.daily.temperature_2m_min[0]) + "°";
 
+  const hourly = el("hourly");
   hourly.innerHTML = "";
   let shown = 0;
   const now = new Date();
 
-  for(let i=0;i<d.hourly.time.length && shown<12;i++){
+  for (let i = 0; i < d.hourly.time.length && shown < 12; i++) {
     const t = new Date(d.hourly.time[i]);
-    if(t > now){
+    if (t > now) {
       const precip = d.hourly.precipitation_probability[i];
       const pIcon = precipIcon(d.hourly.weathercode[i]);
 
-      hourly.innerHTML += `
-        <div class="hour">
-          <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
-          <div>${weatherIcon(d.hourly.weathercode[i])}</div>
-          <div>${Math.round(d.hourly.temperature_2m[i])}°</div>
-          <div style="font-size:.9em;opacity:.7">
-            ${pIcon && precip != null ? precip + "% " + pIcon : ""}
-          </div>
-        </div>`;
+      hourly.innerHTML +=
+        '<div class="hour">' +
+          '<div>' + t.toLocaleTimeString([], {hour:"numeric"}) + '</div>' +
+          '<div>' + weatherIcon(d.hourly.weathercode[i]) + '</div>' +
+          '<div>' + Math.round(d.hourly.temperature_2m[i]) + '°</div>' +
+          '<div style="font-size:.9em;opacity:.7">' +
+            (pIcon && precip != null ? precip + "% " + pIcon : "") +
+          '</div>' +
+        '</div>';
       shown++;
     }
   }
 
+  const daily = el("daily");
   daily.innerHTML = "";
-  for(let i=1;i<d.daily.time.length;i++){
-    const [y,m,da] = d.daily.time[i].split("-").map(Number);
-    const dt = new Date(y,m-1,da);
+
+  for (let i = 1; i < d.daily.time.length; i++) {
+    const parts = d.daily.time[i].split("-");
+    const dt = new Date(parts[0], parts[1] - 1, parts[2]);
     const precip = d.daily.precipitation_probability_max[i];
     const pIcon = precipIcon(d.daily.weathercode[i]);
 
-    daily.innerHTML += `
-      <div class="day">
-        <div class="day-date">${dt.toLocaleDateString([], {weekday:"short",month:"numeric",day:"numeric"})}</div>
-        <div>${weatherIcon(d.daily.weathercode[i])}</div>
-        <div>${Math.round(d.daily.temperature_2m_max[i])}° / ${Math.round(d.daily.temperature_2m_min[i])}°</div>
-        <div style="font-size:.9em;opacity:.7">
-          ${pIcon && precip != null ? precip + "% " + pIcon : ""}
-        </div>
-      </div>`;
+    daily.innerHTML +=
+      '<div class="day">' +
+        '<div class="day-date">' +
+          dt.toLocaleDateString([], {weekday:"short", month:"numeric", day:"numeric"}) +
+        '</div>' +
+        '<div>' + weatherIcon(d.daily.weathercode[i]) + '</div>' +
+        '<div>' +
+          Math.round(d.daily.temperature_2m_max[i]) + '° / ' +
+          Math.round(d.daily.temperature_2m_min[i]) + '°' +
+        '</div>' +
+        '<div style="font-size:.9em;opacity:.7">' +
+          (pIcon && precip != null ? precip + "% " + pIcon : "") +
+        '</div>' +
+      '</div>';
   }
 
-  updated.textContent = "Last updated: " + new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  el("updated").textContent =
+    "Last updated: " +
+    new Date().toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
 }
 
 loadWeather();
-setInterval(loadWeather,300000);
+setInterval(loadWeather, 300000);
 
 /* TRAVEL */
-const mapboxKey="pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
-const origin=[-83.4755,42.4806];
-const destination=[-83.2205,42.5536];
+const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
+const origin = [-83.4755,42.4806];
+const destination = [-83.2205,42.5536];
 
 async function loadTravelTime(){
-  const h=new Date().getHours();
-  if(h>=6&&h<8){
-    try{
-      const r=await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${origin.join(",")};${destination.join(",")}?access_token=${mapboxKey}`);
-      const d=await r.json();
-      travel.textContent=`🚗 Estimated drive: ~${Math.round(d.routes[0].duration/60)} min`;
-    }catch{
-      travel.textContent="🚗 Travel time unavailable";
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 8) {
+    try {
+      const r = await fetch(
+        "https://api.mapbox.com/directions/v5/mapbox/driving/" +
+        origin.join(",") + ";" + destination.join(",") +
+        "?access_token=" + mapboxKey
+      );
+      const d = await r.json();
+      el("travel").textContent =
+        "🚗 Estimated drive: ~" + Math.round(d.routes[0].duration / 60) + " min";
+    } catch {
+      el("travel").textContent = "🚗 Travel time unavailable";
     }
-  }else{
-    travel.textContent="🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
+  } else {
+    el("travel").textContent =
+      "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
   }
 }
 loadTravelTime();
-setInterval(loadTravelTime,600000);
+setInterval(loadTravelTime, 600000);
 </script>
 </body>
 </html>

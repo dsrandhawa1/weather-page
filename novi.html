@@ -280,13 +280,13 @@ async function loadTravelTime(){
       );
       const d = await r.json();
       el("travel").textContent =
-        "🚗 Estimated drive: ~" + Math.round(d.routes[0].duration / 60) + " min";
+        "🚗 Estimated drive to Roepar: ~" + Math.round(d.routes[0].duration / 60) + " min";
     } catch {
       el("travel").textContent = "🚗 Travel time unavailable";
     }
   } else {
     el("travel").textContent =
-      "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
+      "🚗 Drive time to Roepar displayed between 6 AM and 8 AM";
   }
 }
 loadTravelTime();

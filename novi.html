@@ -111,6 +111,11 @@ footer{
 <div style="" class="clock-wrap">
 <div style="" class="date" id="date"></div>
 <div class="clock" id="clock" style="font-size: 67px"></div>
+
+<button id="toggleSeconds"
+  style="font-size:14px;margin-top:6px;cursor:pointer">
+  ⏱ Show seconds
+</button>
 </div>
 </td>
 </tr>
@@ -290,6 +295,49 @@ async function loadTravelTime(){
 }
 loadTravelTime();
 setInterval(loadTravelTime, 600000);
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const dateEl = document.getElementById("date");
+  const clockEl = document.getElementById("clock");
+  const btn = document.getElementById("toggleSeconds");
+
+  let showSeconds = localStorage.getItem("showSeconds") === "true";
+
+  function updateClock(){
+    const now = new Date();
+
+    dateEl.textContent = now.toLocaleDateString([], {
+      weekday:"long",
+      month:"long",
+      day:"numeric",
+      year:"numeric"
+    });
+
+    clockEl.textContent = now.toLocaleTimeString([], {
+      hour:"numeric",
+      minute:"2-digit",
+      second: showSeconds ? "2-digit" : undefined
+    });
+
+    btn.textContent = showSeconds
+      ? "⏱ Hide seconds"
+      : "⏱ Show seconds";
+  }
+
+  btn.addEventListener("click", () => {
+    showSeconds = !showSeconds;
+    localStorage.setItem("showSeconds", showSeconds);
+    updateClock();
+  });
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+});
 </script>
 </body>
 </html>

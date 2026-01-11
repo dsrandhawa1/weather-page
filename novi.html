@@ -1,4 +1,4 @@
-<!-- style="border: 2px solid black"-->
+<!-- style=""-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,13 +17,13 @@ html, body {
   display:flex;
   flex-direction:column;
   height:100%;
-  padding:1px;
+  padding:15px;
   box-sizing:border-box;
 }
 .card{
   background:#ededed;
   border-radius:18px;
-  padding:5px;
+  padding:2px;
   box-shadow:0 4px 12px rgba(0,0,0,.1);
   margin-bottom:12px;
 }
@@ -56,7 +56,7 @@ html, body {
   color:#1a73e8;
 }
 .section{
-  margin-top:16px;
+  margin-top:4px;
 }
 .section-title{
   font-size:1.6rem;
@@ -89,46 +89,45 @@ footer{
 </head>
 
 <body>
-asdasdsad
-<div style="border: 2px solid black"class="container">
+<div class="container">
 
-<div style="border: 2px solid black"class="card section">
+<div style=""class="card section">
 <table width="100%">
 <tr>
-<td width=5%><div style="border: 2px solid black" class="icon" id="icon">☀️</div></td>
-<td width=5%><div style="border: 2px solid black" style="font-size: 34px" class="temp" id="temp">--°</div>sadsad</td>
+<td width=5%><div style="" class="icon" id="icon">☀️</div></td>
+<td width=5%><div style="" style="font-size: 27px" class="temp" id="temp">--°</div></td>
 
 <td width=5%>
-<div style="border: 2px solid black"class="hilo">
+<div style=""class="hilo">
 <table width="100%">
-<tr><td align="right">Highn:</td><td align="left"><span id="high">--°</span></td></tr>
-<tr><td align="right">Low:</td><td align="left"><span id="low">--°</span></td></tr>
+<tr><td align="right">High18:</td><td align="left"><span id="high"  style="font-size: 67px">--°</span></td></tr>
+<tr><td align="right">Low:</td><td align="left"><span id="low" style="font-size: 67px">--°</span></td></tr>
 </table>
 </div>
 </td>
 
 
 <td width="50%">
-<div style="border: 2px solid black"class="clock-wrap">
-<div style="border: 2px solid black"class="date" id="date"></div>
-<div style="border: 2px solid black"class="clock" id="clock"></div>
+<div style="" class="clock-wrap">
+<div style="" class="date" id="date"></div>
+<div class="clock" id="clock" style="font-size: 87px"></div>
 </div>
 </td>
 </tr>
 </table>
-<div style="border: 2px solid black"class="updated"><span id="updated"></span></div>
+<div style=""class="updated"><span id="updated"></span></div>
 </div>
 
-<div style="border: 2px solid black"class="card section">
-<div style="border: 2px solid black"class="section-title">Next 12 Hours</div>
-<div style="border: 2px solid black"class="hourly" id="hourly"></div>
+<div class="card section">
+<div style="" class="section-title">Next 12 Hours</div>
+<div style="" class="hourly" id="hourly"></div>
 </div>
 
-<div style="border: 2px solid black"class="card section">
-<div style="border: 2px solid black"class="section-title">8-Day Forecast</div>
-<div style="border: 2px solid black"class="daily" id="daily"></div>
+<div style=""class="card section">
+<div style=""class="section-title">8-Day Forecast</div>
+<div style=""class="daily" id="daily"></div>
 </div>
-<div style="border: 2px solid black"class="travel" id="travel"><br>
+<div style=""class="travel" id="travel"><br>
 <span class="quote" id="quote">
 </div>
 </div>
@@ -220,11 +219,11 @@ el("icon").innerHTML =
       const pIcon = precipIcon(d.hourly.weathercode[i]);
 
       hourly.innerHTML +=
-        '<div style="border: 2px solid black"class="hour">' +
+        '<div style=""class="hour">' +
           '<div>' + t.toLocaleTimeString([], {hour:"numeric"}) + '</div>' +
           '<div>' + weatherIcon(d.hourly.weathercode[i]) + '</div>' +
           '<div>' + Math.round(d.hourly.temperature_2m[i]) + '°</div>' +
-          '<div style="border: 2px solid black"style="font-size:.9em;opacity:.7">' +
+          '<div style=""style="font-size:.9em;opacity:.7">' +
             (pIcon && precip != null ? precip + "% " + pIcon : "") +
           '</div>' +
         '</div>';
@@ -242,8 +241,8 @@ el("icon").innerHTML =
     const pIcon = precipIcon(d.daily.weathercode[i]);
 
     daily.innerHTML +=
-      '<div style="border: 2px solid black"class="day">' +
-        '<div style="border: 2px solid black"class="day-date">' +
+      '<div style=""class="day">' +
+        '<div style=""class="day-date">' +
           dt.toLocaleDateString([], {weekday:"short", month:"numeric", day:"numeric"}) +
         '</div>' +
         '<div>' + weatherIcon(d.daily.weathercode[i]) + '</div>' +
@@ -251,7 +250,7 @@ el("icon").innerHTML =
           Math.round(d.daily.temperature_2m_max[i]) + '° / ' +
           Math.round(d.daily.temperature_2m_min[i]) + '°' +
         '</div>' +
-        '<div style="border: 2px solid black"style="font-size:.9em;opacity:.7">' +
+        '<div style=""style="font-size:.9em;opacity:.7">' +
           (pIcon && precip != null ? precip + "% " + pIcon : "") +
         '</div>' +
       '</div>';

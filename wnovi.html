@@ -59,71 +59,112 @@ html, body {
   justify-content: center;
   margin-left: 10px;
   vertical-align: middle;
+  transform: translateY(20px);
 }
 
 .moon {
   position: relative;
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 8px rgba(255,255,255,.9);
+  width: 102px;
+  height: 102px;
+  border-radius: 20px;
+  background: #444;
+  box-shadow:
+    0 0 4px rgba(0,0,0,.10),
+    0 0 10px rgba(237,237,237,.8);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
+/* Actual visible moon circle */
+.moon::before {
+  content: "";
+  position: absolute;
+  width: 83px;
+  height: 83px;
+  left: 9.5px;
+  top: 9.5px;
+  border-radius: 50%;
+  background: white;
+}
+
+/* Dark/hidden portion of moon */
 .moon::after {
   content: "";
   position: absolute;
-  background: #ededed;
+  width: 83px;
+  height: 83px;
+  left: 9.5px;
+  top: 9.5px;
   border-radius: 50%;
+  background: #444;
 }
 
-.moon-new {
-  background: #202020;
-  border: 2px solid #111;
-  box-shadow: none;
+/* New moon */
+.moon-new::before {
+  display: none;
 }
 
+.moon-new::after {
+  display: none;
+}
+
+/* Waxing crescent */
 .moon-waxing-crescent::after {
-  width: 58px;
-  height: 58px;
-  left: -20px;
-  top: 0;
+  left: -9.5px;
+  top: 9.5px;
 }
 
+/* First quarter */
 .moon-first-quarter {
-  background:
-    linear-gradient(to right, white 0%, white 50%, #202020 50%, #202020 100%);
+  background: #444;
 }
 
+.moon-first-quarter::after {
+  width: 41.5px;
+  height: 83px;
+  left: 9.5px;
+  top: 9.5px;
+  border-radius: 41.5px 0 0 41.5px;
+}
+
+/* Waxing gibbous */
 .moon-waxing-gibbous::after {
-  width: 58px;
-  height: 58px;
-  left: -38px;
-  top: 0;
+  left: -9.5px;
+  top: 9.5px;
 }
 
-.moon-full {
+/* Full moon */
+.moon-full::after {
+  display: none;
+}
+
+/* Waning gibbous */
+.moon-waning-gibbous::after {
+  left: 28.5px;
+  top: 9.5px;
+}
+
+/* Last quarter */
+.moon-last-quarter {
+  background: #444;
+}
+
+.moon-last-quarter::before {
   background: white;
 }
 
-.moon-waning-gibbous::after {
-  width: 58px;
-  height: 58px;
-  left: 38px;
-  top: 0;
+.moon-last-quarter::after {
+  width: 41.5px;
+  height: 83px;
+  left: 51px;
+  top: 9.5px;
+  border-radius: 0 41.5px 41.5px 0;
 }
 
-.moon-last-quarter {
-  background:
-    linear-gradient(to right, #202020 0%, #202020 50%, white 50%, white 100%);
-}
-
+/* Waning crescent */
 .moon-waning-crescent::after {
-  width: 58px;
-  height: 58px;
-  left: 20px;
-  top: 0;
+  left: 28.5px;
+  top: 9.5px;
 }
 
 .current-moon-name {
@@ -134,8 +175,12 @@ html, body {
 }
 
 .hilo {
-  font-size: 2.2rem;
-  opacity: .7;
+  font-size: 9.9rem;
+  font-weight: 700;
+}
+
+.hilo td {
+  font-weight: 700;
 }
 
 .clock-wrap {
@@ -453,11 +498,44 @@ footer {
   .temp { font-size: 6rem; }
   .date { font-size: 1.6rem; }
   .clock { font-size: 3rem; }
-  .hilo { font-size: 1.7rem; }
+
+  .hilo {
+    font-size: 7.65rem;
+    font-weight: 700;
+  }
 
   .current-moon .moon {
-    width: 46px;
-    height: 46px;
+    width: 74px;
+    height: 74px;
+    border-radius: 15px;
+  }
+
+  .current-moon .moon::before,
+  .current-moon .moon::after {
+    width: 60px;
+    height: 60px;
+    left: 7px;
+    top: 7px;
+  }
+
+  .current-moon .moon-first-quarter::after,
+  .current-moon .moon-last-quarter::after {
+    width: 30px;
+    height: 60px;
+  }
+
+  .current-moon .moon-waxing-crescent::after,
+  .current-moon .moon-waxing-gibbous::after {
+    left: -7px;
+  }
+
+  .current-moon .moon-waning-gibbous::after,
+  .current-moon .moon-waning-crescent::after {
+    left: 20.5px;
+  }
+
+  .current-moon .moon-last-quarter::after {
+    left: 37px;
   }
 
   .current-moon-name {
@@ -491,6 +569,10 @@ footer {
   .quote-text { font-size: .75rem; }
   .hour-condition { font-size: .7rem; }
   .hour-moon-phase { font-size: .62rem; }
+
+  .hilo {
+    font-size: 4.95rem;
+  }
 }
 </style>
 </head>
@@ -929,7 +1011,8 @@ loadWeather();
 setInterval(loadWeather, 300000);
 
 /* QUOTE OF THE HOUR
-   Tries multiple public quote sources; changes once per hour. */
+   Tries multiple public quote sources.
+   Rejects any quote longer than 25 words. */
 const quoteSources = [
   {
     name: "ZenQuotes",
@@ -949,6 +1032,15 @@ const quoteSources = [
   }
 ];
 
+/* COUNT WORDS */
+function wordCount(text) {
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .length;
+}
+
 async function loadQuote() {
   const quoteText = document.getElementById("quoteText");
   const quoteAuthor = document.getElementById("quoteAuthor");
@@ -964,17 +1056,22 @@ async function loadQuote() {
       const data = await response.json();
       const quote = source.parse(data);
 
-      if (quote && quote.text) {
-        quoteText.textContent = `“${quote.text}”`;
-        quoteAuthor.textContent = quote.author ? `— ${quote.author}` : "";
-        quoteSource.textContent = source.name;
-        return;
+      /* REJECT QUOTES LONGER THAN 25 WORDS */
+      if (!quote || !quote.text || wordCount(quote.text) > 25) {
+        continue;
       }
+
+      quoteText.textContent = `“${quote.text}”`;
+      quoteAuthor.textContent = quote.author ? `— ${quote.author}` : "";
+      quoteSource.textContent = source.name;
+      return;
+
     } catch (error) {
       // Try the next quote source.
     }
   }
 
+  /* SHORT FALLBACK */
   quoteText.textContent = "Stay present. Stay kind.";
   quoteAuthor.textContent = "";
   quoteSource.textContent = "";
@@ -998,3 +1095,4 @@ function showRoeperMap() {
 </body>
 </html>
 ```
+current

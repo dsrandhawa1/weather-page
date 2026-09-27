@@ -6,12 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+
 html, body {
   margin:0;
   height:100%;
   font-family:system-ui,-apple-system,Segoe UI,Roboto;
   background:white;
 }
+
 .container{
   display:flex;
   flex-direction:column;
@@ -19,6 +21,7 @@ html, body {
   padding:12px;
   box-sizing:border-box;
 }
+
 .card{
   background:#ededed;
   border-radius:18px;
@@ -26,360 +29,1707 @@ html, body {
   box-shadow:0 4px 12px rgba(0,0,0,.1);
   margin-bottom:12px;
 }
+
 .top{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
+
 .city{
   font-size:2.5rem;
   font-weight:600;
 }
+
 .clock-wrap{
   text-align:right;
 }
-.date{font-size:2rem;}
-.clock{font-size:3.6rem;}
+
+.date{
+  font-size:2rem;
+}
+
+.clock{
+  font-size:3.6rem;
+}
+
 .current{
   display:flex;
   align-items:center;
   gap:24px;
   margin-top:16px;
 }
-.icon{font-size:4.5rem;}
-.temp{font-size:8rem;font-weight:600;}
-.hilo{font-size:2.2rem;opacity:.7;}
+
+.icon{
+  font-size:4.5rem;
+}
+
+.temp{
+  font-size:8rem;
+  font-weight:600;
+}
+
+.hilo{
+  font-size:2.2rem;
+  opacity:.7;
+}
+
 .travel{
   margin-top:8px;
   font-size:1.15rem;
   color:#1a73e8;
 }
+
 .section{
   margin-top:16px;
 }
+
 .section-title{
   font-size:1.6rem;
   margin-bottom:8px;
 }
-.hourly,.daily{
+
+
+/* =========================================================
+   NEXT 12 HOURS HEADER
+   ========================================================= */
+
+.hourly-header{
+  position:relative;
+  height:42px;
+  margin-bottom:10px;
+}
+
+.hourly-title{
+  font-size:1.6rem;
+  position:absolute;
+  left:0;
+  top:0;
+}
+
+.hourly-day{
+  font-size:1.6rem;
+  font-weight:600;
+  text-align:center;
+
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:0;
+}
+
+.hourly-nav{
+  position:absolute;
+  right:0;
+  top:0;
+
+  display:flex;
+  gap:8px;
+}
+
+.hourly-nav button{
+  width:70px;
+  height:42px;
+
+  font-size:2rem;
+  line-height:1;
+
+  border:none;
+  border-radius:10px;
+
+  background:white;
+
+  cursor:pointer;
+
+  box-shadow:0 2px 5px rgba(0,0,0,.15);
+}
+
+.hourly-nav button:hover{
+  background:#f5f5f5;
+}
+
+.hourly-nav button:disabled{
+  opacity:.35;
+  cursor:default;
+}
+
+
+/* =========================================================
+   NEXT 12 HOURS BOXES
+   ========================================================= */
+
+.hourly{
   display:flex;
   justify-content:space-between;
+  gap:10px;
 }
-.hour,.day{
+
+.hour{
+  flex:1;
+  min-width:0;
+
   text-align:center;
+
   font-size:1.3rem;
+
+  padding:10px 5px;
+
+  border-radius:14px;
+
+  box-sizing:border-box;
+
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+
+  transition:
+    background .3s ease,
+    color .3s ease;
 }
-.day-date{font-weight:600;}
+
+
+/* -------------------------
+   DAYTIME
+   ------------------------- */
+
+.hour.sunny-day{
+  background:linear-gradient(
+    to bottom,
+    #fff6a8 0%,
+    #dff4ff 100%
+  );
+}
+
+.hour.partly-cloudy-day{
+  background:linear-gradient(
+    to bottom,
+    #dceeff 0%,
+    #e8e8e8 100%
+  );
+}
+
+.hour.cloudy-day{
+  background:linear-gradient(
+    to bottom,
+    #d5d8dc 0%,
+    #bfc3c7 100%
+  );
+}
+
+.hour.rainy-day{
+  background:linear-gradient(
+    to bottom,
+    #c3d2df 0%,
+    #9aaab8 100%
+  );
+}
+
+.hour.snowy-day{
+  background:linear-gradient(
+    to bottom,
+    #eef7ff 0%,
+    #d5e2ec 100%
+  );
+}
+
+.hour.stormy-day{
+  background:linear-gradient(
+    to bottom,
+    #999da3 0%,
+    #686d73 100%
+  );
+
+  color:white;
+}
+
+
+/* -------------------------
+   NIGHTTIME
+   ------------------------- */
+
+.hour.sunny-night{
+  background:linear-gradient(
+    to bottom,
+    #394867 0%,
+    #1d2940 100%
+  );
+
+  color:white;
+}
+
+.hour.partly-cloudy-night{
+  background:linear-gradient(
+    to bottom,
+    #454f62 0%,
+    #252d3b 100%
+  );
+
+  color:white;
+}
+
+.hour.cloudy-night{
+  background:linear-gradient(
+    to bottom,
+    #4b4f55 0%,
+    #2d3035 100%
+  );
+
+  color:white;
+}
+
+.hour.rainy-night{
+  background:linear-gradient(
+    to bottom,
+    #3f5366 0%,
+    #263440 100%
+  );
+
+  color:white;
+}
+
+.hour.snowy-night{
+  background:linear-gradient(
+    to bottom,
+    #4e6070 0%,
+    #303e49 100%
+  );
+
+  color:white;
+}
+
+.hour.stormy-night{
+  background:linear-gradient(
+    to bottom,
+    #3a3b40 0%,
+    #202125 100%
+  );
+
+  color:white;
+}
+
+
+/* =========================================================
+   8-DAY FORECAST
+   ========================================================= */
+
+.daily{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.day{
+  text-align:center;
+
+  font-size:1.3rem;
+
+  flex:1;
+  min-width:0;
+
+  padding:14px 8px;
+
+  border-radius:16px;
+
+  box-sizing:border-box;
+
+  box-shadow:0 2px 6px rgba(0,0,0,.12);
+
+  transition:background .3s ease;
+}
+
+.day-date{
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.day-icon{
+  font-size:2.8rem;
+  margin:6px 0;
+}
+
+.day-temp{
+  font-size:1.25rem;
+  font-weight:500;
+}
+
+
+/* Sunny */
+
+.day.sunny{
+  background:linear-gradient(
+    to bottom,
+    #fff7b2 0%,
+    #dff4ff 100%
+  );
+}
+
+
+/* Partly cloudy */
+
+.day.partly-cloudy{
+  background:linear-gradient(
+    to bottom,
+    #dceeff 0%,
+    #e8e8e8 100%
+  );
+}
+
+
+/* Cloudy */
+
+.day.cloudy{
+  background:linear-gradient(
+    to bottom,
+    #d5d8dc 0%,
+    #bfc3c7 100%
+  );
+}
+
+
+/* Rain */
+
+.day.rainy{
+  background:linear-gradient(
+    to bottom,
+    #b9c9d8 0%,
+    #8f9eab 100%
+  );
+}
+
+
+/* Snow */
+
+.day.snowy{
+  background:linear-gradient(
+    to bottom,
+    #eef7ff 0%,
+    #d5e2ec 100%
+  );
+}
+
+
+/* Thunderstorm */
+
+.day.stormy{
+  background:linear-gradient(
+    to bottom,
+    #8e9298 0%,
+    #5f646b 100%
+  );
+
+  color:white;
+}
+
+
+/* =========================================================
+   OTHER
+   ========================================================= */
+
 .updated{
   margin-top:12px;
+
   display:flex;
   gap:16px;
   flex-wrap:wrap;
+
   font-size:1rem;
+
   opacity:.7;
 }
-.quote{font-style:italic;}
+
+.quote{
+  font-style:italic;
+}
+
 footer{
   margin-top:auto;
   text-align:center;
   opacity:.5;
 }
+
 </style>
 </head>
 
+
 <body>
-<div  class="container">
 
-  <!-- CURRENT WEATHER CARD -->
+<div class="container">
 
-    <div class="card section"  >
-<table width=100% >
+
+<!-- =======================================================
+     CURRENT WEATHER CARD
+     ======================================================= -->
+
+<div class="card section">
+
+<table width="100%">
+
 <tr>
-<td width=10% >
-      <div  class="icon" id="icon">☀️</div>
-</td>
-<td width=15% >
-      <div  class="temp" id="temp">--°</div>
-</td>
-<td width=20% >
-      <div  class="hilo">
 
-		<table width=100% >
-		<tr>
-			<td align=right><div>High: </div></td>
-			<td align=left><span id="high">--°</span></td>
-		</tr>
-		<tr>
-			<td align=right><div>Low: </div></td>
-			<td align=left><span id="low">--°</span></td>
-		</tr>
-		</table>
+<td width="10%">
 
+<div class="icon" id="icon">
+☀️
+</div>
 
-
-      </div>
 </td>
 
-<td width=30% align=center >
 
-<table width=80% >
-		<tr>
-			<td align=right>    <div class="travel" id="travel"></div></td>
-		</tr>
-		<tr>
-			<td align=right>&nbsp;</td>
-		</tr>
-		<tr>
-			<td align=right>      <span class="quote" id="quote"></span></td>
-		</tr>
-		</table>
+<td width="15%">
+
+<div class="temp" id="temp">
+--°
+</div>
+
 </td>
 
 
-<td width=30% >
-      <div  class="clock-wrap">
-        <div  class="date" id="date"></div>
-        <div  class="clock" id="clock"></div>
-      </div>
+<td width="20%">
 
+<div class="hilo">
+
+<table width="100%">
+
+<tr>
+
+<td align="right">
+<div>High: </div>
 </td>
+
+<td align="left">
+<span id="high">--°</span>
+</td>
+
+</tr>
+
+
+<tr>
+
+<td align="right">
+<div>Low: </div>
+</td>
+
+<td align="left">
+<span id="low">--°</span>
+</td>
+
+</tr>
+
 </table>
-<div  class="updated"><span id="updated"></span></div>
-  </div>
-    
-
-      
-
-
-  <!-- HOURLY FORECAST -->
-  <div  class="card section" id="dx">
-    <div class="hourly-header">
-      <div class="hourly-title">Next 12 Hours</div>
-      <div class="hourly-day" id="hourlyDay">—</div>
-      <div class="hourly-nav">
-        <button id="hourlyBack" type="button" aria-label="Previous 12 hours" title="Previous 12 hours">‹</button>
-        <button id="hourlyForward" type="button" aria-label="Next 12 hours" title="Next 12 hours">›</button>
-      </div>
-    </div>
-    <div class="hourly" id="hourly"></div>
-  </div>
-
-  <!-- DAILY FORECAST -->
-  <div  class="card section">
-    <div  class="section-title">8-Day Forecast</div>
-    <div  class="daily" id="daily"></div>
-  </div>
 
 </div>
 
+</td>
+
+
+<td width="30%" align="center">
+
+<table width="80%">
+
+<tr>
+
+<td align="right">
+
+<div
+class="travel"
+id="travel">
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td align="right">
+&nbsp;
+</td>
+
+</tr>
+
+
+<tr>
+
+<td align="right">
+
+<span
+class="quote"
+id="quote">
+</span>
+
+</td>
+
+</tr>
+
+</table>
+
+</td>
+
+
+<td width="30%">
+
+<div class="clock-wrap">
+
+<div
+class="date"
+id="date">
+</div>
+
+<div
+class="clock"
+id="clock">
+</div>
+
+</div>
+
+</td>
+
+</tr>
+
+</table>
+
+
+<div class="updated">
+
+<span id="updated">
+</span>
+
+</div>
+
+</div>
+
+
+
+<!-- =======================================================
+     NEXT 12 HOURS
+     ======================================================= -->
+
+<div
+class="card section"
+id="dx">
+
+
+<div class="hourly-header">
+
+
+<div class="hourly-title">
+Next 12 Hours
+</div>
+
+
+<div
+class="hourly-day"
+id="hourlyDay">
+—
+</div>
+
+
+<div class="hourly-nav">
+
+
+<button
+id="hourlyBack"
+type="button"
+aria-label="Previous 12 hours"
+title="Previous 12 hours">
+‹
+</button>
+
+
+<button
+id="hourlyForward"
+type="button"
+aria-label="Next 12 hours"
+title="Next 12 hours">
+›
+</button>
+
+
+</div>
+
+</div>
+
+
+<div
+class="hourly"
+id="hourly">
+</div>
+
+
+</div>
+
+
+
+<!-- =======================================================
+     8-DAY FORECAST
+     ======================================================= -->
+
+<div class="card section">
+
+
+<div class="section-title">
+8-Day Forecast
+</div>
+
+
+<div
+class="daily"
+id="daily">
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
 <script>
+
 const LAT = 42.4806;
 const LON = -83.4755;
 
-/* CLOCK */
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
 function updateClock(){
+
   const now = new Date();
+
+
   document.getElementById("date").textContent =
-    now.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});
+
+    now.toLocaleDateString(
+      [],
+      {
+        weekday:"long",
+        month:"long",
+        day:"numeric",
+        year:"numeric"
+      }
+    );
+
+
   document.getElementById("clock").textContent =
-    now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+
+    now.toLocaleTimeString(
+      [],
+      {
+        hour:"numeric",
+        minute:"2-digit"
+      }
+    );
+
 }
-setInterval(updateClock,1000);
+
+setInterval(
+  updateClock,
+  1000
+);
+
 updateClock();
 
-/* WEATHER ICONS
-   Open-Meteo uses WMO weather interpretation codes.
-   Map each code explicitly so fog, drizzle, snow, showers, and
-   thunderstorms don't get grouped under the wrong icon.
-*/
+
+
+/* =========================================================
+   WEATHER ICONS
+   ========================================================= */
+
 function weatherIcon(code){
+
   const icons = {
-    0: "☀️",   // Clear sky
-    1: "🌤️",   // Mainly clear
-    2: "⛅",   // Partly cloudy
-    3: "☁️",   // Overcast
-    45: "🌫️",  // Fog
-    48: "🌫️",  // Depositing rime fog
-    51: "🌦️",  // Light drizzle
-    53: "🌦️",  // Moderate drizzle
-    55: "🌧️",  // Dense drizzle
-    56: "🌧️",  // Light freezing drizzle
-    57: "🌧️",  // Dense freezing drizzle
-    61: "🌧️",  // Slight rain
-    63: "🌧️",  // Moderate rain
-    65: "🌧️",  // Heavy rain
-    66: "🌧️",  // Light freezing rain
-    67: "🌧️",  // Heavy freezing rain
-    71: "🌨️",  // Slight snow
-    73: "❄️",   // Moderate snow
-    75: "❄️",   // Heavy snow
-    77: "❄️",   // Snow grains
-    80: "🌦️",  // Slight rain showers
-    81: "🌧️",  // Moderate rain showers
-    82: "🌧️",  // Violent rain showers
-    85: "🌨️",  // Slight snow showers
-    86: "❄️",   // Heavy snow showers
-    95: "⛈️",  // Thunderstorm
-    96: "⛈️",  // Thunderstorm with slight hail
-    99: "⛈️"   // Thunderstorm with heavy hail
+
+    0:"☀️",
+
+    1:"🌤️",
+
+    2:"⛅",
+
+    3:"☁️",
+
+    45:"🌫️",
+
+    48:"🌫️",
+
+    51:"🌦️",
+
+    53:"🌦️",
+
+    55:"🌧️",
+
+    56:"🌧️",
+
+    57:"🌧️",
+
+    61:"🌧️",
+
+    63:"🌧️",
+
+    65:"🌧️",
+
+    66:"🌧️",
+
+    67:"🌧️",
+
+    71:"🌨️",
+
+    73:"❄️",
+
+    75:"❄️",
+
+    77:"❄️",
+
+    80:"🌦️",
+
+    81:"🌧️",
+
+    82:"🌧️",
+
+    85:"🌨️",
+
+    86:"❄️",
+
+    95:"⛈️",
+
+    96:"⛈️",
+
+    99:"⛈️"
+
   };
-  return icons[Number(code)] ?? "🌡️";
+
+
+  return icons[
+    Number(code)
+  ] ?? "🌡️";
+
 }
 
-/* HOURLY FORECAST NAVIGATION */
+
+
+/* =========================================================
+   HOURLY WEATHER CLASS
+   ========================================================= */
+
+function getHourlyWeatherClass(code){
+
+  code = Number(code);
+
+
+  if(code === 0){
+
+    return "sunny";
+
+  }
+
+
+  if(
+    code === 1 ||
+    code === 2
+  ){
+
+    return "partly-cloudy";
+
+  }
+
+
+  if(
+    code === 3 ||
+    code === 45 ||
+    code === 48
+  ){
+
+    return "cloudy";
+
+  }
+
+
+  if(
+    (code >= 51 && code <= 67) ||
+    (code >= 80 && code <= 82)
+  ){
+
+    return "rainy";
+
+  }
+
+
+  if(
+    (code >= 71 && code <= 77) ||
+    (code >= 85 && code <= 86)
+  ){
+
+    return "snowy";
+
+  }
+
+
+  if(code >= 95){
+
+    return "stormy";
+
+  }
+
+
+  return "cloudy";
+
+}
+
+
+
+/* =========================================================
+   HOURLY NAVIGATION
+   ========================================================= */
+
 let hourlyPageOffset = 0;
+
 let hourlyData = null;
 
+
+
 function renderHourly(){
-  const hourly = document.getElementById("hourly");
-  const dayLabel = document.getElementById("hourlyDay");
-  const backButton = document.getElementById("hourlyBack");
-  const forwardButton = document.getElementById("hourlyForward");
+
+  const hourly =
+    document.getElementById("hourly");
+
+
+  const dayLabel =
+    document.getElementById("hourlyDay");
+
+
+  const backButton =
+    document.getElementById("hourlyBack");
+
+
+  const forwardButton =
+    document.getElementById("hourlyForward");
+
 
   hourly.innerHTML = "";
-  if(!hourlyData || !hourlyData.time || hourlyData.time.length === 0){
+
+
+  if(
+    !hourlyData ||
+    !hourlyData.time ||
+    hourlyData.time.length === 0
+  ){
+
     dayLabel.textContent = "—";
+
     backButton.disabled = true;
+
     forwardButton.disabled = true;
+
     return;
+
   }
 
+
   const now = new Date();
-  let firstFutureIndex = hourlyData.time.findIndex(time => new Date(time) >= now);
-  if(firstFutureIndex < 0) firstFutureIndex = hourlyData.time.length - 1;
+
+
+  let firstFutureIndex =
+
+    hourlyData.time.findIndex(
+      time =>
+        new Date(time) >= now
+    );
+
+
+  if(firstFutureIndex < 0){
+
+    firstFutureIndex =
+      hourlyData.time.length - 1;
+
+  }
+
 
   const startIndex = Math.min(
-    firstFutureIndex + hourlyPageOffset,
-    Math.max(0, hourlyData.time.length - 1)
-  );
-  const endIndex = Math.min(startIndex + 12, hourlyData.time.length);
-  const [year, month, day] = hourlyData.time[startIndex].slice(0, 10).split("-").map(Number);
-  const displayDate = new Date(year, month - 1, day);
-  dayLabel.textContent = displayDate.toLocaleDateString([], {weekday:"long"});
 
-  for(let i = startIndex; i < endIndex; i++){
-    const t = new Date(hourlyData.time[i]);
+    firstFutureIndex +
+      hourlyPageOffset,
+
+    Math.max(
+      0,
+      hourlyData.time.length - 1
+    )
+
+  );
+
+
+  const endIndex = Math.min(
+
+    startIndex + 12,
+
+    hourlyData.time.length
+
+  );
+
+
+  /* Determine selected day */
+
+  const [
+    year,
+    month,
+    day
+  ] =
+
+    hourlyData.time[startIndex]
+      .slice(0,10)
+      .split("-")
+      .map(Number);
+
+
+  const displayDate =
+
+    new Date(
+      year,
+      month - 1,
+      day
+    );
+
+
+  dayLabel.textContent =
+
+    displayDate.toLocaleDateString(
+      [],
+      {
+        weekday:"long"
+      }
+    );
+
+
+
+  /* =======================================================
+     RENDER EACH HOUR
+     ======================================================= */
+
+  for(
+    let i = startIndex;
+    i < endIndex;
+    i++
+  ){
+
+    const t =
+
+      new Date(
+        hourlyData.time[i]
+      );
+
+
+    const code =
+
+      Number(
+        hourlyData.weathercode[i]
+      );
+
+
+    /*
+       Find sunrise and sunset for
+       this particular date.
+    */
+
+    let sunrise = null;
+
+    let sunset = null;
+
+
+    if(
+      hourlyData.daily &&
+      hourlyData.daily.time
+    ){
+
+      const dateString =
+
+        hourlyData.time[i]
+          .slice(0,10);
+
+
+      const dailyIndex =
+
+        hourlyData.daily.time.indexOf(
+          dateString
+        );
+
+
+      if(dailyIndex >= 0){
+
+        sunrise =
+
+          new Date(
+            hourlyData.daily.sunrise[
+              dailyIndex
+            ]
+          );
+
+
+        sunset =
+
+          new Date(
+            hourlyData.daily.sunset[
+              dailyIndex
+            ]
+          );
+
+      }
+
+    }
+
+
+    /*
+       Daytime is from sunrise
+       through sunset.
+    */
+
+    let isDaytime = true;
+
+
+    if(
+      sunrise &&
+      sunset
+    ){
+
+      isDaytime =
+
+        t >= sunrise &&
+        t < sunset;
+
+    }
+
+
+    const weatherClass =
+
+      getHourlyWeatherClass(
+        code
+      );
+
+
+    const timeClass =
+
+      isDaytime
+
+        ? `${weatherClass}-day`
+
+        : `${weatherClass}-night`;
+
+
     hourly.innerHTML += `
-      <div class="hour">
-        <div>${t.toLocaleTimeString([], {hour:"numeric"})}</div>
-        <div>${weatherIcon(hourlyData.weathercode[i])}</div>
-        <div>${Math.round(hourlyData.temperature_2m[i])}°</div>
-      </div>`;
+
+      <div
+        class="hour ${timeClass}"
+      >
+
+        <div>
+          ${t.toLocaleTimeString(
+            [],
+            {
+              hour:"numeric"
+            }
+          )}
+        </div>
+
+
+        <div
+          style="
+            font-size:2.4rem;
+            margin:5px 0;
+          "
+        >
+
+          ${weatherIcon(code)}
+
+        </div>
+
+
+        <div>
+
+          ${Math.round(
+            hourlyData.temperature_2m[i]
+          )}°
+
+        </div>
+
+      </div>
+
+    `;
+
   }
 
-  backButton.disabled = hourlyPageOffset <= 0;
-  forwardButton.disabled = endIndex >= hourlyData.time.length;
+
+  backButton.disabled =
+
+    hourlyPageOffset <= 0;
+
+
+  forwardButton.disabled =
+
+    endIndex >=
+    hourlyData.time.length;
+
 }
 
-document.getElementById("hourlyBack").addEventListener("click", () => {
-  hourlyPageOffset = Math.max(0, hourlyPageOffset - 12);
-  renderHourly();
-});
-document.getElementById("hourlyForward").addEventListener("click", () => {
-  if(hourlyData && hourlyPageOffset + 12 < hourlyData.time.length){
-    hourlyPageOffset += 12;
-    renderHourly();
+
+
+/* =========================================================
+   HOURLY BUTTONS
+   ========================================================= */
+
+document
+  .getElementById("hourlyBack")
+  .addEventListener(
+    "click",
+    () => {
+
+      hourlyPageOffset =
+
+        Math.max(
+          0,
+          hourlyPageOffset - 12
+        );
+
+
+      renderHourly();
+
+    }
+  );
+
+
+
+document
+  .getElementById("hourlyForward")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(
+        hourlyData &&
+        hourlyPageOffset + 12 <
+        hourlyData.time.length
+      ){
+
+        hourlyPageOffset += 12;
+
+        renderHourly();
+
+      }
+
+    }
+  );
+
+
+
+/* =========================================================
+   DAILY WEATHER CLASS
+   ========================================================= */
+
+function getWeatherClass(code){
+
+  code = Number(code);
+
+
+  if(code === 0){
+
+    return "sunny";
+
   }
-});
 
-/* LOAD WEATHER */
+
+  if(
+    code === 1 ||
+    code === 2
+  ){
+
+    return "partly-cloudy";
+
+  }
+
+
+  if(
+    code === 3 ||
+    code === 45 ||
+    code === 48
+  ){
+
+    return "cloudy";
+
+  }
+
+
+  if(
+    (code >= 51 && code <= 67) ||
+    (code >= 80 && code <= 82)
+  ){
+
+    return "rainy";
+
+  }
+
+
+  if(
+    (code >= 71 && code <= 77) ||
+    (code >= 85 && code <= 86)
+  ){
+
+    return "snowy";
+
+  }
+
+
+  if(code >= 95){
+
+    return "stormy";
+
+  }
+
+
+  return "cloudy";
+
+}
+
+
+
+/* =========================================================
+   LOAD WEATHER
+   ========================================================= */
+
 async function loadWeather(){
+
   const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`+
-    `&current_weather=true&hourly=temperature_2m,weathercode`+
-    `&daily=temperature_2m_max,temperature_2m_min,weathercode`+
-    `&temperature_unit=fahrenheit&timezone=auto`;
 
-  const d = await (await fetch(url)).json();
+    `https://api.open-meteo.com/v1/forecast?` +
 
-  document.getElementById("temp").textContent = Math.round(d.current_weather.temperature)+"°";
-  document.getElementById("icon").textContent = weatherIcon(d.current_weather.weathercode);
-  document.getElementById("high").textContent = Math.round(d.daily.temperature_2m_max[0])+"°";
-  document.getElementById("low").textContent = Math.round(d.daily.temperature_2m_min[0])+"°";
+    `latitude=${LAT}` +
 
-  // Keep the selected 12-hour page, but refresh its data and weekday label.
+    `&longitude=${LON}` +
+
+    `&current_weather=true` +
+
+    `&hourly=temperature_2m,weathercode` +
+
+    `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset` +
+
+    `&temperature_unit=fahrenheit` +
+
+    `&timezone=auto`;
+
+
+  const d =
+
+    await (
+      await fetch(url)
+    ).json();
+
+
+
+  /* =======================================================
+     CURRENT WEATHER
+     ======================================================= */
+
+  document.getElementById("temp").textContent =
+
+    Math.round(
+      d.current_weather.temperature
+    ) + "°";
+
+
+  document.getElementById("icon").textContent =
+
+    weatherIcon(
+      d.current_weather.weathercode
+    );
+
+
+  document.getElementById("high").textContent =
+
+    Math.round(
+      d.daily.temperature_2m_max[0]
+    ) + "°";
+
+
+  document.getElementById("low").textContent =
+
+    Math.round(
+      d.daily.temperature_2m_min[0]
+    ) + "°";
+
+
+
+  /* =======================================================
+     HOURLY DATA
+     Add daily sunrise/sunset data to it.
+     ======================================================= */
+
   hourlyData = d.hourly;
+
+  hourlyData.daily = d.daily;
+
   renderHourly();
+
+
+
+  /* =======================================================
+     LAST UPDATED
+     ======================================================= */
 
   document.getElementById("updated").textContent =
-    "Last updated: "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
 
+    "Last updated: " +
 
-// 8-day forecast starting from tomorrow
-
-const daily = document.getElementById("daily");
-daily.innerHTML = "";
-for (let i = 1; i <= 8; i++) { // skip today
-  const [year, month, day] = d.daily.time[i].split("-").map(Number);
-  const dt = new Date(year, month - 1, day); // correct local date
-  daily.innerHTML += `
-    <div class="day">
-      <div class="day-date">
-        ${dt.toLocaleDateString([], { weekday: "short", month: "numeric", day: "numeric" })}
-      </div>
-      <div>${weatherIcon(d.daily.weathercode[i])}</div>
-      <div>${Math.round(d.daily.temperature_2m_max[i])}° /
-           ${Math.round(d.daily.temperature_2m_min[i])}°</div>
-    </div>`;
-
-}
-
-}
-loadWeather();
-setInterval(loadWeather,300000);
-
-/* LOAD QUOTE */
-async function loadQuote(){
-  try{
-    const r = await fetch(
-      "https://api.allorigins.win/raw?url="+
-      encodeURIComponent("https://zenquotes.io/api/today")
+    new Date().toLocaleTimeString(
+      [],
+      {
+        hour:"numeric",
+        minute:"2-digit"
+      }
     );
-    const d = await r.json();
-    document.getElementById("quote").textContent = `"${d[0].q}" — ${d[0].a}`;
-  }catch{
-    document.getElementById("quote").textContent = "Stay present. Stay kind.";
-  }
-}
-//loadQuote();
 
-/* SCHOOL TRAVEL TIME USING MAPBOX (6 AM - 8 AM ONLY) */
-const mapboxKey = "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw"; // replace with your Mapbox token
-const origin = [-83.4755,42.4806]; // Novi
-const destination = [-83.2205,42.5536]; // Roeper School
+
+
+  /* =======================================================
+     8-DAY FORECAST
+     ======================================================= */
+
+  const daily =
+    document.getElementById("daily");
+
+
+  daily.innerHTML = "";
+
+
+  /*
+     Start at tomorrow.
+  */
+
+  for(
+    let i = 1;
+    i <= 8;
+    i++
+  ){
+
+    /* DATE */
+
+    const [
+      year,
+      month,
+      day
+    ] =
+
+      d.daily.time[i]
+        .split("-")
+        .map(Number);
+
+
+    const dt =
+
+      new Date(
+        year,
+        month - 1,
+        day
+      );
+
+
+    /* WEATHER */
+
+    const code =
+
+      Number(
+        d.daily.weathercode[i]
+      );
+
+
+    const weatherClass =
+
+      getWeatherClass(
+        code
+      );
+
+
+    /* SUNRISE */
+
+    const sunrise =
+
+      new Date(
+        d.daily.sunrise[i]
+      );
+
+
+    /* SUNSET */
+
+    const sunset =
+
+      new Date(
+        d.daily.sunset[i]
+      );
+
+
+    const sunriseText =
+
+      sunrise.toLocaleTimeString(
+        [],
+        {
+          hour:"numeric",
+          minute:"2-digit"
+        }
+      );
+
+
+    const sunsetText =
+
+      sunset.toLocaleTimeString(
+        [],
+        {
+          hour:"numeric",
+          minute:"2-digit"
+        }
+      );
+
+
+
+    /* CREATE BOX */
+
+    daily.innerHTML += `
+
+      <div
+        class="day ${weatherClass}"
+        title="
+          Sunrise: ${sunriseText}
+          |
+          Sunset: ${sunsetText}
+        "
+      >
+
+
+        <div class="day-date">
+
+          ${dt.toLocaleDateString(
+            [],
+            {
+              weekday:"short",
+              month:"numeric",
+              day:"numeric"
+            }
+          )}
+
+        </div>
+
+
+        <div class="day-icon">
+
+          ${weatherIcon(code)}
+
+        </div>
+
+
+        <div class="day-temp">
+
+          ${Math.round(
+            d.daily.temperature_2m_max[i]
+          )}°
+
+          /
+
+          ${Math.round(
+            d.daily.temperature_2m_min[i]
+          )}°
+
+        </div>
+
+
+        <div
+          style="
+            font-size:.8rem;
+            opacity:.65;
+            margin-top:6px;
+          "
+        >
+
+          ☀️ ${sunriseText}
+
+          <br>
+
+          🌙 ${sunsetText}
+
+        </div>
+
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+
+/* =========================================================
+   INITIAL WEATHER LOAD
+   ========================================================= */
+
+loadWeather();
+
+
+/* Refresh every 5 minutes */
+
+setInterval(
+  loadWeather,
+  300000
+);
+
+
+
+/* =========================================================
+   QUOTE
+   ========================================================= */
+
+async function loadQuote(){
+
+  try{
+
+    const r =
+
+      await fetch(
+        "https://api.allorigins.win/raw?url=" +
+        encodeURIComponent(
+          "https://zenquotes.io/api/today"
+        )
+      );
+
+
+    const d =
+      await r.json();
+
+
+    document.getElementById(
+      "quote"
+    ).textContent =
+
+      `"${d[0].q}" — ${d[0].a}`;
+
+  }
+
+  catch{
+
+    document.getElementById(
+      "quote"
+    ).textContent =
+
+      "Stay present. Stay kind.";
+
+  }
+
+}
+
+
+// loadQuote();
+
+
+
+/* =========================================================
+   SCHOOL TRAVEL TIME USING MAPBOX
+   ========================================================= */
+
+const mapboxKey =
+
+  "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
+
+
+const origin =
+  [-83.4755,42.4806];
+
+
+const destination =
+  [-83.2205,42.5536];
+
+
 
 async function loadTravelTime(){
-  const now = new Date();
-  const hour = now.getHours();
-  const travelEl = document.getElementById("travel");
 
-  if(hour >= 6 && hour < 8){
-    // Only show travel time between 6AM and 8AM
+  const now =
+    new Date();
+
+
+  const hour =
+    now.getHours();
+
+
+  const travelEl =
+    document.getElementById(
+      "travel"
+    );
+
+
+  if(
+    hour >= 6 &&
+    hour < 8
+  ){
+
     try{
-      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/`+
-                  `${origin[0]},${origin[1]};${destination[0]},${destination[1]}`+
-                  `?access_token=${mapboxKey}`;
-      const r = await fetch(url);
-      const d = await r.json();
-      const minutes = Math.round(d.routes[0].duration / 60);
-      travelEl.textContent = `🚗 Estimated drive: ~${minutes} min`;
-    }catch{
-      travelEl.textContent = "🚗 Travel time unavailable";
+
+      const url =
+
+        `https://api.mapbox.com/directions/v5/mapbox/driving/` +
+
+        `${origin[0]},${origin[1]};` +
+
+        `${destination[0]},${destination[1]}` +
+
+        `?access_token=${mapboxKey}`;
+
+
+      const r =
+        await fetch(url);
+
+
+      const d =
+        await r.json();
+
+
+      const minutes =
+
+        Math.round(
+          d.routes[0].duration / 60
+        );
+
+
+      travelEl.textContent =
+
+        `🚗 Estimated drive: ~${minutes} min`;
+
     }
-  } else {
-    travelEl.textContent = "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
+
+    catch{
+
+      travelEl.textContent =
+
+        "🚗 Travel time unavailable";
+
+    }
+
   }
+
+  else{
+
+    travelEl.textContent =
+
+      "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
+
+  }
+
 }
 
-// Initial load + interval every 10 minutes
-//loadTravelTime();
-//setInterval(loadTravelTime, 600000); // 600,000ms = 10 minutes
+
+/*
+loadTravelTime();
+
+setInterval(
+  loadTravelTime,
+  600000
+);
+*/
+
 </script>
+
 </body>
 </html>
-
-
-
-
-
-

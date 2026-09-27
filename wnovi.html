@@ -2,183 +2,307 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Novi MI Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Novi MI Dashboard</title>
 
 <style>
 
+/* =========================================================
+   GENERAL PAGE
+   ========================================================= */
+
 html, body {
-  margin:0;
-  height:100%;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  background:white;
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: white;
 }
 
-.container{
-  display:flex;
-  flex-direction:column;
-  height:100%;
-  padding:12px;
-  box-sizing:border-box;
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
-.card{
-  background:#ededed;
-  border-radius:18px;
-  padding:16px;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-  margin-bottom:12px;
-}
-
-.top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.city{
-  font-size:2.5rem;
-  font-weight:600;
-}
-
-.clock-wrap{
-  text-align:right;
-}
-
-.date{
-  font-size:2rem;
-}
-
-.clock{
-  font-size:3.6rem;
-}
-
-.current{
-  display:flex;
-  align-items:center;
-  gap:24px;
-  margin-top:16px;
-}
-
-.icon{
-  font-size:4.5rem;
-}
-
-.temp{
-  font-size:8rem;
-  font-weight:600;
-}
-
-.hilo{
-  font-size:2.2rem;
-  opacity:.7;
-}
-
-.travel{
-  margin-top:8px;
-  font-size:1.15rem;
-  color:#1a73e8;
-}
-
-.section{
-  margin-top:16px;
-}
-
-.section-title{
-  font-size:1.6rem;
-  margin-bottom:8px;
+.card {
+  background: #ededed;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  margin-bottom: 12px;
 }
 
 
 /* =========================================================
-   NEXT 12 HOURS HEADER
+   CURRENT WEATHER
    ========================================================= */
 
-.hourly-header{
-  position:relative;
-  height:42px;
-  margin-bottom:10px;
+.date {
+  font-size: 2rem;
 }
 
-.hourly-title{
-  font-size:1.6rem;
-  position:absolute;
-  left:0;
-  top:0;
+.clock {
+  font-size: 3.6rem;
 }
 
-.hourly-day{
-  font-size:1.6rem;
-  font-weight:600;
-  text-align:center;
-
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  top:0;
+.icon {
+  font-size: 4.5rem;
 }
 
-.hourly-nav{
-  position:absolute;
-  right:0;
-  top:0;
-
-  display:flex;
-  gap:8px;
+.temp {
+  font-size: 8rem;
+  font-weight: 600;
 }
 
-.hourly-nav button{
-  width:70px;
-  height:42px;
-
-  font-size:2rem;
-  line-height:1;
-
-  border:none;
-  border-radius:10px;
-
-  background:white;
-
-  cursor:pointer;
-
-  box-shadow:0 2px 5px rgba(0,0,0,.15);
+.hilo {
+  font-size: 2.2rem;
+  opacity: .7;
 }
 
-.hourly-nav button:hover{
-  background:#f5f5f5;
+.travel {
+  margin-top: 8px;
+  font-size: 1.15rem;
+  color: #1a73e8;
 }
 
-.hourly-nav button:disabled{
-  opacity:.35;
-  cursor:default;
+.clock-wrap {
+  text-align: center;
 }
 
 
 /* =========================================================
-   NEXT 12 HOURS BOXES
+   ROEPER BUTTON
    ========================================================= */
 
-.hourly{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
+.roeper-button-cell {
+  text-align: center;
+  vertical-align: middle;
 }
 
-.hour{
-  flex:1;
-  min-width:0;
+.roeper-button {
+  font-size: 1.35rem;
+  font-weight: 600;
+  padding: 18px 28px;
+  border: none;
+  border-radius: 18px;
+  background: #4285f4;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,.18);
+  white-space: nowrap;
+}
 
-  text-align:center;
+.roeper-button:hover {
+  background: #3367d6;
+}
 
-  font-size:1.3rem;
+.roeper-button:active {
+  transform: scale(.98);
+}
 
-  padding:10px 5px;
 
-  border-radius:14px;
+/* =========================================================
+   GOOGLE MAPS POPUP
+   ========================================================= */
 
-  box-sizing:border-box;
+#roeperPopup {
+  display: none;
 
-  box-shadow:0 2px 6px rgba(0,0,0,.12);
+  position: fixed;
+  z-index: 9999;
+
+  left: 10%;
+  top: 10%;
+
+  width: 80%;
+  height: 80%;
+
+  background: white;
+
+  border-radius: 18px;
+
+  box-shadow: 0 8px 35px rgba(0,0,0,.35);
+
+  overflow: hidden;
+}
+
+.roeper-popup-header {
+  height: 48px;
+  position: relative;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.roeper-popup-title {
+  position: absolute;
+  left: 18px;
+  top: 12px;
+
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.roeper-close {
+  position: absolute;
+
+  right: 8px;
+  top: 5px;
+
+  width: 40px;
+  height: 38px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+
+  font-size: 2rem;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.roeper-close:hover {
+  background: #ddd;
+}
+
+#roeperMapFrame {
+  width: 100%;
+  height: calc(100% - 78px);
+
+  border: none;
+}
+
+.roeper-popup-footer {
+  height: 30px;
+
+  text-align: center;
+
+  font-size: .85rem;
+
+  color: #666;
+
+  line-height: 30px;
+
+  background: #f5f5f5;
+}
+
+
+/* =========================================================
+   SECTIONS
+   ========================================================= */
+
+.section {
+  margin-top: 16px;
+}
+
+.section-title {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+
+/* =========================================================
+   HOURLY HEADER
+   ========================================================= */
+
+.hourly-header {
+  position: relative;
+  height: 42px;
+  margin-bottom: 10px;
+}
+
+.hourly-title {
+  font-size: 1.6rem;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.hourly-day {
+  font-size: 1.6rem;
+  font-weight: 600;
+
+  text-align: center;
+
+  position: absolute;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  top: 0;
+}
+
+.hourly-nav {
+  position: absolute;
+
+  right: 0;
+  top: 0;
+
+  display: flex;
+
+  gap: 8px;
+}
+
+.hourly-nav button {
+  width: 70px;
+  height: 42px;
+
+  font-size: 2rem;
+  line-height: 1;
+
+  border: none;
+  border-radius: 10px;
+
+  background: white;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 5px rgba(0,0,0,.15);
+}
+
+.hourly-nav button:hover {
+  background: #f5f5f5;
+}
+
+.hourly-nav button:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+
+/* =========================================================
+   HOURLY FORECAST
+   ========================================================= */
+
+.hourly {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+.hour {
+  flex: 1;
+
+  min-width: 0;
+
+  text-align: center;
+
+  font-size: 1.3rem;
+
+  padding: 10px 5px;
+
+  border-radius: 14px;
+
+  box-sizing: border-box;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
 
   transition:
     background .3s ease,
@@ -186,263 +310,323 @@ html, body {
 }
 
 
-/* -------------------------
-   DAYTIME
-   ------------------------- */
+/* Day backgrounds */
 
-.hour.sunny-day{
-  background:linear-gradient(
+.hour.sunny-day {
+  background: linear-gradient(
     to bottom,
     #fff6a8 0%,
     #dff4ff 100%
   );
 }
 
-.hour.partly-cloudy-day{
-  background:linear-gradient(
+.hour.partly-cloudy-day {
+  background: linear-gradient(
     to bottom,
     #dceeff 0%,
     #e8e8e8 100%
   );
 }
 
-.hour.cloudy-day{
-  background:linear-gradient(
+.hour.cloudy-day {
+  background: linear-gradient(
     to bottom,
     #d5d8dc 0%,
     #bfc3c7 100%
   );
 }
 
-.hour.rainy-day{
-  background:linear-gradient(
+.hour.rainy-day {
+  background: linear-gradient(
     to bottom,
     #c3d2df 0%,
     #9aaab8 100%
   );
 }
 
-.hour.snowy-day{
-  background:linear-gradient(
+.hour.snowy-day {
+  background: linear-gradient(
     to bottom,
     #eef7ff 0%,
     #d5e2ec 100%
   );
 }
 
-.hour.stormy-day{
-  background:linear-gradient(
+.hour.stormy-day {
+  background: linear-gradient(
     to bottom,
     #999da3 0%,
     #686d73 100%
   );
 
-  color:white;
+  color: white;
 }
 
 
-/* -------------------------
-   NIGHTTIME
-   ------------------------- */
+/* Night backgrounds */
 
-.hour.sunny-night{
-  background:linear-gradient(
+.hour.sunny-night {
+  background: linear-gradient(
     to bottom,
     #394867 0%,
     #1d2940 100%
   );
 
-  color:white;
+  color: white;
 }
 
-.hour.partly-cloudy-night{
-  background:linear-gradient(
+.hour.partly-cloudy-night {
+  background: linear-gradient(
     to bottom,
     #454f62 0%,
     #252d3b 100%
   );
 
-  color:white;
+  color: white;
 }
 
-.hour.cloudy-night{
-  background:linear-gradient(
+.hour.cloudy-night {
+  background: linear-gradient(
     to bottom,
     #4b4f55 0%,
     #2d3035 100%
   );
 
-  color:white;
+  color: white;
 }
 
-.hour.rainy-night{
-  background:linear-gradient(
+.hour.rainy-night {
+  background: linear-gradient(
     to bottom,
     #3f5366 0%,
     #263440 100%
   );
 
-  color:white;
+  color: white;
 }
 
-.hour.snowy-night{
-  background:linear-gradient(
+.hour.snowy-night {
+  background: linear-gradient(
     to bottom,
     #4e6070 0%,
     #303e49 100%
   );
 
-  color:white;
+  color: white;
 }
 
-.hour.stormy-night{
-  background:linear-gradient(
+.hour.stormy-night {
+  background: linear-gradient(
     to bottom,
     #3a3b40 0%,
     #202125 100%
   );
 
-  color:white;
+  color: white;
 }
 
 
 /* =========================================================
-   8-DAY FORECAST
+   8 DAY FORECAST
    ========================================================= */
 
-.daily{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
+.daily {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 12px;
 }
 
-.day{
-  text-align:center;
+.day {
+  text-align: center;
 
-  font-size:1.3rem;
+  font-size: 1.3rem;
 
-  flex:1;
-  min-width:0;
+  flex: 1;
 
-  padding:14px 8px;
+  min-width: 0;
 
-  border-radius:16px;
+  padding: 14px 8px;
 
-  box-sizing:border-box;
+  border-radius: 16px;
 
-  box-shadow:0 2px 6px rgba(0,0,0,.12);
+  box-sizing: border-box;
 
-  transition:background .3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+
+  transition:
+    background .3s ease;
 }
 
-.day-date{
-  font-weight:600;
-  margin-bottom:8px;
+.day-date {
+  font-weight: 600;
+
+  margin-bottom: 8px;
 }
 
-.day-icon{
-  font-size:2.8rem;
-  margin:6px 0;
+.day-icon {
+  font-size: 2.8rem;
+
+  margin: 6px 0;
 }
 
-.day-temp{
-  font-size:1.25rem;
-  font-weight:500;
+.day-temp {
+  font-size: 1.25rem;
+
+  font-weight: 500;
 }
 
 
-/* Sunny */
+/* Daily weather backgrounds */
 
-.day.sunny{
-  background:linear-gradient(
+.day.sunny {
+  background: linear-gradient(
     to bottom,
     #fff7b2 0%,
     #dff4ff 100%
   );
 }
 
-
-/* Partly cloudy */
-
-.day.partly-cloudy{
-  background:linear-gradient(
+.day.partly-cloudy {
+  background: linear-gradient(
     to bottom,
     #dceeff 0%,
     #e8e8e8 100%
   );
 }
 
-
-/* Cloudy */
-
-.day.cloudy{
-  background:linear-gradient(
+.day.cloudy {
+  background: linear-gradient(
     to bottom,
     #d5d8dc 0%,
     #bfc3c7 100%
   );
 }
 
-
-/* Rain */
-
-.day.rainy{
-  background:linear-gradient(
+.day.rainy {
+  background: linear-gradient(
     to bottom,
     #b9c9d8 0%,
     #8f9eab 100%
   );
 }
 
-
-/* Snow */
-
-.day.snowy{
-  background:linear-gradient(
+.day.snowy {
+  background: linear-gradient(
     to bottom,
     #eef7ff 0%,
     #d5e2ec 100%
   );
 }
 
-
-/* Thunderstorm */
-
-.day.stormy{
-  background:linear-gradient(
+.day.stormy {
+  background: linear-gradient(
     to bottom,
     #8e9298 0%,
     #5f646b 100%
   );
 
-  color:white;
+  color: white;
 }
 
 
 /* =========================================================
-   OTHER
+   UPDATED / FOOTER
    ========================================================= */
 
-.updated{
-  margin-top:12px;
+.updated {
+  margin-top: 12px;
 
-  display:flex;
-  gap:16px;
-  flex-wrap:wrap;
+  display: flex;
 
-  font-size:1rem;
+  gap: 16px;
 
-  opacity:.7;
+  flex-wrap: wrap;
+
+  font-size: 1rem;
+
+  opacity: .7;
 }
 
-.quote{
-  font-style:italic;
+.quote {
+  font-style: italic;
 }
 
-footer{
-  margin-top:auto;
-  text-align:center;
-  opacity:.5;
+footer {
+  margin-top: auto;
+
+  text-align: center;
+
+  opacity: .5;
+}
+
+
+/* =========================================================
+   SMALLER SCREENS / IPAD
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .temp {
+    font-size: 6rem;
+  }
+
+  .date {
+    font-size: 1.6rem;
+  }
+
+  .clock {
+    font-size: 3rem;
+  }
+
+  .hilo {
+    font-size: 1.7rem;
+  }
+
+  .roeper-button {
+    font-size: 1.1rem;
+    padding: 15px 20px;
+  }
+
+  .daily {
+    gap: 6px;
+  }
+
+  .day {
+    font-size: 1.05rem;
+    padding: 10px 5px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREEN
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  #roeperPopup {
+    left: 3%;
+    top: 5%;
+
+    width: 94%;
+    height: 90%;
+  }
+
+  .hourly {
+    gap: 5px;
+  }
+
+  .hour {
+    font-size: 1rem;
+  }
+
+  .hourly-nav button {
+    width: 55px;
+  }
+
 }
 
 </style>
@@ -454,9 +638,9 @@ footer{
 <div class="container">
 
 
-<!-- =======================================================
-     CURRENT WEATHER CARD
-     ======================================================= -->
+<!-- =========================================================
+     TOP WEATHER CARD
+     ========================================================= -->
 
 <div class="card section">
 
@@ -464,124 +648,99 @@ footer{
 
 <tr>
 
+
+<!-- WEATHER ICON -->
+
 <td width="10%">
 
-<div class="icon" id="icon">
-☀️
-</div>
+  <div class="icon" id="icon">
+    ☀️
+  </div>
 
 </td>
 
+
+<!-- CURRENT TEMPERATURE -->
 
 <td width="15%">
 
-<div class="temp" id="temp">
---°
-</div>
+  <div class="temp" id="temp">
+    --°
+  </div>
 
 </td>
 
+
+<!-- HIGH / LOW -->
 
 <td width="20%">
 
-<div class="hilo">
+  <div class="hilo">
 
-<table width="100%">
+    <table width="100%">
 
-<tr>
+      <tr>
 
-<td align="right">
-<div>High: </div>
-</td>
+        <td align="right">
+          <div>High:</div>
+        </td>
 
-<td align="left">
-<span id="high">--°</span>
-</td>
+        <td align="left">
+          <span id="high">--°</span>
+        </td>
 
-</tr>
+      </tr>
 
+      <tr>
 
-<tr>
+        <td align="right">
+          <div>Low:</div>
+        </td>
 
-<td align="right">
-<div>Low: </div>
-</td>
+        <td align="left">
+          <span id="low">--°</span>
+        </td>
 
-<td align="left">
-<span id="low">--°</span>
-</td>
+      </tr>
 
-</tr>
+    </table>
 
-</table>
-
-</div>
-
-</td>
-
-
-<td width="30%" align="center">
-
-<table width="80%">
-
-<tr>
-
-<td align="right">
-
-<div
-class="travel"
-id="travel">
-</div>
+  </div>
 
 </td>
 
-</tr>
 
+<!-- ROEPER BUTTON -->
 
-<tr>
+<td width="25%" class="roeper-button-cell">
 
-<td align="right">
-&nbsp;
-</td>
+  <button
+    class="roeper-button"
+    onclick="showRoeperMap()">
 
-</tr>
+    Show time to Roepar
 
-
-<tr>
-
-<td align="right">
-
-<span
-class="quote"
-id="quote">
-</span>
+  </button>
 
 </td>
 
-</tr>
 
-</table>
-
-</td>
-
+<!-- DATE / TIME -->
 
 <td width="30%">
 
-<div class="clock-wrap">
+  <div class="clock-wrap">
 
-<div
-class="date"
-id="date">
-</div>
+    <div class="date" id="date">
+    </div>
 
-<div
-class="clock"
-id="clock">
-</div>
+    <div class="clock" id="clock">
+    </div>
 
-</div>
+  </div>
 
 </td>
+
 
 </tr>
 
@@ -590,8 +749,8 @@ id="clock">
 
 <div class="updated">
 
-<span id="updated">
-</span>
+  <span id="updated">
+  </span>
 
 </div>
 
@@ -599,85 +758,118 @@ id="clock">
 
 
 
-<!-- =======================================================
+<!-- =========================================================
      NEXT 12 HOURS
-     ======================================================= -->
+     ========================================================= -->
 
-<div
-class="card section"
-id="dx">
+<div class="section">
 
+  <div class="hourly-header">
 
-<div class="hourly-header">
+    <div class="hourly-title">
+      Next 12 Hours
+    </div>
 
+    <div
+      class="hourly-day"
+      id="hourlyDay">
+      —
+    </div>
 
-<div class="hourly-title">
-Next 12 Hours
-</div>
+    <div class="hourly-nav">
 
+      <button
+        id="hourlyBack"
+        aria-label="Previous 12 hours">
+        ‹
+      </button>
 
-<div
-class="hourly-day"
-id="hourlyDay">
-—
-</div>
+      <button
+        id="hourlyForward"
+        aria-label="Next 12 hours">
+        ›
+      </button>
 
+    </div>
 
-<div class="hourly-nav">
-
-
-<button
-id="hourlyBack"
-type="button"
-aria-label="Previous 12 hours"
-title="Previous 12 hours">
-‹
-</button>
-
-
-<button
-id="hourlyForward"
-type="button"
-aria-label="Next 12 hours"
-title="Next 12 hours">
-›
-</button>
+  </div>
 
 
-</div>
-
-</div>
-
-
-<div
-class="hourly"
-id="hourly">
-</div>
-
+  <div
+    class="hourly"
+    id="hourly">
+  </div>
 
 </div>
 
 
 
-<!-- =======================================================
-     8-DAY FORECAST
-     ======================================================= -->
+<!-- =========================================================
+     8 DAY FORECAST
+     ========================================================= -->
 
-<div class="card section">
+<div class="section">
+
+  <div class="section-title">
+    8-Day Forecast
+  </div>
+
+  <div
+    class="daily"
+    id="daily">
+  </div>
+
+</div>
 
 
-<div class="section-title">
-8-Day Forecast
+<footer>
+  Novi, Michigan
+</footer>
+
 </div>
 
 
-<div
-class="daily"
-id="daily">
-</div>
+
+<!-- =========================================================
+     ROEPER GOOGLE MAPS POPUP
+     ========================================================= -->
+
+<div id="roeperPopup">
 
 
-</div>
+  <div class="roeper-popup-header">
+
+    <div class="roeper-popup-title">
+      Time to Roepar
+    </div>
+
+
+    <button
+      class="roeper-close"
+      onclick="closeRoeperMap()"
+      aria-label="Close">
+
+      ×
+
+    </button>
+
+  </div>
+
+
+  <iframe
+    id="roeperMapFrame"
+    src="about:blank"
+    allowfullscreen>
+  </iframe>
+
+
+  <div
+    class="roeper-popup-footer"
+    id="roeperRefreshTime">
+
+    Last refreshed: --
+
+  </div>
 
 
 </div>
@@ -685,6 +877,10 @@ id="daily">
 
 
 <script>
+
+/* =========================================================
+   LOCATION
+   ========================================================= */
 
 const LAT = 42.4806;
 const LON = -83.4755;
@@ -698,114 +894,79 @@ function updateClock(){
 
   const now = new Date();
 
-
   document.getElementById("date").textContent =
-
-    now.toLocaleDateString(
-      [],
-      {
-        weekday:"long",
-        month:"long",
-        day:"numeric",
-        year:"numeric"
-      }
-    );
-
+    now.toLocaleDateString([], {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
 
   document.getElementById("clock").textContent =
-
-    now.toLocaleTimeString(
-      [],
-      {
-        hour:"numeric",
-        minute:"2-digit"
-      }
-    );
+    now.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit"
+    });
 
 }
 
-setInterval(
-  updateClock,
-  1000
-);
+setInterval(updateClock, 1000);
 
 updateClock();
 
 
-
 /* =========================================================
-   WEATHER ICONS
+   WEATHER ICON
    ========================================================= */
 
 function weatherIcon(code){
 
   const icons = {
 
-    0:"☀️",
+    0: "☀️",
 
-    1:"🌤️",
+    1: "🌤️",
+    2: "⛅",
+    3: "☁️",
 
-    2:"⛅",
+    45: "🌫️",
+    48: "🌫️",
 
-    3:"☁️",
+    51: "🌦️",
+    53: "🌦️",
+    55: "🌧️",
 
-    45:"🌫️",
+    56: "🌧️",
+    57: "🌧️",
 
-    48:"🌫️",
+    61: "🌧️",
+    63: "🌧️",
+    65: "🌧️",
 
-    51:"🌦️",
+    66: "🌧️",
+    67: "🌧️",
 
-    53:"🌦️",
+    71: "🌨️",
+    73: "❄️",
+    75: "❄️",
+    77: "❄️",
 
-    55:"🌧️",
+    80: "🌦️",
+    81: "🌧️",
+    82: "🌧️",
 
-    56:"🌧️",
+    85: "🌨️",
+    86: "❄️",
 
-    57:"🌧️",
-
-    61:"🌧️",
-
-    63:"🌧️",
-
-    65:"🌧️",
-
-    66:"🌧️",
-
-    67:"🌧️",
-
-    71:"🌨️",
-
-    73:"❄️",
-
-    75:"❄️",
-
-    77:"❄️",
-
-    80:"🌦️",
-
-    81:"🌧️",
-
-    82:"🌧️",
-
-    85:"🌨️",
-
-    86:"❄️",
-
-    95:"⛈️",
-
-    96:"⛈️",
-
-    99:"⛈️"
+    95: "⛈️",
+    96: "⛈️",
+    99: "⛈️"
 
   };
 
-
-  return icons[
-    Number(code)
-  ] ?? "🌡️";
+  return icons[Number(code)] ?? "🌡️";
 
 }
-
 
 
 /* =========================================================
@@ -816,70 +977,37 @@ function getHourlyWeatherClass(code){
 
   code = Number(code);
 
-
-  if(code === 0){
-
+  if(code === 0)
     return "sunny";
 
-  }
-
-
-  if(
-    code === 1 ||
-    code === 2
-  ){
-
+  if(code === 1 || code === 2)
     return "partly-cloudy";
 
-  }
-
-
-  if(
-    code === 3 ||
-    code === 45 ||
-    code === 48
-  ){
-
+  if(code === 3 || code === 45 || code === 48)
     return "cloudy";
-
-  }
-
 
   if(
     (code >= 51 && code <= 67) ||
     (code >= 80 && code <= 82)
-  ){
-
+  )
     return "rainy";
-
-  }
-
 
   if(
     (code >= 71 && code <= 77) ||
     (code >= 85 && code <= 86)
-  ){
-
+  )
     return "snowy";
 
-  }
-
-
-  if(code >= 95){
-
+  if(code >= 95)
     return "stormy";
-
-  }
-
 
   return "cloudy";
 
 }
 
 
-
 /* =========================================================
-   HOURLY NAVIGATION
+   HOURLY DATA
    ========================================================= */
 
 let hourlyPageOffset = 0;
@@ -887,20 +1015,20 @@ let hourlyPageOffset = 0;
 let hourlyData = null;
 
 
+/* =========================================================
+   RENDER HOURLY FORECAST
+   ========================================================= */
 
 function renderHourly(){
 
   const hourly =
     document.getElementById("hourly");
 
-
   const dayLabel =
     document.getElementById("hourlyDay");
 
-
   const backButton =
     document.getElementById("hourlyBack");
-
 
   const forwardButton =
     document.getElementById("hourlyForward");
@@ -918,7 +1046,6 @@ function renderHourly(){
     dayLabel.textContent = "—";
 
     backButton.disabled = true;
-
     forwardButton.disabled = true;
 
     return;
@@ -930,10 +1057,8 @@ function renderHourly(){
 
 
   let firstFutureIndex =
-
     hourlyData.time.findIndex(
-      time =>
-        new Date(time) >= now
+      time => new Date(time) >= now
     );
 
 
@@ -945,36 +1070,28 @@ function renderHourly(){
   }
 
 
-  const startIndex = Math.min(
-
-    firstFutureIndex +
-      hourlyPageOffset,
-
-    Math.max(
-      0,
-      hourlyData.time.length - 1
-    )
-
-  );
+  const startIndex =
+    Math.min(
+      firstFutureIndex + hourlyPageOffset,
+      Math.max(
+        0,
+        hourlyData.time.length - 1
+      )
+    );
 
 
-  const endIndex = Math.min(
+  const endIndex =
+    Math.min(
+      startIndex + 12,
+      hourlyData.time.length
+    );
 
-    startIndex + 12,
-
-    hourlyData.time.length
-
-  );
-
-
-  /* Determine selected day */
 
   const [
     year,
     month,
     day
   ] =
-
     hourlyData.time[startIndex]
       .slice(0,10)
       .split("-")
@@ -982,7 +1099,6 @@ function renderHourly(){
 
 
   const displayDate =
-
     new Date(
       year,
       month - 1,
@@ -991,19 +1107,11 @@ function renderHourly(){
 
 
   dayLabel.textContent =
-
     displayDate.toLocaleDateString(
       [],
-      {
-        weekday:"long"
-      }
+      {weekday:"long"}
     );
 
-
-
-  /* =======================================================
-     RENDER EACH HOUR
-     ======================================================= */
 
   for(
     let i = startIndex;
@@ -1012,26 +1120,14 @@ function renderHourly(){
   ){
 
     const t =
-
-      new Date(
-        hourlyData.time[i]
-      );
+      new Date(hourlyData.time[i]);
 
 
     const code =
+      Number(hourlyData.weathercode[i]);
 
-      Number(
-        hourlyData.weathercode[i]
-      );
-
-
-    /*
-       Find sunrise and sunset for
-       this particular date.
-    */
 
     let sunrise = null;
-
     let sunset = null;
 
 
@@ -1041,13 +1137,10 @@ function renderHourly(){
     ){
 
       const dateString =
-
-        hourlyData.time[i]
-          .slice(0,10);
+        hourlyData.time[i].slice(0,10);
 
 
       const dailyIndex =
-
         hourlyData.daily.time.indexOf(
           dateString
         );
@@ -1056,20 +1149,13 @@ function renderHourly(){
       if(dailyIndex >= 0){
 
         sunrise =
-
           new Date(
-            hourlyData.daily.sunrise[
-              dailyIndex
-            ]
+            hourlyData.daily.sunrise[dailyIndex]
           );
 
-
         sunset =
-
           new Date(
-            hourlyData.daily.sunset[
-              dailyIndex
-            ]
+            hourlyData.daily.sunset[dailyIndex]
           );
 
       }
@@ -1077,21 +1163,12 @@ function renderHourly(){
     }
 
 
-    /*
-       Daytime is from sunrise
-       through sunset.
-    */
-
     let isDaytime = true;
 
 
-    if(
-      sunrise &&
-      sunset
-    ){
+    if(sunrise && sunset){
 
       isDaytime =
-
         t >= sunrise &&
         t < sunset;
 
@@ -1099,55 +1176,39 @@ function renderHourly(){
 
 
     const weatherClass =
-
-      getHourlyWeatherClass(
-        code
-      );
+      getHourlyWeatherClass(code);
 
 
     const timeClass =
-
       isDaytime
-
         ? `${weatherClass}-day`
-
         : `${weatherClass}-night`;
 
 
     hourly.innerHTML += `
 
-      <div
-        class="hour ${timeClass}"
-      >
+      <div class="hour ${timeClass}">
 
         <div>
-          ${t.toLocaleTimeString(
-            [],
-            {
-              hour:"numeric"
-            }
-          )}
+          ${t.toLocaleTimeString([], {
+            hour:"numeric"
+          })}
         </div>
-
 
         <div
           style="
             font-size:2.4rem;
             margin:5px 0;
-          "
-        >
+          ">
 
           ${weatherIcon(code)}
 
         </div>
 
-
         <div>
-
           ${Math.round(
             hourlyData.temperature_2m[i]
           )}°
-
         </div>
 
       </div>
@@ -1158,21 +1219,17 @@ function renderHourly(){
 
 
   backButton.disabled =
-
     hourlyPageOffset <= 0;
 
 
   forwardButton.disabled =
-
-    endIndex >=
-    hourlyData.time.length;
+    endIndex >= hourlyData.time.length;
 
 }
 
 
-
 /* =========================================================
-   HOURLY BUTTONS
+   HOURLY NAVIGATION
    ========================================================= */
 
 document
@@ -1182,18 +1239,15 @@ document
     () => {
 
       hourlyPageOffset =
-
         Math.max(
           0,
           hourlyPageOffset - 12
         );
 
-
       renderHourly();
 
     }
   );
-
 
 
 document
@@ -1218,7 +1272,6 @@ document
   );
 
 
-
 /* =========================================================
    DAILY WEATHER CLASS
    ========================================================= */
@@ -1227,66 +1280,37 @@ function getWeatherClass(code){
 
   code = Number(code);
 
-
-  if(code === 0){
-
+  if(code === 0)
     return "sunny";
 
-  }
-
-
-  if(
-    code === 1 ||
-    code === 2
-  ){
-
+  if(code === 1 || code === 2)
     return "partly-cloudy";
-
-  }
-
 
   if(
     code === 3 ||
     code === 45 ||
     code === 48
-  ){
-
+  )
     return "cloudy";
-
-  }
-
 
   if(
     (code >= 51 && code <= 67) ||
     (code >= 80 && code <= 82)
-  ){
-
+  )
     return "rainy";
-
-  }
-
 
   if(
     (code >= 71 && code <= 77) ||
     (code >= 85 && code <= 86)
-  ){
-
+  )
     return "snowy";
 
-  }
-
-
-  if(code >= 95){
-
+  if(code >= 95)
     return "stormy";
-
-  }
-
 
   return "cloudy";
 
 }
-
 
 
 /* =========================================================
@@ -1295,282 +1319,241 @@ function getWeatherClass(code){
 
 async function loadWeather(){
 
-  const url =
+  try{
 
-    `https://api.open-meteo.com/v1/forecast?` +
-
-    `latitude=${LAT}` +
-
-    `&longitude=${LON}` +
-
-    `&current_weather=true` +
-
-    `&hourly=temperature_2m,weathercode` +
-
-    `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset` +
-
-    `&temperature_unit=fahrenheit` +
-
-    `&timezone=auto`;
+    const url =
+      `https://api.open-meteo.com/v1/forecast?` +
+      `latitude=${LAT}` +
+      `&longitude=${LON}` +
+      `&current_weather=true` +
+      `&hourly=temperature_2m,weathercode` +
+      `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset` +
+      `&temperature_unit=fahrenheit` +
+      `&timezone=auto`;
 
 
-  const d =
-
-    await (
-      await fetch(url)
-    ).json();
+    const response =
+      await fetch(url);
 
 
-
-  /* =======================================================
-     CURRENT WEATHER
-     ======================================================= */
-
-  document.getElementById("temp").textContent =
-
-    Math.round(
-      d.current_weather.temperature
-    ) + "°";
+    if(!response.ok)
+      throw new Error("Weather service unavailable");
 
 
-  document.getElementById("icon").textContent =
-
-    weatherIcon(
-      d.current_weather.weathercode
-    );
+    const d =
+      await response.json();
 
 
-  document.getElementById("high").textContent =
+    /* CURRENT WEATHER */
 
-    Math.round(
-      d.daily.temperature_2m_max[0]
-    ) + "°";
-
-
-  document.getElementById("low").textContent =
-
-    Math.round(
-      d.daily.temperature_2m_min[0]
-    ) + "°";
+    document.getElementById("temp").textContent =
+      Math.round(
+        d.current_weather.temperature
+      ) + "°";
 
 
-
-  /* =======================================================
-     HOURLY DATA
-     Add daily sunrise/sunset data to it.
-     ======================================================= */
-
-  hourlyData = d.hourly;
-
-  hourlyData.daily = d.daily;
-
-  renderHourly();
+    document.getElementById("icon").textContent =
+      weatherIcon(
+        d.current_weather.weathercode
+      );
 
 
+    document.getElementById("high").textContent =
+      Math.round(
+        d.daily.temperature_2m_max[0]
+      ) + "°";
 
-  /* =======================================================
-     LAST UPDATED
-     ======================================================= */
 
-  document.getElementById("updated").textContent =
+    document.getElementById("low").textContent =
+      Math.round(
+        d.daily.temperature_2m_min[0]
+      ) + "°";
 
-    "Last updated: " +
 
-    new Date().toLocaleTimeString(
-      [],
-      {
+    /* HOURLY */
+
+    hourlyData = d.hourly;
+
+    hourlyData.daily = d.daily;
+
+    renderHourly();
+
+
+    /* LAST UPDATED */
+
+    document.getElementById("updated").textContent =
+      "Last updated: " +
+      new Date().toLocaleTimeString([], {
         hour:"numeric",
         minute:"2-digit"
-      }
-    );
+      });
 
 
+    /* =====================================================
+       8 DAY FORECAST
+       ===================================================== */
 
-  /* =======================================================
-     8-DAY FORECAST
-     ======================================================= */
-
-  const daily =
-    document.getElementById("daily");
-
-
-  daily.innerHTML = "";
+    const daily =
+      document.getElementById("daily");
 
 
-  /*
-     Start at tomorrow.
-  */
-
-  for(
-    let i = 1;
-    i <= 8;
-    i++
-  ){
-
-    /* DATE */
-
-    const [
-      year,
-      month,
-      day
-    ] =
-
-      d.daily.time[i]
-        .split("-")
-        .map(Number);
+    daily.innerHTML = "";
 
 
-    const dt =
+    for(
+      let i = 1;
+      i <= 8;
+      i++
+    ){
 
-      new Date(
+      const [
         year,
-        month - 1,
+        month,
         day
-      );
+      ] =
+        d.daily.time[i]
+          .split("-")
+          .map(Number);
 
 
-    /* WEATHER */
-
-    const code =
-
-      Number(
-        d.daily.weathercode[i]
-      );
-
-
-    const weatherClass =
-
-      getWeatherClass(
-        code
-      );
+      const dt =
+        new Date(
+          year,
+          month - 1,
+          day
+        );
 
 
-    /* SUNRISE */
-
-    const sunrise =
-
-      new Date(
-        d.daily.sunrise[i]
-      );
+      const code =
+        Number(
+          d.daily.weathercode[i]
+        );
 
 
-    /* SUNSET */
-
-    const sunset =
-
-      new Date(
-        d.daily.sunset[i]
-      );
+      const weatherClass =
+        getWeatherClass(code);
 
 
-    const sunriseText =
-
-      sunrise.toLocaleTimeString(
-        [],
-        {
-          hour:"numeric",
-          minute:"2-digit"
-        }
-      );
+      const sunrise =
+        new Date(
+          d.daily.sunrise[i]
+        );
 
 
-    const sunsetText =
-
-      sunset.toLocaleTimeString(
-        [],
-        {
-          hour:"numeric",
-          minute:"2-digit"
-        }
-      );
+      const sunset =
+        new Date(
+          d.daily.sunset[i]
+        );
 
 
-
-    /* CREATE BOX */
-
-    daily.innerHTML += `
-
-      <div
-        class="day ${weatherClass}"
-        title="
-          Sunrise: ${sunriseText}
-          |
-          Sunset: ${sunsetText}
-        "
-      >
+      const sunriseText =
+        sunrise.toLocaleTimeString(
+          [],
+          {
+            hour:"numeric",
+            minute:"2-digit"
+          }
+        );
 
 
-        <div class="day-date">
-
-          ${dt.toLocaleDateString(
-            [],
-            {
-              weekday:"short",
-              month:"numeric",
-              day:"numeric"
-            }
-          )}
-
-        </div>
+      const sunsetText =
+        sunset.toLocaleTimeString(
+          [],
+          {
+            hour:"numeric",
+            minute:"2-digit"
+          }
+        );
 
 
-        <div class="day-icon">
-
-          ${weatherIcon(code)}
-
-        </div>
-
-
-        <div class="day-temp">
-
-          ${Math.round(
-            d.daily.temperature_2m_max[i]
-          )}°
-
-          /
-
-          ${Math.round(
-            d.daily.temperature_2m_min[i]
-          )}°
-
-        </div>
-
+      daily.innerHTML += `
 
         <div
-          style="
-            font-size:.8rem;
-            opacity:.65;
-            margin-top:6px;
-          "
-        >
+          class="day ${weatherClass}"
+          title="
+            Sunrise: ${sunriseText}
+            |
+            Sunset: ${sunsetText}
+          ">
 
-          ☀️ ${sunriseText}
+          <div class="day-date">
 
-          <br>
+            ${dt.toLocaleDateString(
+              [],
+              {
+                weekday:"short",
+                month:"numeric",
+                day:"numeric"
+              }
+            )}
 
-          🌙 ${sunsetText}
+          </div>
+
+
+          <div class="day-icon">
+
+            ${weatherIcon(code)}
+
+          </div>
+
+
+          <div class="day-temp">
+
+            ${Math.round(
+              d.daily.temperature_2m_max[i]
+            )}°
+
+            /
+
+            ${Math.round(
+              d.daily.temperature_2m_min[i]
+            )}°
+
+          </div>
+
+
+          <div
+            style="
+              font-size:.8rem;
+              opacity:.65;
+              margin-top:6px;
+            ">
+
+            ☀️ ${sunriseText}
+
+            <br>
+
+            🌙 ${sunsetText}
+
+          </div>
 
         </div>
 
+      `;
 
-      </div>
+    }
 
-    `;
+  }
+  catch(error){
+
+    console.error(
+      "Weather error:",
+      error
+    );
+
+    document.getElementById("updated").textContent =
+      "Weather unavailable";
 
   }
 
 }
 
 
-
 /* =========================================================
-   INITIAL WEATHER LOAD
+   WEATHER REFRESH
    ========================================================= */
 
 loadWeather();
-
-
-/* Refresh every 5 minutes */
 
 setInterval(
   loadWeather,
@@ -1578,156 +1561,217 @@ setInterval(
 );
 
 
-
 /* =========================================================
-   QUOTE
+   GOOGLE MAPS ROEPER POPUP
    ========================================================= */
 
-async function loadQuote(){
-
-  try{
-
-    const r =
-
-      await fetch(
-        "https://api.allorigins.win/raw?url=" +
-        encodeURIComponent(
-          "https://zenquotes.io/api/today"
-        )
-      );
+let roeperRefreshTimer = null;
 
 
-    const d =
-      await r.json();
+/*
+   Google Maps normal directions page.
+
+   No Google Maps API key is required because this is
+   opening the normal Google Maps website.
+*/
+
+const roeperGoogleMapsURL =
+  "https://www.google.com/maps/dir/" +
+  "24010+Greening+Dr,+Novi,+MI/" +
+  "1051+Oakland+Ave,+Birmingham,+MI+48009/" +
+  "?travelmode=driving";
 
 
+/* =========================================================
+   OPEN ROEPER MAP
+   ========================================================= */
+
+function showRoeperMap(){
+
+  const popup =
     document.getElementById(
-      "quote"
-    ).textContent =
+      "roeperPopup"
+    );
 
-      `"${d[0].q}" — ${d[0].a}`;
+
+  const frame =
+    document.getElementById(
+      "roeperMapFrame"
+    );
+
+
+  /*
+     Show popup.
+  */
+
+  popup.style.display = "block";
+
+
+  /*
+     Load Google Maps immediately.
+  */
+
+  frame.src =
+    roeperGoogleMapsURL;
+
+
+  /*
+     Record refresh time.
+  */
+
+  updateRoeperRefreshTime();
+
+
+  /*
+     Prevent duplicate timers.
+  */
+
+  if(roeperRefreshTimer){
+
+    clearInterval(
+      roeperRefreshTimer
+    );
 
   }
 
-  catch{
 
-    document.getElementById(
-      "quote"
-    ).textContent =
+  /*
+     Refresh Google Maps every 30 seconds.
+  */
 
-      "Stay present. Stay kind.";
+  roeperRefreshTimer =
+    setInterval(
+      () => {
 
-  }
+        const popup =
+          document.getElementById(
+            "roeperPopup"
+          );
+
+
+        if(
+          popup.style.display !== "none"
+        ){
+
+          const frame =
+            document.getElementById(
+              "roeperMapFrame"
+            );
+
+
+          /*
+             Reload Google Maps.
+
+             This allows Google Maps to
+             recalculate the route using
+             its current traffic information.
+          */
+
+          frame.src =
+            roeperGoogleMapsURL;
+
+
+          updateRoeperRefreshTime();
+
+        }
+
+      },
+      30000
+    );
 
 }
 
 
-// loadQuote();
-
-
-
 /* =========================================================
-   SCHOOL TRAVEL TIME USING MAPBOX
+   REFRESH TIME
    ========================================================= */
 
-const mapboxKey =
-
-  "pk.eyJ1Ijoic3Rncm91cCIsImEiOiJjbWp4ZXE1cmE1a3VyM2dxMWVma2tkempzIn0.w225FCxMloOE30u-aghOmw";
-
-
-const origin =
-  [-83.4755,42.4806];
-
-
-const destination =
-  [-83.2205,42.5536];
-
-
-
-async function loadTravelTime(){
+function updateRoeperRefreshTime(){
 
   const now =
     new Date();
 
 
-  const hour =
-    now.getHours();
+  document.getElementById(
+    "roeperRefreshTime"
+  ).textContent =
 
+    "Last refreshed: " +
 
-  const travelEl =
-    document.getElementById(
-      "travel"
+    now.toLocaleTimeString(
+      [],
+      {
+        hour:"numeric",
+        minute:"2-digit",
+        second:"2-digit"
+      }
     );
-
-
-  if(
-    hour >= 6 &&
-    hour < 8
-  ){
-
-    try{
-
-      const url =
-
-        `https://api.mapbox.com/directions/v5/mapbox/driving/` +
-
-        `${origin[0]},${origin[1]};` +
-
-        `${destination[0]},${destination[1]}` +
-
-        `?access_token=${mapboxKey}`;
-
-
-      const r =
-        await fetch(url);
-
-
-      const d =
-        await r.json();
-
-
-      const minutes =
-
-        Math.round(
-          d.routes[0].duration / 60
-        );
-
-
-      travelEl.textContent =
-
-        `🚗 Estimated drive: ~${minutes} min`;
-
-    }
-
-    catch{
-
-      travelEl.textContent =
-
-        "🚗 Travel time unavailable";
-
-    }
-
-  }
-
-  else{
-
-    travelEl.textContent =
-
-      "🚗 Travel time to Avleen school will be displayed only between 6 AM and 8 AM";
-
-  }
 
 }
 
 
-/*
-loadTravelTime();
+/* =========================================================
+   CLOSE ROEPER MAP
+   ========================================================= */
 
-setInterval(
-  loadTravelTime,
-  600000
+function closeRoeperMap(){
+
+  const popup =
+    document.getElementById(
+      "roeperPopup"
+    );
+
+
+  popup.style.display =
+    "none";
+
+
+  /*
+     Stop 30-second refresh.
+  */
+
+  if(roeperRefreshTimer){
+
+    clearInterval(
+      roeperRefreshTimer
+    );
+
+    roeperRefreshTimer = null;
+
+  }
+
+
+  /*
+     Clear iframe so Google Maps
+     stops running after closing.
+  */
+
+  document.getElementById(
+    "roeperMapFrame"
+  ).src =
+    "about:blank";
+
+}
+
+
+/* =========================================================
+   CLOSE WITH ESCAPE KEY
+   ========================================================= */
+
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    if(
+      event.key === "Escape"
+    ){
+
+      closeRoeperMap();
+
+    }
+
+  }
 );
-*/
 
 </script>
 

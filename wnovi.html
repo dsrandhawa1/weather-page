@@ -85,13 +85,19 @@ html, body {
 .roeper-button {
   font-size: 1.35rem;
   font-weight: 600;
+
   padding: 18px 28px;
+
   border: none;
   border-radius: 18px;
+
   background: #4285f4;
   color: white;
+
   cursor: pointer;
+
   box-shadow: 0 4px 10px rgba(0,0,0,.18);
+
   white-space: nowrap;
 }
 
@@ -101,93 +107,6 @@ html, body {
 
 .roeper-button:active {
   transform: scale(.98);
-}
-
-
-/* =========================================================
-   GOOGLE MAPS POPUP
-   ========================================================= */
-
-#roeperPopup {
-  display: none;
-
-  position: fixed;
-  z-index: 9999;
-
-  left: 10%;
-  top: 10%;
-
-  width: 80%;
-  height: 80%;
-
-  background: white;
-
-  border-radius: 18px;
-
-  box-shadow: 0 8px 35px rgba(0,0,0,.35);
-
-  overflow: hidden;
-}
-
-.roeper-popup-header {
-  height: 48px;
-  position: relative;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ddd;
-}
-
-.roeper-popup-title {
-  position: absolute;
-  left: 18px;
-  top: 12px;
-
-  font-size: 1.15rem;
-  font-weight: 600;
-}
-
-.roeper-close {
-  position: absolute;
-
-  right: 8px;
-  top: 5px;
-
-  width: 40px;
-  height: 38px;
-
-  border: none;
-  border-radius: 10px;
-
-  background: transparent;
-
-  font-size: 2rem;
-  line-height: 1;
-
-  cursor: pointer;
-}
-
-.roeper-close:hover {
-  background: #ddd;
-}
-
-#roeperMapFrame {
-  width: 100%;
-  height: calc(100% - 78px);
-
-  border: none;
-}
-
-.roeper-popup-footer {
-  height: 30px;
-
-  text-align: center;
-
-  font-size: .85rem;
-
-  color: #666;
-
-  line-height: 30px;
-
-  background: #f5f5f5;
 }
 
 
@@ -310,7 +229,9 @@ html, body {
 }
 
 
-/* Day backgrounds */
+/* =========================================================
+   HOURLY DAY COLORS
+   ========================================================= */
 
 .hour.sunny-day {
   background: linear-gradient(
@@ -363,7 +284,9 @@ html, body {
 }
 
 
-/* Night backgrounds */
+/* =========================================================
+   HOURLY NIGHT COLORS
+   ========================================================= */
 
 .hour.sunny-night {
   background: linear-gradient(
@@ -478,7 +401,9 @@ html, body {
 }
 
 
-/* Daily weather backgrounds */
+/* =========================================================
+   DAILY WEATHER COLORS
+   ========================================================= */
 
 .day.sunny {
   background: linear-gradient(
@@ -563,7 +488,7 @@ footer {
 
 
 /* =========================================================
-   SMALLER SCREENS / IPAD
+   TABLET / SMALLER SCREENS
    ========================================================= */
 
 @media (max-width: 1100px) {
@@ -607,14 +532,6 @@ footer {
 
 @media (max-width: 800px) {
 
-  #roeperPopup {
-    left: 3%;
-    top: 5%;
-
-    width: 94%;
-    height: 90%;
-  }
-
   .hourly {
     gap: 5px;
   }
@@ -625,6 +542,11 @@ footer {
 
   .hourly-nav button {
     width: 55px;
+  }
+
+  .roeper-button {
+    font-size: 1rem;
+    padding: 13px 15px;
   }
 
 }
@@ -710,7 +632,9 @@ footer {
 </td>
 
 
-<!-- ROEPER BUTTON -->
+<!-- =======================================================
+     ROEPER BUTTON
+     ======================================================= -->
 
 <td width="25%" class="roeper-button-cell">
 
@@ -731,10 +655,14 @@ footer {
 
   <div class="clock-wrap">
 
-    <div class="date" id="date">
+    <div
+      class="date"
+      id="date">
     </div>
 
-    <div class="clock" id="clock">
+    <div
+      class="clock"
+      id="clock">
     </div>
 
   </div>
@@ -825,52 +753,6 @@ footer {
 <footer>
   Novi, Michigan
 </footer>
-
-</div>
-
-
-
-<!-- =========================================================
-     ROEPER GOOGLE MAPS POPUP
-     ========================================================= -->
-
-<div id="roeperPopup">
-
-
-  <div class="roeper-popup-header">
-
-    <div class="roeper-popup-title">
-      Time to Roepar
-    </div>
-
-
-    <button
-      class="roeper-close"
-      onclick="closeRoeperMap()"
-      aria-label="Close">
-
-      ×
-
-    </button>
-
-  </div>
-
-
-  <iframe
-    id="roeperMapFrame"
-    src="about:blank"
-    allowfullscreen>
-  </iframe>
-
-
-  <div
-    class="roeper-popup-footer"
-    id="roeperRefreshTime">
-
-    Last refreshed: --
-
-  </div>
-
 
 </div>
 
@@ -1109,7 +991,9 @@ function renderHourly(){
   dayLabel.textContent =
     displayDate.toLocaleDateString(
       [],
-      {weekday:"long"}
+      {
+        weekday: "long"
+      }
     );
 
 
@@ -1337,7 +1221,9 @@ async function loadWeather(){
 
 
     if(!response.ok)
-      throw new Error("Weather service unavailable");
+      throw new Error(
+        "Weather service unavailable"
+      );
 
 
     const d =
@@ -1562,216 +1448,57 @@ setInterval(
 
 
 /* =========================================================
-   GOOGLE MAPS ROEPER POPUP
+   ROEPER GOOGLE MAPS
+   =========================================================
+
+   This uses Google Maps' standard Directions URL.
+
+   No API key.
+   No Google Maps subscription.
+   No iframe.
+
+   On Android:
+       - Google Maps app will normally open if installed.
+       - Otherwise Chrome opens Google Maps.
+
+   On iPad:
+       - Google Maps app may open if installed.
+       - Otherwise Safari opens Google Maps.
    ========================================================= */
 
-let roeperRefreshTimer = null;
-
-
-/*
-   Google Maps normal directions page.
-
-   No Google Maps API key is required because this is
-   opening the normal Google Maps website.
-*/
-
 const roeperGoogleMapsURL =
-  "https://www.google.com/maps/dir/" +
-  "24010+Greening+Dr,+Novi,+MI/" +
-  "1051+Oakland+Ave,+Birmingham,+MI+48009/" +
-  "?travelmode=driving";
+  "https://www.google.com/maps/dir/?api=1" +
+  "&origin=" +
+  encodeURIComponent(
+    "24010 Greening Dr, Novi, MI"
+  ) +
+  "&destination=" +
+  encodeURIComponent(
+    "1051 Oakland Ave, Birmingham, MI 48009"
+  ) +
+  "&travelmode=driving";
 
 
 /* =========================================================
-   OPEN ROEPER MAP
+   SHOW TIME TO ROEPAR
    ========================================================= */
 
 function showRoeperMap(){
 
-  const popup =
-    document.getElementById(
-      "roeperPopup"
-    );
-
-
-  const frame =
-    document.getElementById(
-      "roeperMapFrame"
-    );
-
-
   /*
-     Show popup.
+     Open Google Maps directly.
+
+     "_blank" allows Android/iPad browsers
+     to hand the URL to Google Maps when
+     the app is installed.
   */
 
-  popup.style.display = "block";
-
-
-  /*
-     Load Google Maps immediately.
-  */
-
-  frame.src =
-    roeperGoogleMapsURL;
-
-
-  /*
-     Record refresh time.
-  */
-
-  updateRoeperRefreshTime();
-
-
-  /*
-     Prevent duplicate timers.
-  */
-
-  if(roeperRefreshTimer){
-
-    clearInterval(
-      roeperRefreshTimer
-    );
-
-  }
-
-
-  /*
-     Refresh Google Maps every 30 seconds.
-  */
-
-  roeperRefreshTimer =
-    setInterval(
-      () => {
-
-        const popup =
-          document.getElementById(
-            "roeperPopup"
-          );
-
-
-        if(
-          popup.style.display !== "none"
-        ){
-
-          const frame =
-            document.getElementById(
-              "roeperMapFrame"
-            );
-
-
-          /*
-             Reload Google Maps.
-
-             This allows Google Maps to
-             recalculate the route using
-             its current traffic information.
-          */
-
-          frame.src =
-            roeperGoogleMapsURL;
-
-
-          updateRoeperRefreshTime();
-
-        }
-
-      },
-      30000
-    );
+  window.open(
+    roeperGoogleMapsURL,
+    "_blank"
+  );
 
 }
-
-
-/* =========================================================
-   REFRESH TIME
-   ========================================================= */
-
-function updateRoeperRefreshTime(){
-
-  const now =
-    new Date();
-
-
-  document.getElementById(
-    "roeperRefreshTime"
-  ).textContent =
-
-    "Last refreshed: " +
-
-    now.toLocaleTimeString(
-      [],
-      {
-        hour:"numeric",
-        minute:"2-digit",
-        second:"2-digit"
-      }
-    );
-
-}
-
-
-/* =========================================================
-   CLOSE ROEPER MAP
-   ========================================================= */
-
-function closeRoeperMap(){
-
-  const popup =
-    document.getElementById(
-      "roeperPopup"
-    );
-
-
-  popup.style.display =
-    "none";
-
-
-  /*
-     Stop 30-second refresh.
-  */
-
-  if(roeperRefreshTimer){
-
-    clearInterval(
-      roeperRefreshTimer
-    );
-
-    roeperRefreshTimer = null;
-
-  }
-
-
-  /*
-     Clear iframe so Google Maps
-     stops running after closing.
-  */
-
-  document.getElementById(
-    "roeperMapFrame"
-  ).src =
-    "about:blank";
-
-}
-
-
-/* =========================================================
-   CLOSE WITH ESCAPE KEY
-   ========================================================= */
-
-document.addEventListener(
-  "keydown",
-  function(event){
-
-    if(
-      event.key === "Escape"
-    ){
-
-      closeRoeperMap();
-
-    }
-
-  }
-);
 
 </script>
 

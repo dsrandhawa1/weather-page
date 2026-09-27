@@ -1,5 +1,5 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,14 +7,13 @@
 <title>Novi MI Dashboard</title>
 
 <style>
-
 :root {
-  --padspace: 5px;
+  --padspace: 2px;
 }
 
 html, body {
   margin: 0;
-  height: 100%;
+  min-height: 100%;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: white;
 }
@@ -22,7 +21,7 @@ html, body {
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh;
   padding: calc(12px - var(--padspace));
   box-sizing: border-box;
 }
@@ -52,25 +51,96 @@ html, body {
   font-weight: 600;
 }
 
+/* CURRENT MOON */
+
+.current-moon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.moon {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 8px rgba(255,255,255,.9);
+  overflow: hidden;
+}
+
+.moon::after {
+  content: "";
+  position: absolute;
+  background: #ededed;
+  border-radius: 50%;
+}
+
+.moon-new {
+  background: #202020;
+  border: 2px solid #111;
+  box-shadow: none;
+}
+
+.moon-waxing-crescent::after {
+  width: 58px;
+  height: 58px;
+  left: -20px;
+  top: 0;
+}
+
+.moon-first-quarter {
+  background:
+    linear-gradient(to right, white 0%, white 50%, #202020 50%, #202020 100%);
+}
+
+.moon-waxing-gibbous::after {
+  width: 58px;
+  height: 58px;
+  left: -38px;
+  top: 0;
+}
+
+.moon-full {
+  background: white;
+}
+
+.moon-waning-gibbous::after {
+  width: 58px;
+  height: 58px;
+  left: 38px;
+  top: 0;
+}
+
+.moon-last-quarter {
+  background:
+    linear-gradient(to right, #202020 0%, #202020 50%, white 50%, white 100%);
+}
+
+.moon-waning-crescent::after {
+  width: 58px;
+  height: 58px;
+  left: 20px;
+  top: 0;
+}
+
+.current-moon-name {
+  font-size: .9rem;
+  opacity: .65;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
 .hilo {
   font-size: 2.2rem;
   opacity: .7;
 }
 
-.travel {
-  margin-top: 8px;
-  font-size: 1.15rem;
-  color: #1a73e8;
-}
-
 .clock-wrap {
   text-align: center;
 }
-
-
-/* =========================================================
-   ROEPER BUTTON
-   ========================================================= */
 
 .roeper-button-cell {
   text-align: center;
@@ -97,11 +167,6 @@ html, body {
 .roeper-button:active {
   transform: scale(.98);
 }
-
-
-/* =========================================================
-   QUOTE OF THE DAY
-   ========================================================= */
 
 .quote-box {
   margin-top: calc(8px - var(--padspace));
@@ -132,11 +197,6 @@ html, body {
   opacity: .4;
 }
 
-
-/* =========================================================
-   SECTIONS
-   ========================================================= */
-
 .section {
   margin-top: calc(16px - var(--padspace));
 }
@@ -146,10 +206,7 @@ html, body {
   margin-bottom: calc(8px - var(--padspace));
 }
 
-
-/* =========================================================
-   HOURLY WEATHER
-   ========================================================= */
+/* HOURLY FORECAST */
 
 .hourly-header {
   position: relative;
@@ -221,6 +278,46 @@ html, body {
   transition: background .3s ease, color .3s ease;
 }
 
+.hour-icon {
+  font-size: 2.4rem;
+  margin: 5px 0;
+  min-height: 2.9rem;
+}
+
+.hour-condition {
+  font-size: .82rem;
+  line-height: 1.1;
+  min-height: 2em;
+  margin-bottom: 5px;
+}
+
+/* SMALL WHITE STARS FOR NIGHTTIME */
+
+.night-stars {
+  height: 2.9rem;
+  min-height: 2.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: white;
+  text-shadow:
+    0 0 3px white,
+    0 0 6px rgba(255,255,255,.9);
+}
+
+.night-stars .star1 {
+  font-size: 1.3rem;
+}
+
+.night-stars .star2 {
+  font-size: .75rem;
+}
+
+.night-stars .star3 {
+  font-size: 1rem;
+}
+
 .hour.sunny-day {
   background: linear-gradient(to bottom,#fff6a8 0%,#dff4ff 100%);
 }
@@ -276,10 +373,7 @@ html, body {
   color: white;
 }
 
-
-/* =========================================================
-   DAILY FORECAST
-   ========================================================= */
+/* DAILY FORECAST */
 
 .daily {
   display: flex;
@@ -339,11 +433,6 @@ html, body {
   color: white;
 }
 
-
-/* =========================================================
-   UPDATED / FOOTER
-   ========================================================= */
-
 .updated {
   margin-top: calc(12px - var(--padspace));
   display: flex;
@@ -353,37 +442,26 @@ html, body {
   opacity: .7;
 }
 
-.quote {
-  font-style: italic;
-}
-
 footer {
   margin-top: auto;
   text-align: center;
   opacity: .5;
+  padding-top: 12px;
 }
 
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-
 @media (max-width: 1100px) {
+  .temp { font-size: 6rem; }
+  .date { font-size: 1.6rem; }
+  .clock { font-size: 3rem; }
+  .hilo { font-size: 1.7rem; }
 
-  .temp {
-    font-size: 6rem;
+  .current-moon .moon {
+    width: 46px;
+    height: 46px;
   }
 
-  .date {
-    font-size: 1.6rem;
-  }
-
-  .clock {
-    font-size: 3rem;
-  }
-
-  .hilo {
-    font-size: 1.7rem;
+  .current-moon-name {
+    font-size: .75rem;
   }
 
   .roeper-button {
@@ -391,9 +469,7 @@ footer {
     padding: calc(15px - var(--padspace)) calc(20px - var(--padspace));
   }
 
-  .daily {
-    gap: 6px;
-  }
+  .daily { gap: 6px; }
 
   .day {
     font-size: 1.05rem;
@@ -402,49 +478,30 @@ footer {
 }
 
 @media (max-width: 800px) {
-
-  .hourly {
-    gap: 5px;
-  }
-
-  .hour {
-    font-size: 1rem;
-  }
-
-  .hourly-nav button {
-    width: 55px;
-  }
+  .hourly { gap: 5px; }
+  .hour { font-size: 1rem; }
+  .hourly-nav button { width: 55px; }
 
   .roeper-button {
     font-size: 1rem;
     padding: calc(13px - var(--padspace)) calc(15px - var(--padspace));
   }
 
-  .quote-box {
-    max-width: 220px;
-  }
-
-  .quote-text {
-    font-size: .75rem;
-  }
-
+  .quote-box { max-width: 220px; }
+  .quote-text { font-size: .75rem; }
+  .hour-condition { font-size: .7rem; }
+  .hour-moon-phase { font-size: .62rem; }
 }
 </style>
-
 </head>
 
 <body>
-
 <div class="container">
 
-<!-- =====================================================
-     SECTION 1 - CURRENT WEATHER
-     ===================================================== -->
+<!-- SECTION 1 - CURRENT WEATHER -->
 
 <div class="card section">
-
 <table width="100%">
-
 <tr>
 
 <td width="10%">
@@ -452,194 +509,91 @@ footer {
 </td>
 
 <td width="15%">
-  <div class="temp" id="temp">--°</div>
+  <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+    <div class="temp" id="temp">--°</div>
+    <div class="current-moon" id="currentMoon"></div>
+  </div>
 </td>
 
 <td width="20%">
-
   <div class="hilo">
-
-
-<table width="100%">
-
-  <tr>
-    <td align="right">
-      <div>High:</div>
-    </td>
-
-    <td align="left">
-      <span id="high">--°</span>
-    </td>
-  </tr>
-
-  <tr>
-    <td align="right">
-      <div>Low:</div>
-    </td>
-
-    <td align="left">
-      <span id="low">--°</span>
-    </td>
-  </tr>
-
-</table>
-
-
+    <table width="100%">
+      <tr>
+        <td align="right">High:</td>
+        <td align="left"><span id="high">--°</span></td>
+      </tr>
+      <tr>
+        <td align="right">Low:</td>
+        <td align="left"><span id="low">--°</span></td>
+      </tr>
+    </table>
   </div>
-
 </td>
 
 <td width="25%" class="roeper-button-cell">
-
-<button
- class="roeper-button"
- onclick="showRoeperMap()">
-
-
-Show time to Roepar
-
-
+  <button class="roeper-button" onclick="showRoeperMap()">
+    Show time to Roeper
   </button>
 
   <div class="quote-box">
-
-
-<div
-  class="quote-text"
-  id="quoteText">
-  Loading quote...
-</div>
-
-<div
-  class="quote-author"
-  id="quoteAuthor">
-</div>
+    <div class="quote-text" id="quoteText">Loading quote...</div>
+    <div class="quote-author" id="quoteAuthor"></div>
+    <div class="quote-source" id="quoteSource"></div>
   </div>
-
 </td>
 
 <td width="30%">
-
   <div class="clock-wrap">
-
-
-<div
-  class="date"
-  id="date">
-</div>
-
-<div
-  class="clock"
-  id="clock">
-</div>
-
-
+    <div class="date" id="date"></div>
+    <div class="clock" id="clock"></div>
   </div>
-
 </td>
 
 </tr>
-
 </table>
 
 <div class="updated">
   <span id="updated"></span>
 </div>
-
 </div>
 
-<!-- =====================================================
-     SECTION 2 - NEXT 12 HOURS
-     ===================================================== -->
+<!-- SECTION 2 - NEXT 12 HOURS -->
 
 <div class="section">
-
   <div class="hourly-header">
+    <div class="hourly-title">Next 12 Hours</div>
 
+    <div class="hourly-day" id="hourlyDay">—</div>
 
-<div class="hourly-title">
-  Next 12 Hours
-</div>
-
-<div
-  class="hourly-day"
-  id="hourlyDay">
-  —
-</div>
-
-<div class="hourly-nav">
-
-  <button
-    id="hourlyBack"
-    aria-label="Previous 12 hours">
-    ‹
-  </button>
-
-  <button
-    id="hourlyForward"
-    aria-label="Next 12 hours">
-    ›
-  </button>
-
-</div>
-
-
+    <div class="hourly-nav">
+      <button id="hourlyBack" type="button" aria-label="Previous 12 hours" title="Previous 12 hours">‹</button>
+      <button id="hourlyForward" type="button" aria-label="Next 12 hours" title="Next 12 hours">›</button>
+    </div>
   </div>
 
-  <div
-    class="hourly"
-    id="hourly">
-  </div>
-
+  <div class="hourly" id="hourly"></div>
 </div>
 
-<!-- =====================================================
-     SECTION 3 - 8 DAY FORECAST
-     ===================================================== -->
+<!-- SECTION 3 - 8 DAY FORECAST -->
 
 <div class="section">
-
-  <div class="section-title">
-    8-Day Forecast
-  </div>
-
-  <div
-    class="daily"
-    id="daily">
-  </div>
-
+  <div class="section-title">8-Day Forecast</div>
+  <div class="daily" id="daily"></div>
 </div>
 
-<footer>
-  Novi, Michigan
-</footer>
-
+<footer>Novi, Michigan</footer>
 </div>
 
 <script>
-
-
-/* =========================================================
-   GLOBAL PADDING
-   ========================================================= */
-
+/* GLOBAL PADDING */
 const padspace = 2;
 
-
-/* =========================================================
-   LOCATION
-   ========================================================= */
-
+/* LOCATION */
 const LAT = 42.4806;
 const LON = -83.4755;
 
-
-/* =========================================================
-   CLOCK
-   ========================================================= */
-
-function updateClock(){
-
+/* CLOCK */
+function updateClock() {
   const now = new Date();
 
   document.getElementById("date").textContent =
@@ -655,905 +609,392 @@ function updateClock(){
       hour: "numeric",
       minute: "2-digit"
     });
-
 }
 
 setInterval(updateClock, 1000);
-
 updateClock();
 
-
-/* =========================================================
-   WEATHER ICONS
-   ========================================================= */
-
-function weatherIcon(code){
-
+/* WEATHER ICONS */
+function weatherIcon(code) {
   const icons = {
-    0:"☀️",
-    1:"🌤️",
-    2:"⛅",
-    3:"☁️",
-    45:"🌫️",
-    48:"🌫️",
-    51:"🌦️",
-    53:"🌦️",
-    55:"🌧️",
-    56:"🌧️",
-    57:"🌧️",
-    61:"🌧️",
-    63:"🌧️",
-    65:"🌧️",
-    66:"🌧️",
-    67:"🌧️",
-    71:"🌨️",
-    73:"❄️",
-    75:"❄️",
-    77:"❄️",
-    80:"🌦️",
-    81:"🌧️",
-    82:"🌧️",
-    85:"🌨️",
-    86:"❄️",
-    95:"⛈️",
-    96:"⛈️",
-    99:"⛈️"
+    0:"☀️", 1:"🌤️", 2:"⛅", 3:"☁️",
+    45:"🌫️", 48:"🌫️",
+    51:"🌦️", 53:"🌦️", 55:"🌧️",
+    56:"🌧️", 57:"🌧️",
+    61:"🌧️", 63:"🌧️", 65:"🌧️",
+    66:"🌧️", 67:"🌧️",
+    71:"🌨️", 73:"❄️", 75:"❄️", 77:"❄️",
+    80:"🌦️", 81:"🌧️", 82:"🌧️",
+    85:"🌨️", 86:"❄️",
+    95:"⛈️", 96:"⛈️", 99:"⛈️"
   };
 
   return icons[Number(code)] ?? "🌡️";
 }
 
-
-/* =========================================================
-   HOURLY WEATHER CLASS
-   ========================================================= */
-
-function getHourlyWeatherClass(code){
-
+/* WEATHER CATEGORY FOR CARD BACKGROUNDS */
+function getHourlyWeatherClass(code) {
   code = Number(code);
 
-  if(code === 0)
-    return "sunny";
+  if (code === 0) return "sunny";
+  if (code === 1 || code === 2) return "partly-cloudy";
+  if (code === 3 || code === 45 || code === 48) return "cloudy";
 
-  if(code === 1 || code === 2)
-    return "partly-cloudy";
-
-  if(code === 3 || code === 45 || code === 48)
-    return "cloudy";
-
-  if(
-    (code >= 51 && code <= 67) ||
-    (code >= 80 && code <= 82)
-  )
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82))
     return "rainy";
 
-  if(
-    (code >= 71 && code <= 77) ||
-    (code >= 85 && code <= 86)
-  )
+  if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86))
     return "snowy";
 
-  if(code >= 95)
-    return "stormy";
+  if (code >= 95) return "stormy";
 
   return "cloudy";
 }
 
+/* HUMAN-READABLE WEATHER DESCRIPTION */
+function getWeatherDescription(code) {
+  code = Number(code);
 
-/* =========================================================
-   HOURLY DATA
-   ========================================================= */
+  if (code === 0) return "Clear";
+  if (code === 1) return "Mostly clear";
+  if (code === 2) return "Partly cloudy";
+  if (code === 3) return "Cloudy";
+  if (code === 45 || code === 48) return "Foggy";
 
+  if (code >= 51 && code <= 57) return "Drizzle";
+  if (code >= 61 && code <= 67) return "Rain";
+  if (code >= 71 && code <= 77) return "Snow";
+  if (code >= 80 && code <= 82) return "Rain showers";
+  if (code >= 85 && code <= 86) return "Snow showers";
+  if (code >= 95) return "Thunderstorms";
+
+  return "Conditions unavailable";
+}
+
+/* MOON PHASE */
+function getMoonPhase(date) {
+  const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14);
+  const synodicMonth = 29.530588853;
+  const daysSince = (date.getTime() - knownNewMoon) / 86400000;
+  const phase = ((daysSince % synodicMonth) + synodicMonth) % synodicMonth;
+  const fraction = phase / synodicMonth;
+
+  if (fraction < 0.035 || fraction >= 0.965)
+    return { type: "new", name: "New moon" };
+
+  if (fraction < 0.215)
+    return { type: "waxing-crescent", name: "Waxing crescent" };
+
+  if (fraction < 0.285)
+    return { type: "first-quarter", name: "First quarter" };
+
+  if (fraction < 0.465)
+    return { type: "waxing-gibbous", name: "Waxing gibbous" };
+
+  if (fraction < 0.535)
+    return { type: "full", name: "Full moon" };
+
+  if (fraction < 0.715)
+    return { type: "waning-gibbous", name: "" };
+
+  if (fraction < 0.785)
+    return { type: "last-quarter", name: "Last quarter" };
+
+  return { type: "waning-crescent", name: "Waning crescent" };
+}
+
+/* CURRENT MOON HTML */
+function getCurrentMoonHTML(date) {
+  const moon = getMoonPhase(date);
+
+  return `
+    <div class="moon moon-${moon.type}" title="${moon.name || "Moon phase"}"></div>
+    ${moon.name ? `<div class="current-moon-name">${moon.name}</div>` : ""}
+  `;
+}
+
+/* NIGHT STARS */
+function getNightStarsHTML() {
+  return `
+    <div class="night-stars">
+      <span class="star1">✦</span>
+      <span class="star2">✧</span>
+      <span class="star3">✦</span>
+      <span class="star2">·</span>
+      <span class="star1">✧</span>
+    </div>
+  `;
+}
+
+/* NIGHT CONDITION ICON */
+function getNightConditionIcon(code) {
+  code = Number(code);
+
+  if (code >= 71 && code <= 77 || code === 85 || code === 86)
+    return "❄️";
+
+  if (code >= 51 && code <= 67 || code >= 80 && code <= 82)
+    return "🌧️";
+
+  if (code >= 95)
+    return "⛈️";
+
+  if (code === 45 || code === 48)
+    return "🌫️";
+
+  if (code === 3)
+    return "☁️";
+
+  if (code === 2)
+    return "☁️";
+
+  return "";
+}
+
+/* HOURLY DATA */
 let hourlyPageOffset = 0;
 let hourlyData = null;
 
-
-/* =========================================================
-   RENDER HOURLY
-   ========================================================= */
-
-function renderHourly(){
-
-  const hourly =
-    document.getElementById("hourly");
-
-  const dayLabel =
-    document.getElementById("hourlyDay");
-
-  const backButton =
-    document.getElementById("hourlyBack");
-
-  const forwardButton =
-    document.getElementById("hourlyForward");
+/* RENDER HOURLY FORECAST */
+function renderHourly() {
+  const hourly = document.getElementById("hourly");
+  const dayLabel = document.getElementById("hourlyDay");
+  const backButton = document.getElementById("hourlyBack");
+  const forwardButton = document.getElementById("hourlyForward");
 
   hourly.innerHTML = "";
 
-
-  if(
-    !hourlyData ||
-    !hourlyData.time ||
-    hourlyData.time.length === 0
-  ){
-
+  if (!hourlyData || !hourlyData.time || hourlyData.time.length === 0) {
     dayLabel.textContent = "—";
     backButton.disabled = true;
     forwardButton.disabled = true;
-
     return;
   }
 
-
   const now = new Date();
 
+  let firstFutureIndex = hourlyData.time.findIndex(time => {
+    const [datePart, timePart] = time.split("T");
+    const [y, m, d] = datePart.split("-").map(Number);
+    const [h, min] = timePart.split(":").map(Number);
+    return new Date(y, m - 1, d, h, min) >= now;
+  });
 
-  let firstFutureIndex =
-    hourlyData.time.findIndex(
-      time => new Date(time) >= now
-    );
+  if (firstFutureIndex < 0)
+    firstFutureIndex = hourlyData.time.length - 1;
 
+  const startIndex = Math.min(
+    firstFutureIndex + hourlyPageOffset,
+    Math.max(0, hourlyData.time.length - 1)
+  );
 
-  if(firstFutureIndex < 0)
-    firstFutureIndex =
-      hourlyData.time.length - 1;
+  const endIndex = Math.min(startIndex + 12, hourlyData.time.length);
 
+  const [year, month, day] =
+    hourlyData.time[startIndex].slice(0, 10).split("-").map(Number);
 
-  const startIndex =
-    Math.min(
-      firstFutureIndex + hourlyPageOffset,
-      Math.max(
-        0,
-        hourlyData.time.length - 1
-      )
-    );
+  const displayDate = new Date(year, month - 1, day);
 
+  dayLabel.textContent = displayDate.toLocaleDateString([], {
+    weekday: "long"
+  });
 
-  const endIndex =
-    Math.min(
-      startIndex + 12,
-      hourlyData.time.length
-    );
+  for (let i = startIndex; i < endIndex; i++) {
+    const timeString = hourlyData.time[i];
+    const [datePart, timePart] = timeString.split("T");
+    const [y, m, d] = datePart.split("-").map(Number);
+    const [h, min] = timePart.split(":").map(Number);
+    const t = new Date(y, m - 1, d, h, min);
 
+    const code = Number(hourlyData.weather_code[i]);
+    const isDaytime = Number(hourlyData.is_day[i]) === 1;
 
-  const [
-    year,
-    month,
-    day
-  ] =
-    hourlyData.time[startIndex]
-      .slice(0,10)
-      .split("-")
-      .map(Number);
+    const weatherClass = getHourlyWeatherClass(code);
+    const timeClass = isDaytime
+      ? `${weatherClass}-day`
+      : `${weatherClass}-night`;
 
+    const condition = getWeatherDescription(code);
 
-  const displayDate =
-    new Date(
-      year,
-      month - 1,
-      day
-    );
+    const icon = isDaytime
+      ? weatherIcon(code)
+      : getNightStarsHTML();
 
-
-  dayLabel.textContent =
-    displayDate.toLocaleDateString(
-      [],
-      {
-        weekday:"long"
-      }
-    );
-
-
-  for(
-    let i = startIndex;
-    i < endIndex;
-    i++
-  ){
-
-    const t =
-      new Date(
-        hourlyData.time[i]
-      );
-
-    const code =
-      Number(
-        hourlyData.weathercode[i]
-      );
-
-
-    let sunrise = null;
-    let sunset = null;
-
-
-    if(
-      hourlyData.daily &&
-      hourlyData.daily.time
-    ){
-
-      const dateString =
-        hourlyData.time[i].slice(0,10);
-
-      const dailyIndex =
-        hourlyData.daily.time.indexOf(
-          dateString
-        );
-
-
-      if(dailyIndex >= 0){
-
-        sunrise =
-          new Date(
-            hourlyData.daily.sunrise[
-              dailyIndex
-            ]
-          );
-
-        sunset =
-          new Date(
-            hourlyData.daily.sunset[
-              dailyIndex
-            ]
-          );
-
-      }
-    }
-
-
-    let isDaytime = true;
-
-
-    if(sunrise && sunset){
-
-      isDaytime =
-        t >= sunrise &&
-        t < sunset;
-
-    }
-
-
-    const weatherClass =
-      getHourlyWeatherClass(code);
-
-
-    const timeClass =
-      isDaytime
-        ? `${weatherClass}-day`
-        : `${weatherClass}-night`;
-
+    const conditionText = isDaytime
+      ? condition
+      : `${condition} night`;
 
     hourly.innerHTML += `
-
       <div class="hour ${timeClass}">
-
-        <div>
-          ${t.toLocaleTimeString(
-            [],
-            {
-              hour:"numeric"
-            }
-          )}
-        </div>
-
-        <div
-          style="
-            font-size:2.4rem;
-            margin:5px 0;
-          ">
-
-          ${weatherIcon(code)}
-
-        </div>
-
-        <div>
-          ${Math.round(
-            hourlyData.temperature_2m[i]
-          )}°
-        </div>
-
+        <div>${t.toLocaleTimeString([], { hour: "numeric" })}</div>
+        <div class="hour-icon">${icon}</div>
+        <div class="hour-condition">${conditionText}</div>
+        <div>${Math.round(hourlyData.temperature_2m[i])}°</div>
       </div>
-
     `;
   }
 
-
-  backButton.disabled =
-    hourlyPageOffset <= 0;
-
-  forwardButton.disabled =
-    endIndex >= hourlyData.time.length;
+  backButton.disabled = hourlyPageOffset <= 0;
+  forwardButton.disabled = endIndex >= hourlyData.time.length;
 }
 
+/* HOURLY NAVIGATION */
+document.getElementById("hourlyBack").addEventListener("click", () => {
+  hourlyPageOffset = Math.max(0, hourlyPageOffset - 12);
+  renderHourly();
+});
 
-/* =========================================================
-   HOURLY BACK
-   ========================================================= */
+document.getElementById("hourlyForward").addEventListener("click", () => {
+  if (hourlyData && hourlyPageOffset + 12 < hourlyData.time.length) {
+    hourlyPageOffset += 12;
+    renderHourly();
+  }
+});
 
-document
-  .getElementById("hourlyBack")
-  .addEventListener(
-    "click",
-    () => {
+/* LOAD WEATHER */
+async function loadWeather() {
+  const url =
+    `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
+    `&current=temperature_2m,weather_code` +
+    `&hourly=temperature_2m,weather_code,is_day` +
+    `&daily=temperature_2m_max,temperature_2m_min,weather_code` +
+    `&temperature_unit=fahrenheit&timezone=America%2FDetroit&forecast_days=9`;
 
-      hourlyPageOffset =
-        Math.max(
-          0,
-          hourlyPageOffset - 12
-        );
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Weather request failed: ${response.status}`);
 
-      renderHourly();
-
-    }
-  );
-
-
-/* =========================================================
-   HOURLY FORWARD
-   ========================================================= */
-
-document
-  .getElementById("hourlyForward")
-  .addEventListener(
-    "click",
-    () => {
-
-      if(
-        hourlyData &&
-        hourlyPageOffset + 12 <
-          hourlyData.time.length
-      ){
-
-        hourlyPageOffset += 12;
-
-        renderHourly();
-
-      }
-    }
-  );
-
-
-/* =========================================================
-   DAILY WEATHER CLASS
-   ========================================================= */
-
-function getWeatherClass(code){
-
-  code = Number(code);
-
-  if(code === 0)
-    return "sunny";
-
-  if(code === 1 || code === 2)
-    return "partly-cloudy";
-
-  if(code === 3 || code === 45 || code === 48)
-    return "cloudy";
-
-  if(
-    (code >= 51 && code <= 67) ||
-    (code >= 80 && code <= 82)
-  )
-    return "rainy";
-
-  if(
-    (code >= 71 && code <= 77) ||
-    (code >= 85 && code <= 86)
-  )
-    return "snowy";
-
-  if(code >= 95)
-    return "stormy";
-
-  return "cloudy";
-}
-
-
-/* =========================================================
-   LOAD WEATHER
-   ========================================================= */
-
-async function loadWeather(){
-
-  try{
-
-    const url =
-      `https://api.open-meteo.com/v1/forecast?` +
-      `latitude=${LAT}` +
-      `&longitude=${LON}` +
-      `&current_weather=true` +
-      `&hourly=temperature_2m,weathercode` +
-      `&daily=temperature_2m_max,temperature_2m_min,weathercode,sunrise,sunset` +
-      `&temperature_unit=fahrenheit` +
-      `&timezone=auto`;
-
-
-    const response =
-      await fetch(url);
-
-
-    if(!response.ok)
-      throw new Error(
-        "Weather service unavailable"
-      );
-
-
-    const d =
-      await response.json();
-
-
-    /* CURRENT WEATHER */
+    const d = await response.json();
 
     document.getElementById("temp").textContent =
-      Math.round(
-        d.current_weather.temperature
-      ) + "°";
-
+      Math.round(d.current.temperature_2m) + "°";
 
     document.getElementById("icon").textContent =
-      weatherIcon(
-        d.current_weather.weathercode
-      );
-
+      weatherIcon(d.current.weather_code);
 
     document.getElementById("high").textContent =
-      Math.round(
-        d.daily.temperature_2m_max[0]
-      ) + "°";
-
+      Math.round(d.daily.temperature_2m_max[0]) + "°";
 
     document.getElementById("low").textContent =
-      Math.round(
-        d.daily.temperature_2m_min[0]
-      ) + "°";
+      Math.round(d.daily.temperature_2m_min[0]) + "°";
 
+    /* CURRENT MOON NEXT TO TEMPERATURE */
+    document.getElementById("currentMoon").innerHTML =
+      getCurrentMoonHTML(new Date());
 
-    /* HOURLY */
-
-    hourlyData =
-      d.hourly;
-
-    hourlyData.daily =
-      d.daily;
-
-    hourlyPageOffset = 0;
-
+    hourlyData = d.hourly;
     renderHourly();
-
-
-    /* UPDATED */
 
     document.getElementById("updated").textContent =
       "Last updated: " +
-      new Date().toLocaleTimeString(
-        [],
-        {
-          hour:"numeric",
-          minute:"2-digit"
-        }
-      );
+      new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+      });
 
-
-    /* DAILY */
-
-    const daily =
-      document.getElementById("daily");
-
+    const daily = document.getElementById("daily");
     daily.innerHTML = "";
 
-
-    for(let i = 1; i <= 8; i++){
-
-      const [
-        year,
-        month,
-        day
-      ] =
-        d.daily.time[i]
-          .split("-")
-          .map(Number);
-
-
-      const dt =
-        new Date(
-          year,
-          month - 1,
-          day
-        );
-
-
-      const code =
-        Number(
-          d.daily.weathercode[i]
-        );
-
-
-      const weatherClass =
-        getWeatherClass(code);
-
-
-      const sunrise =
-        new Date(
-          d.daily.sunrise[i]
-        );
-
-
-      const sunset =
-        new Date(
-          d.daily.sunset[i]
-        );
-
-
-      const sunriseText =
-        sunrise.toLocaleTimeString(
-          [],
-          {
-            hour:"numeric",
-            minute:"2-digit"
-          }
-        );
-
-
-      const sunsetText =
-        sunset.toLocaleTimeString(
-          [],
-          {
-            hour:"numeric",
-            minute:"2-digit"
-          }
-        );
-
+    // Eight forecast days starting tomorrow.
+    for (let i = 1; i <= 8; i++) {
+      const [year, month, day] = d.daily.time[i].split("-").map(Number);
+      const dt = new Date(year, month - 1, day);
+      const code = Number(d.daily.weather_code[i]);
+      const category = getHourlyWeatherClass(code);
 
       daily.innerHTML += `
-
-        <div
-          class="day ${weatherClass}"
-          title="Sunrise: ${sunriseText} | Sunset: ${sunsetText}">
-
+        <div class="day ${category}">
           <div class="day-date">
-
-            ${dt.toLocaleDateString(
-              [],
-              {
-                weekday:"short",
-                month:"numeric",
-                day:"numeric"
-              }
-            )}
-
+            ${dt.toLocaleDateString([], {
+              weekday: "short",
+              month: "numeric",
+              day: "numeric"
+            })}
           </div>
-
-          <div class="day-icon">
-            ${weatherIcon(code)}
-          </div>
-
+          <div class="day-icon">${weatherIcon(code)}</div>
           <div class="day-temp">
-
-            ${Math.round(
-              d.daily.temperature_2m_max[i]
-            )}°
-
-            /
-
-            ${Math.round(
-              d.daily.temperature_2m_min[i]
-            )}°
-
+            ${Math.round(d.daily.temperature_2m_max[i])}° /
+            ${Math.round(d.daily.temperature_2m_min[i])}°
           </div>
-
-          <div
-            style="
-              font-size:.8rem;
-              opacity:.65;
-              margin-top:6px;
-            ">
-
-            ☀️ ${sunriseText}<br>
-            🌙 ${sunsetText}
-
-          </div>
-
         </div>
-
       `;
     }
-
-  }
-  catch(error){
-
-    console.error(
-      "Weather error:",
-      error
-    );
-
-    document.getElementById(
-      "updated"
-    ).textContent =
-      "Weather unavailable";
-
+  } catch (error) {
+    console.error("Unable to load weather:", error);
+    document.getElementById("updated").textContent = "Weather data unavailable";
   }
 }
-
-
-/* =========================================================
-   WEATHER START
-   ========================================================= */
 
 loadWeather();
+setInterval(loadWeather, 300000);
 
-setInterval(
-  loadWeather,
-  300000
-);
-
-
-/* =========================================================
-   QUOTE SYSTEM
-   ========================================================= */
-
-const backupQuotes = [
-
+/* QUOTE OF THE HOUR
+   Tries multiple public quote sources; changes once per hour. */
+const quoteSources = [
   {
-    quote:"The best way to predict the future is to create it.",
-    author:"Peter Drucker"
+    name: "ZenQuotes",
+    url: "https://zenquotes.io/api/random",
+    parse: data => ({ text: data[0].q, author: data[0].a })
   },
-
   {
-    quote:"It always seems impossible until it's done.",
-    author:"Nelson Mandela"
+    name: "Quotable",
+    url: "https://api.allorigins.win/raw?url=" +
+      encodeURIComponent("https://api.quotable.io/random"),
+    parse: data => ({ text: data.content, author: data.author })
   },
-
   {
-    quote:"The future depends on what you do today.",
-    author:"Mahatma Gandhi"
-  },
-
-  {
-    quote:"What we think, we become.",
-    author:"Buddha"
-  },
-
-  {
-    quote:"Do what you can, with what you have, where you are.",
-    author:"Theodore Roosevelt"
-  },
-
-  {
-    quote:"Believe you can and you're halfway there.",
-    author:"Theodore Roosevelt"
-  },
-
-  {
-    quote:"Great things are done by a series of small things brought together.",
-    author:"Vincent van Gogh"
-  },
-
-  {
-    quote:"A journey of a thousand miles begins with a single step.",
-    author:"Lao Tzu"
-  },
-
-  {
-    quote:"Success is the sum of small efforts, repeated day in and day out.",
-    author:"Robert Collier"
+    name: "DummyJSON",
+    url: "https://dummyjson.com/quotes/random",
+    parse: data => ({ text: data.quote, author: data.author })
   }
-
 ];
 
+async function loadQuote() {
+  const quoteText = document.getElementById("quoteText");
+  const quoteAuthor = document.getElementById("quoteAuthor");
+  const quoteSource = document.getElementById("quoteSource");
 
-function displayQuote(
-  quote,
-  author,
-  source
-){
+  const shuffled = [...quoteSources].sort(() => Math.random() - 0.5);
 
-  document.getElementById(
-    "quoteText"
-  ).textContent =
-    `"${quote}"`;
+  for (const source of shuffled) {
+    try {
+      const response = await fetch(source.url, { cache: "no-store" });
+      if (!response.ok) continue;
 
-  document.getElementById(
-    "quoteAuthor"
-  ).textContent =
-    `— ${author}`;
+      const data = await response.json();
+      const quote = source.parse(data);
 
-  document.getElementById(
-    "quoteSource"
-  ).textContent =
-    source;
-
-}
-
-
-/* SOURCE 1 */
-
-async function getDummyJsonQuote(){
-
-  const response =
-    await fetch(
-      "https://dummyjson.com/quotes/random",
-      {
-        cache:"no-store"
+      if (quote && quote.text) {
+        quoteText.textContent = `“${quote.text}”`;
+        quoteAuthor.textContent = quote.author ? `— ${quote.author}` : "";
+        quoteSource.textContent = source.name;
+        return;
       }
-    );
-
-
-  if(!response.ok)
-    throw new Error(
-      "DummyJSON unavailable"
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if(
-    !data.quote ||
-    !data.author
-  )
-    throw new Error(
-      "Invalid DummyJSON quote"
-    );
-
-
-  return {
-    quote:data.quote,
-    author:data.author,
-    source:"DummyJSON"
-  };
-
-}
-
-
-/* SOURCE 2 */
-
-async function getZenQuote(){
-
-  const response =
-    await fetch(
-      "https://zenquotes.io/api/random",
-      {
-        cache:"no-store"
-      }
-    );
-
-
-  if(!response.ok)
-    throw new Error(
-      "ZenQuotes unavailable"
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if(
-    !Array.isArray(data) ||
-    !data.length ||
-    !data[0].q ||
-    !data[0].a
-  )
-    throw new Error(
-      "Invalid ZenQuotes response"
-    );
-
-
-  return {
-    quote:data[0].q,
-    author:data[0].a,
-    source:"ZenQuotes"
-  };
-
-}
-
-
-/* LOAD QUOTE */
-
-async function loadQuote(){
-
-  const useZenFirst =
-    Math.random() < 0.5;
-
-
-  const sources =
-    useZenFirst
-      ? [
-          getZenQuote,
-          getDummyJsonQuote
-        ]
-      : [
-          getDummyJsonQuote,
-          getZenQuote
-        ];
-
-
-  for(
-    const source of sources
-  ){
-
-    try{
-
-      const result =
-        await source();
-
-
-      displayQuote(
-        result.quote,
-        result.author,
-        "Source: " + result.source
-      );
-
-      return;
-
+    } catch (error) {
+      // Try the next quote source.
     }
-    catch(error){
-
-      console.log(
-        "Quote source failed:",
-        error
-      );
-
-    }
-
   }
 
-
-  const backup =
-    backupQuotes[
-      Math.floor(
-        Math.random() *
-        backupQuotes.length
-      )
-    ];
-
-
-  displayQuote(
-    backup.quote,
-    backup.author,
-    "Source: Dashboard backup"
-  );
-
+  quoteText.textContent = "Stay present. Stay kind.";
+  quoteAuthor.textContent = "";
+  quoteSource.textContent = "";
 }
-
-
-/* INITIAL QUOTE */
 
 loadQuote();
+setInterval(loadQuote, 60 * 60 * 1000);
 
+/* ROEPER ROUTE
+   Opens directions in a new browser tab. */
+function showRoeperMap() {
+  const url =
+    "https://www.google.com/maps/dir/?api=1" +
+    "&origin=42.4806,-83.4755" +
+    "&destination=42.5536,-83.2205" +
+    "&travelmode=driving";
 
-/* REFRESH EVERY HOUR */
-
-setInterval(
-  loadQuote,
-  60 * 60 * 1000
-);
-
-
-/* =========================================================
-   ROEPER GOOGLE MAPS
-   ========================================================= */
-
-const roeperGoogleMapsURL =
-  "https://www.google.com/maps/dir/?api=1" +
-  "&origin=" +
-  encodeURIComponent(
-    "24010 Greening Dr, Novi, MI"
-  ) +
-  "&destination=" +
-  encodeURIComponent(
-    "1051 Oakland Ave, Birmingham, MI 48009"
-  ) +
-  "&travelmode=driving";
-
-
-function showRoeperMap(){
-
-  window.open(
-    roeperGoogleMapsURL,
-    "RoeperGoogleMaps"
-  );
-
+  window.open(url, "_blank", "noopener,noreferrer");
 }
-
 </script>
-
 </body>
 </html>
+```

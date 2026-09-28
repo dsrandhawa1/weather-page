@@ -1,5 +1,5 @@
-```html
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -508,6 +508,7 @@ footer {
   }
 }
 </style>
+
 </head>
 
 <body>
@@ -575,19 +576,22 @@ footer {
   <div class="hourly-header">
     <div class="hourly-title">Next 12 Hours</div>
 
-    <div class="hourly-day" id="hourlyDay">—</div>
+```
+<div class="hourly-day" id="hourlyDay">—</div>
 
-    <div class="hourly-nav">
-      <button id="hourlyBack"
-              type="button"
-              aria-label="Previous 12 hours"
-              title="Previous 12 hours">‹</button>
+<div class="hourly-nav">
+  <button id="hourlyBack"
+          type="button"
+          aria-label="Previous 12 hours"
+          title="Previous 12 hours">‹</button>
 
-      <button id="hourlyForward"
-              type="button"
-              aria-label="Next 12 hours"
-              title="Next 12 hours">›</button>
-    </div>
+  <button id="hourlyForward"
+          type="button"
+          aria-label="Next 12 hours"
+          title="Next 12 hours">›</button>
+</div>
+```
+
   </div>
 
   <div class="hourly" id="hourly"></div>
@@ -704,8 +708,13 @@ function getHourlyWeatherClass(code) {
 function getWeatherDescription(code) {
   code = Number(code);
 
+  /*
+   * IMPORTANT:
+   * These descriptions describe the weather condition itself.
+   * They do NOT add "night" to the text.
+   */
   if (code === 0)
-    return "Sunny";
+    return "Clear";
 
   if (code === 1)
     return "Mostly clear";
@@ -916,6 +925,10 @@ function renderHourly() {
         ? `${weatherClass}-day`
         : `${weatherClass}-night`;
 
+    /*
+     * The condition text is the same day or night.
+     * Only the visual icon changes at night.
+     */
     const condition =
       getWeatherDescription(code);
 
@@ -927,10 +940,20 @@ function renderHourly() {
       icon = getNightConditionIcon(code);
     }
 
-    const conditionText =
-      isDaytime
-        ? condition
-        : `${condition} night`;
+    /*
+     * FIX:
+     * Do NOT append "night" to the condition.
+     *
+     * Examples:
+     *   Clear
+     *   Mostly clear
+     *   Partly cloudy
+     *   Cloudy
+     *   Rain
+     *   Snow
+     *   Thunderstorms
+     */
+    const conditionText = condition;
 
     hourly.innerHTML += `
       <div class="hour ${timeClass}">
@@ -1294,4 +1317,3 @@ function showRoeperMap() {
 
 </body>
 </html>
-```

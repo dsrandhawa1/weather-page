@@ -1297,21 +1297,48 @@ setInterval(
 );
 
 /* ROEPER ROUTE
-   Opens directions in a new browser tab. */
+   Opens Google Maps in a reusable tab and refreshes it every 30 seconds. */
+
+let roeperMapWindow = null;
+let roeperMapRefreshTimer = null;
 
 function showRoeperMap() {
-
   const url =
     "https://www.google.com/maps/dir/?api=1" +
-    "&origin=42.4806,-83.4755" +
+    "&origin=" + encodeURIComponent("24010 Greening Dr, Novi MI 48375") +
     "&destination=42.5536,-83.2205" +
     "&travelmode=driving";
 
-  window.open(
-    url,
-    "_blank",
-    "noopener,noreferrer"
-  );
+  // Reuse the Maps tab if it is still open; otherwise create it.
+  if (!roeperMapWindow || roeperMapWindow.closed) {
+    roeperMapWindow = window.open(url, "roeperMap");
+  } else {
+    roeperMapWindow.location.href = url;
+    roeperMapWindow.focus();
+  }
+
+  // Avoid creating multiple refresh loops when the button is clicked again.
+  if (roeperMapRefreshTimer !== null) {
+    clearInterval(roeperMapRefreshTimer);
+  }
+
+  roeperMapRefreshTimer = setInterval(() => {
+    try {
+      if (!roeperMapWindow || roeperMapWindow.closed) {
+        clearInterval(roeperMapRefreshTimer);
+        roeperMapRefreshTimer = null;
+        roeperMapWindow = null;
+        return;
+      }
+
+      // Reload the Maps tab every 30 seconds.
+      roeperMapWindow.location.reload();
+    } catch (error) {
+      // If the browser blocks access to the tab, stop the refresh timer.
+      clearInterval(roeperMapRefreshTimer);
+      roeperMapRefreshTimer = null;
+    }
+  }, 30000);
 }
 </script>
 

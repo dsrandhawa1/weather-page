@@ -1171,8 +1171,8 @@ async function loadDriveTime() {
  * The drive time is only shown from 6:00 AM until 8:00 AM Detroit time, and
  * only fetched in that window (every 4 minutes), which also saves requests.
  */
-const DRIVE_START_HOUR = 15;
-const DRIVE_END_HOUR = 18;
+const DRIVE_START_HOUR = 6;
+const DRIVE_END_HOUR = 8;
 const DRIVE_REFRESH_MS = 4 * 60 * 1000;
 let lastDriveFetch = 0;
 

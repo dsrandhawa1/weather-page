@@ -61,7 +61,7 @@ html, body {
 .roeper-button:hover { background: #3367d6; }
 .roeper-button:active { transform: scale(.98); }
 
-.quote-box {
+.drive-box {
   margin-top: calc(8px - var(--padspace));
   text-align: center;
   max-width: 300px;
@@ -69,25 +69,39 @@ html, body {
   margin-right: auto;
 }
 
-.quote-text {
-  font-size: 22px;
-  line-height: 1.2;
-  font-style: italic;
-  opacity: .72;
+.drive-label {
+  font-size: 1.1rem;
+  opacity: .65;
 }
 
-.quote-author {
+.drive-time {
+  font-size: 2.6rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.drive-time.drive-good { color: #1b7a34; }
+.drive-time.drive-slow { color: #a35f00; }
+.drive-time.drive-bad { color: #c62828; }
+
+.drive-detail {
   font-size: 1rem;
-  line-height: 1.15;
-  margin-top: 2px;
-  opacity: .55;
+  line-height: 1.2;
+  opacity: .75;
 }
 
-.quote-source {
-  font-size: .58rem;
-  line-height: 1;
+.drive-refresh {
+  font-size: .95rem;
+  line-height: 1.2;
   margin-top: 2px;
-  opacity: .4;
+  opacity: .7;
+}
+
+.drive-note {
+  font-size: .62rem;
+  line-height: 1.1;
+  margin-top: 2px;
+  opacity: .45;
 }
 
 .section { margin-top: calc(16px - var(--padspace)); }
@@ -415,8 +429,10 @@ footer {
     padding: calc(13px - var(--padspace)) calc(15px - var(--padspace));
   }
 
-  .quote-box { max-width: 220px; }
-  .quote-text { font-size: .75rem; }
+  .drive-box { max-width: 220px; }
+  .drive-time { font-size: 1.8rem; }
+  .drive-detail { font-size: .8rem; }
+  .drive-refresh { font-size: .75rem; }
   .hour-condition { font-size: .7rem; }
   .hour-icon .wx-icon { width: 44px; }
   .day-condition { font-size: .75rem; }
@@ -459,10 +475,12 @@ footer {
     Show time to Roeper
   </button>
 
-  <div class="quote-box">
-    <div class="quote-text" id="quoteText">Loading quote...</div>
-    <div class="quote-author" id="quoteAuthor"></div>
-    <div class="quote-source" id="quoteSource"></div>
+  <div class="drive-box" id="driveBox" style="display:none">
+    <div class="drive-label">Drive to Roeper</div>
+    <div class="drive-time" id="driveTime">--</div>
+    <div class="drive-detail" id="driveDetail">Loading...</div>
+    <div class="drive-refresh" id="driveRefresh"></div>
+    <div class="drive-note" id="driveNote"></div>
   </div>
 </td>
 
@@ -1022,64 +1040,200 @@ async function loadWeather() {
 loadWeather();
 setInterval(loadWeather, 300000);
 
-/* QUOTE OF THE HOUR */
-const quoteSources = [
-  {
-    name: "ZenQuotes",
-    url: "https://zenquotes.io/api/random",
-    parse: data => ({ text: data[0].q, author: data[0].a })
-  },
-  {
-    name: "Quotable",
-    url:
-      "https://api.allorigins.win/raw?url=" +
-      encodeURIComponent("https://api.quotable.io/random"),
-    parse: data => ({ text: data.content, author: data.author })
-  },
-  {
-    name: "DummyJSON",
-    url: "https://dummyjson.com/quotes/random",
-    parse: data => ({ text: data.quote, author: data.author })
-  }
-];
+/*
+ * DRIVE TIME TO ROEPER (live traffic, fastest route)
+ * Uses the TomTom Routing API. Get a free key (no credit card; about 20,000
+ * routing requests per month) at https://developer.tomtom.com and paste it
+ * below. The page asks for up to 3 route options and shows the fastest.
+ */
+const TOMTOM_KEY = "bGApSVLEyCknqcd8a3FRE4C53AxOq6TL";
 
-async function loadQuote() {
-  const quoteText = document.getElementById("quoteText");
-  const quoteAuthor = document.getElementById("quoteAuthor");
-  const quoteSource = document.getElementById("quoteSource");
+const geocodeCache = {};
 
-  const shuffled = [...quoteSources].sort(() => Math.random() - 0.5);
+/* Build an error that includes TomTom's reason, so it can be shown on screen. */
+async function httpError(label, response) {
+  let detail = "";
 
-  for (const source of shuffled) {
+  try {
+    const text = await response.text();
+
     try {
-      const response = await fetch(source.url, { cache: "no-store" });
-      if (!response.ok) continue;
-
-      const data = await response.json();
-      const quote = source.parse(data);
-
-      if (!quote || !quote.text) continue;
-
-      const wordCount = quote.text.trim().split(/\s+/).length;
-
-      if (wordCount <= 25) {
-        quoteText.textContent = `“${quote.text}”`;
-        quoteAuthor.textContent = quote.author ? `— ${quote.author}` : "";
-        quoteSource.textContent = source.name;
-        return;
-      }
-    } catch (error) {
-      /* Try next source. */
+      const j = JSON.parse(text);
+      detail = (j.detailedError && j.detailedError.message) ||
+               j.error || j.errorText || j.message || "";
+    } catch (e) {
+      detail = text;
     }
-  }
+  } catch (e) { /* no body available */ }
 
-  quoteText.textContent = "Stay present. Stay kind.";
-  quoteAuthor.textContent = "";
-  quoteSource.textContent = "";
+  return new Error(
+    `${label} failed: ${response.status}` +
+    (detail ? ` (${String(detail).slice(0, 100)})` : "")
+  );
 }
 
-loadQuote();
-setInterval(loadQuote, 60 * 60 * 1000);
+/* Address -> coordinates, looked up once and remembered. */
+async function geocodeAddress(address) {
+  if (geocodeCache[address]) return geocodeCache[address];
+
+  const storeKey = "geo:" + address;
+
+  try {
+    const saved = localStorage.getItem(storeKey);
+    if (saved) {
+      geocodeCache[address] = JSON.parse(saved);
+      return geocodeCache[address];
+    }
+  } catch (e) { /* storage unavailable; look it up instead */ }
+
+  const url =
+    "https://api.tomtom.com/search/2/geocode/" + encodeURIComponent(address) +
+    ".json?key=" + encodeURIComponent(TOMTOM_KEY.trim()) + "&limit=1&countrySet=US";
+
+  const response = await fetch(url);
+  if (!response.ok) throw await httpError("Geocoding", response);
+
+  const data = await response.json();
+  const pos = data.results && data.results[0] && data.results[0].position;
+  if (!pos) throw new Error("Address not found: " + address);
+
+  const point = { lat: pos.lat, lon: pos.lon };
+  geocodeCache[address] = point;
+
+  try { localStorage.setItem(storeKey, JSON.stringify(point)); } catch (e) {}
+
+  return point;
+}
+
+function formatDriveTime(seconds) {
+  const mins = Math.max(1, Math.round(seconds / 60));
+  if (mins < 60) return `${mins} min`;
+
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m ? `${h} hr ${m} min` : `${h} hr`;
+}
+
+let lastDriveUpdate = null;
+
+async function loadDriveTime() {
+  const timeEl = document.getElementById("driveTime");
+  const detailEl = document.getElementById("driveDetail");
+  const noteEl = document.getElementById("driveNote");
+  const refreshEl = document.getElementById("driveRefresh");
+
+  if (!TOMTOM_KEY.trim()) {
+    timeEl.textContent = "--";
+    detailEl.textContent = "Add a free TomTom API key to show drive time";
+    return;
+  }
+
+  try {
+    const [from, to] = await Promise.all([
+      geocodeAddress(ROEPER_ORIGIN),
+      geocodeAddress(ROEPER_DESTINATION)
+    ]);
+
+    const url =
+      "https://api.tomtom.com/routing/1/calculateRoute/" +
+      `${from.lat},${from.lon}:${to.lat},${to.lon}/json` +
+      "?key=" + encodeURIComponent(TOMTOM_KEY.trim()) +
+      "&traffic=true&travelMode=car&routeType=fastest&maxAlternatives=2";
+
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw await httpError("Routing", response);
+
+    const data = await response.json();
+    const routes = (data.routes || []).filter(r => r.summary);
+    if (routes.length === 0) throw new Error("No routes returned");
+
+    /* Fastest option including current traffic. */
+    const best = routes.reduce((a, b) =>
+      b.summary.travelTimeInSeconds < a.summary.travelTimeInSeconds ? b : a);
+
+    const s = best.summary;
+    const delayMin = Math.round((s.trafficDelayInSeconds || 0) / 60);
+    const miles = (s.lengthInMeters / 1609.344).toFixed(1);
+
+    timeEl.textContent = formatDriveTime(s.travelTimeInSeconds);
+    timeEl.className = "drive-time " +
+      (delayMin < 2 ? "drive-good" : delayMin < 8 ? "drive-slow" : "drive-bad");
+
+    detailEl.textContent =
+      (delayMin >= 2 ? `+${delayMin} min traffic` : "Light traffic") +
+      ` · ${miles} mi`;
+
+    lastDriveUpdate = new Date().toLocaleTimeString([], {
+      timeZone: TZ,
+      hour: "numeric",
+      minute: "2-digit"
+    });
+
+    refreshEl.textContent = `Last refreshed: ${lastDriveUpdate}`;
+
+    noteEl.textContent =
+      `Fastest of ${routes.length} route${routes.length === 1 ? "" : "s"} · ` +
+      `traffic by TomTom`;
+  } catch (error) {
+    console.error("Unable to load drive time:", error);
+
+    detailEl.textContent = lastDriveUpdate
+      ? "Update failed - showing older data"
+      : "Drive time unavailable";
+
+    /* Show the reason on screen (handy on a tablet with no dev tools). */
+    noteEl.textContent = String(error && error.message || error).slice(0, 140);
+  }
+}
+
+/*
+ * The drive time is only shown from 6:00 AM until 8:00 AM Detroit time, and
+ * only fetched in that window (every 4 minutes), which also saves requests.
+ */
+const DRIVE_START_HOUR = 15;
+const DRIVE_END_HOUR = 18;
+const DRIVE_REFRESH_MS = 4 * 60 * 1000;
+let lastDriveFetch = 0;
+
+function inDriveWindow() {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: TZ,
+      hour: "numeric",
+      hourCycle: "h23"
+    }).format(new Date())
+  );
+
+  return hour >= DRIVE_START_HOUR && hour < DRIVE_END_HOUR;
+}
+
+function driveTick() {
+  const box = document.getElementById("driveBox");
+
+  if (!inDriveWindow()) {
+    box.style.display = "none";
+    lastDriveFetch = 0;
+    lastDriveUpdate = null;
+
+    /* Clear yesterday's numbers so they don't flash when the window reopens. */
+    document.getElementById("driveTime").textContent = "--";
+    document.getElementById("driveTime").className = "drive-time";
+    document.getElementById("driveDetail").textContent = "Loading...";
+    document.getElementById("driveRefresh").textContent = "";
+    document.getElementById("driveNote").textContent = "";
+    return;
+  }
+
+  box.style.display = "";
+
+  if (Date.now() - lastDriveFetch >= DRIVE_REFRESH_MS) {
+    lastDriveFetch = Date.now();
+    loadDriveTime();
+  }
+}
+
+driveTick();
+setInterval(driveTick, 15000);
 </script>
 
 </body>

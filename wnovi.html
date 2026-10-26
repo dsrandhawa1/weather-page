@@ -242,6 +242,19 @@ html, body {
 .hazy-sky::before { top: 11px; }
 .hazy-sky::after { bottom: 10px; background: rgba(150,150,150,.28); }
 
+/* METEOCONS WEATHER ICONS */
+
+.wx-icon {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.icon .wx-icon { width: 100px; }
+.hour-icon .wx-icon { width: 58px; }
+.day-icon .wx-icon { width: 72px; }
+
 /* DAY / NIGHT HOURLY CARDS */
 
 .hour.sunny-day { background: linear-gradient(to bottom,#fff6a8 0%,#dff4ff 100%); }
@@ -356,10 +369,25 @@ footer {
   cursor: pointer;
 }
 
+.map-open {
+  position: absolute;
+  top: 10px;
+  right: 110px;
+  z-index: 2;
+  padding: 9px 14px;
+  border-radius: 6px;
+  background: #4285f4;
+  color: white;
+  font-size: 16px;
+  text-decoration: none;
+}
+
 @media (max-width: 1100px) {
   .temp { font-size: 6rem; }
   .date { font-size: 1.6rem; }
   .clock { font-size: 3rem; }
+  .icon .wx-icon { width: 80px; }
+  .day-icon .wx-icon { width: 60px; }
   .hilo { font-size: 1.7rem; }
 
   .roeper-button {
@@ -390,6 +418,7 @@ footer {
   .quote-box { max-width: 220px; }
   .quote-text { font-size: .75rem; }
   .hour-condition { font-size: .7rem; }
+  .hour-icon .wx-icon { width: 44px; }
   .day-condition { font-size: .75rem; }
 }
 </style>
@@ -403,7 +432,7 @@ footer {
 <table width="100%">
 <tr>
 <td width="10%">
-  <div class="icon" id="icon">☀️</div>
+  <div class="icon" id="icon">🌡️</div>
 </td>
 
 <td width="15%">
@@ -483,6 +512,7 @@ footer {
 <!-- ROEPER MAP OVERLAY -->
 <div id="mapOverlay" class="map-overlay">
   <div class="map-container">
+    <a class="map-open" id="mapOpenLink" target="_blank" rel="noopener">Open in Maps ↗</a>
     <button class="map-close" onclick="closeRoeperMap()">Close ✕</button>
     <iframe
       id="roeperMapFrame"
@@ -500,6 +530,7 @@ const padspace = 2;
 /* WEATHER LOCATION */
 const LAT = 42.4806;
 const LON = -83.4755;
+const TZ = "America/Detroit";
 
 /* ROEPER ROUTE */
 const ROEPER_ORIGIN = "24010 Greening Dr, Novi, MI 48375";
@@ -508,24 +539,48 @@ const ROEPER_DESTINATION = "1051 Oakland Ave, Birmingham, MI 48009";
 let roeperMapRefreshTimer = null;
 
 /*
- * Opens Google Maps directions in the overlay.
- * Google may prevent its regular directions page from
- * being embedded in an iframe.
+ * Google blocks its regular directions page from being shown in an iframe,
+ * so the popup uses an embeddable directions view instead:
+ *
+ * - With a Google Maps Embed API key (free; enable "Maps Embed API" in the
+ *   Google Cloud console and paste the key below): the official embed.
+ * - Without a key: Google's older, unofficial embed URL. It needs no setup
+ *   but is not guaranteed to keep working.
+ *
+ * The "Open in Maps" button in the popup always opens the full Google Maps
+ * route (live drive time) in a new tab or the Maps app.
  */
+const GOOGLE_MAPS_EMBED_KEY = "";
+
 function showRoeperMap() {
   const overlay = document.getElementById("mapOverlay");
   const frame = document.getElementById("roeperMapFrame");
+  const openLink = document.getElementById("mapOpenLink");
 
-  const directionsUrl =
+  const origin = encodeURIComponent(ROEPER_ORIGIN);
+  const destination = encodeURIComponent(ROEPER_DESTINATION);
+
+  openLink.href =
     "https://www.google.com/maps/dir/?api=1" +
-    "&origin=" + encodeURIComponent(ROEPER_ORIGIN) +
-    "&destination=" + encodeURIComponent(ROEPER_DESTINATION) +
+    "&origin=" + origin +
+    "&destination=" + destination +
     "&travelmode=driving";
+
+  const embedUrl = GOOGLE_MAPS_EMBED_KEY
+    ? "https://www.google.com/maps/embed/v1/directions" +
+      "?key=" + encodeURIComponent(GOOGLE_MAPS_EMBED_KEY) +
+      "&origin=" + origin +
+      "&destination=" + destination +
+      "&mode=driving"
+    : "https://maps.google.com/maps" +
+      "?saddr=" + origin +
+      "&daddr=" + destination +
+      "&dirflg=d&output=embed";
 
   overlay.style.display = "flex";
 
   function refreshMap() {
-    frame.src = directionsUrl + "&refresh=" + Date.now();
+    frame.src = embedUrl + "&refresh=" + Date.now();
   }
 
   refreshMap();
@@ -570,6 +625,7 @@ function updateClock() {
 
   document.getElementById("date").textContent =
     now.toLocaleDateString([], {
+      timeZone: TZ,
       weekday: "long",
       month: "long",
       day: "numeric",
@@ -578,6 +634,7 @@ function updateClock() {
 
   document.getElementById("clock").textContent =
     now.toLocaleTimeString([], {
+      timeZone: TZ,
       hour: "numeric",
       minute: "2-digit"
     });
@@ -586,8 +643,14 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* WEATHER ICONS */
-function weatherIcon(code) {
+/*
+ * WEATHER ICONS
+ * Meteocons by Bas Milius (MIT license), loaded from the jsDelivr CDN.
+ * If an icon fails to load, the old emoji is shown instead.
+ */
+const ICON_BASE = "https://cdn.jsdelivr.net/npm/@meteocons/svg/fill/";
+
+function weatherEmoji(code) {
   const icons = {
     0:"☀️", 1:"🌤️", 2:"⛅", 3:"☁️",
     45:"🌫️", 48:"🌫️", 51:"🌦️", 53:"🌦️",
@@ -599,6 +662,40 @@ function weatherIcon(code) {
   };
 
   return icons[Number(code)] ?? "🌡️";
+}
+
+/* Open-Meteo weather code -> Meteocons icon name */
+function meteoconName(code, isDay) {
+  const dn = isDay ? "day" : "night";
+
+  if (code === 0) return `clear-${dn}`;
+  if (code === 1) return `mostly-clear-${dn}`;
+  if (code === 2) return `partly-cloudy-${dn}`;
+  if (code === 3) return `overcast-${dn}`;
+  if (code === 45 || code === 48) return `fog-${dn}`;
+  if (code >= 51 && code <= 55) return "drizzle";
+  if (code === 56 || code === 57) return "sleet";
+  if (code >= 61 && code <= 65) return "rain";
+  if (code === 66 || code === 67) return "sleet";
+  if (code >= 71 && code <= 77) return "snow";
+  if (code >= 80 && code <= 82) return `partly-cloudy-${dn}-rain`;
+  if (code === 85 || code === 86) return `partly-cloudy-${dn}-snow`;
+  if (code === 95) return `thunderstorms-${dn}`;
+  if (code === 96 || code === 99) return `thunderstorms-${dn}-hail`;
+
+  return null;
+}
+
+function weatherIcon(code, isDay = true) {
+  code = Number(code);
+
+  const name = meteoconName(code, isDay);
+  const emoji = weatherEmoji(code);
+
+  if (!name) return emoji;
+
+  return `<img class="wx-icon" src="${ICON_BASE}${name}.svg" alt="" ` +
+         `onerror="this.replaceWith(document.createTextNode('${emoji}'))">`;
 }
 
 /* WEATHER CATEGORY FOR CARD BACKGROUNDS */
@@ -657,23 +754,28 @@ function getHazySkyHTML() {
   return `<div class="hazy-sky"></div>`;
 }
 
-/* NIGHT CONDITION ICON */
+/* NIGHT CONDITION ICON (Meteocons night variants; the old CSS stars and
+   hazy-sky helpers above are no longer used) */
 function getNightConditionIcon(code) {
-  code = Number(code);
+  return weatherIcon(code, false);
+}
 
-  if ((code >= 71 && code <= 77) || code === 85 || code === 86)
-    return "❄️";
+/* CURRENT TIME IN DETROIT, formatted like Open-Meteo hourly times */
+function detroitNowString() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(new Date());
 
-  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82))
-    return "🌧️";
+  const p = {};
+  parts.forEach(x => { p[x.type] = x.value; });
 
-  if (code >= 95) return "⛈️";
-  if (code === 45 || code === 48) return "🌫️";
-
-  if (code === 0 || code === 1) return getNightStarsHTML();
-  if (code === 2 || code === 3) return getHazySkyHTML();
-
-  return "✨";
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
 }
 
 /* HOURLY DATA */
@@ -696,15 +798,10 @@ function renderHourly() {
     return;
   }
 
-  const now = new Date();
+  /* Compare in Detroit time so the row is right on any device timezone. */
+  const nowDetroit = detroitNowString();
 
-  let firstFutureIndex = hourlyData.time.findIndex(time => {
-    const [datePart, timePart] = time.split("T");
-    const [y, m, d] = datePart.split("-").map(Number);
-    const [h, min] = timePart.split(":").map(Number);
-
-    return new Date(y, m - 1, d, h, min) >= now;
-  });
+  let firstFutureIndex = hourlyData.time.findIndex(time => time >= nowDetroit);
 
   if (firstFutureIndex < 0) {
     firstFutureIndex = hourlyData.time.length - 1;
@@ -742,7 +839,7 @@ function renderHourly() {
       : `${weatherClass}-night`;
 
     const condition = getWeatherDescription(code);
-    const icon = isDaytime ? weatherIcon(code) : getNightConditionIcon(code);
+    const icon = weatherIcon(code, isDaytime);
 
     hourly.innerHTML += `
       <div class="hour ${timeClass}">
@@ -771,17 +868,69 @@ document.getElementById("hourlyForward").addEventListener("click", () => {
   }
 });
 
+/*
+ * DAILY CONDITION CODE
+ * Open-Meteo's daily weather_code is the most severe code of the whole 24
+ * hours, so one cloudy overnight hour makes the day "Cloudy". Instead:
+ *  - any precipitation/storm hour (code 51+) in the day wins (worst one), and
+ *  - otherwise use the most common code during daylight hours (ties go to
+ *    the cloudier code).
+ * Falls back to the API's daily code if no hourly data matches that date.
+ */
+function getDayCode(dateStr, fallbackCode) {
+  const counts = {};
+  let worstPrecip = null;
+
+  for (let i = 0; i < hourlyData.time.length; i++) {
+    if (!hourlyData.time[i].startsWith(dateStr)) continue;
+
+    const c = Number(hourlyData.weather_code[i]);
+
+    if (c >= 51) {
+      worstPrecip = worstPrecip === null ? c : Math.max(worstPrecip, c);
+    }
+
+    if (Number(hourlyData.is_day[i]) === 1) {
+      counts[c] = (counts[c] || 0) + 1;
+    }
+  }
+
+  if (worstPrecip !== null) return worstPrecip;
+
+  let best = null;
+  for (const key of Object.keys(counts)) {
+    const c = Number(key);
+    if (best === null ||
+        counts[c] > counts[best] ||
+        (counts[c] === counts[best] && c > best)) {
+      best = c;
+    }
+  }
+
+  return best !== null ? best : Number(fallbackCode);
+}
+
+/* CURRENT CONDITIONS ICON (day/night aware) */
+function setCurrentIcon(code, isDay) {
+  const el = document.getElementById("icon");
+
+  el.innerHTML = weatherIcon(code, Number(isDay) === 1);
+}
+
 /* LOAD WEATHER */
+let lastGoodUpdate = null;
+let weatherRetryTimer = null;
+
 async function loadWeather() {
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
-    `&current=temperature_2m,weather_code` +
+    `&current=temperature_2m,weather_code,is_day` +
     `&hourly=temperature_2m,weather_code,is_day` +
     `&daily=temperature_2m_max,temperature_2m_min,weather_code` +
-    `&temperature_unit=fahrenheit&timezone=America%2FDetroit&forecast_days=9`;
+    `&temperature_unit=fahrenheit&timezone=${encodeURIComponent(TZ)}&forecast_days=9`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { cache: "no-store" });
 
     if (!response.ok) {
       throw new Error(`Weather request failed: ${response.status}`);
@@ -789,11 +938,17 @@ async function loadWeather() {
 
     const d = await response.json();
 
+    /* Validate before touching the page so a bad response can't half-update it. */
+    if (!d.current || !d.hourly || !d.daily ||
+        !Array.isArray(d.daily.time) || d.daily.time.length < 9 ||
+        !Array.isArray(d.hourly.time)) {
+      throw new Error("Weather response was missing expected data");
+    }
+
     document.getElementById("temp").textContent =
       Math.round(d.current.temperature_2m) + "°";
 
-    document.getElementById("icon").textContent =
-      weatherIcon(d.current.weather_code);
+    setCurrentIcon(d.current.weather_code, d.current.is_day);
 
     document.getElementById("high").textContent =
       Math.round(d.daily.temperature_2m_max[0]) + "°";
@@ -804,13 +959,6 @@ async function loadWeather() {
     hourlyData = d.hourly;
     renderHourly();
 
-    document.getElementById("updated").textContent =
-      "Last updated: " +
-      new Date().toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-      });
-
     /* DAILY FORECAST */
     const daily = document.getElementById("daily");
     daily.innerHTML = "";
@@ -819,7 +967,7 @@ async function loadWeather() {
     for (let i = 1; i <= 8; i++) {
       const [year, month, day] = d.daily.time[i].split("-").map(Number);
       const dt = new Date(year, month - 1, day);
-      const code = Number(d.daily.weather_code[i]);
+      const code = getDayCode(d.daily.time[i], d.daily.weather_code[i]);
       const category = getHourlyWeatherClass(code);
       const condition = getWeatherDescription(code);
 
@@ -844,10 +992,30 @@ async function loadWeather() {
         </div>
       `;
     }
+
+    lastGoodUpdate = new Date().toLocaleTimeString([], {
+      timeZone: TZ,
+      hour: "numeric",
+      minute: "2-digit"
+    });
+
+    document.getElementById("updated").textContent =
+      "Last updated: " + lastGoodUpdate;
+
+    if (weatherRetryTimer) {
+      clearTimeout(weatherRetryTimer);
+      weatherRetryTimer = null;
+    }
   } catch (error) {
     console.error("Unable to load weather:", error);
-    document.getElementById("updated").textContent =
-      "Weather data unavailable";
+
+    document.getElementById("updated").textContent = lastGoodUpdate
+      ? "Update failed - showing data from " + lastGoodUpdate
+      : "Weather data unavailable";
+
+    /* Retry in a minute instead of waiting for the next 5-minute refresh. */
+    if (weatherRetryTimer) clearTimeout(weatherRetryTimer);
+    weatherRetryTimer = setTimeout(loadWeather, 60000);
   }
 }
 

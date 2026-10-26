@@ -69,11 +69,6 @@ html, body {
   margin-right: auto;
 }
 
-.drive-label {
-  font-size: 1.1rem;
-  opacity: .65;
-}
-
 .drive-time {
   font-size: 2.6rem;
   font-weight: 600;
@@ -95,13 +90,6 @@ html, body {
   line-height: 1.2;
   margin-top: 2px;
   opacity: .7;
-}
-
-.drive-note {
-  font-size: .62rem;
-  line-height: 1.1;
-  margin-top: 2px;
-  opacity: .45;
 }
 
 .section { margin-top: calc(16px - var(--padspace)); }
@@ -476,11 +464,9 @@ footer {
   </button>
 
   <div class="drive-box" id="driveBox" style="display:none">
-    <div class="drive-label">Drive to Roeper</div>
     <div class="drive-time" id="driveTime">--</div>
     <div class="drive-detail" id="driveDetail">Loading...</div>
     <div class="drive-refresh" id="driveRefresh"></div>
-    <div class="drive-note" id="driveNote"></div>
   </div>
 </td>
 
@@ -1119,7 +1105,6 @@ let lastDriveUpdate = null;
 async function loadDriveTime() {
   const timeEl = document.getElementById("driveTime");
   const detailEl = document.getElementById("driveDetail");
-  const noteEl = document.getElementById("driveNote");
   const refreshEl = document.getElementById("driveRefresh");
 
   if (!TOMTOM_KEY.trim()) {
@@ -1171,18 +1156,14 @@ async function loadDriveTime() {
 
     refreshEl.textContent = `Last refreshed: ${lastDriveUpdate}`;
 
-    noteEl.textContent =
-      `Fastest of ${routes.length} route${routes.length === 1 ? "" : "s"} · ` +
-      `traffic by TomTom`;
   } catch (error) {
     console.error("Unable to load drive time:", error);
 
+    /* Show the reason on screen (handy on a tablet with no dev tools). */
     detailEl.textContent = lastDriveUpdate
       ? "Update failed - showing older data"
-      : "Drive time unavailable";
-
-    /* Show the reason on screen (handy on a tablet with no dev tools). */
-    noteEl.textContent = String(error && error.message || error).slice(0, 140);
+      : "Drive time unavailable - " +
+        String(error && error.message || error).slice(0, 120);
   }
 }
 
@@ -1220,7 +1201,6 @@ function driveTick() {
     document.getElementById("driveTime").className = "drive-time";
     document.getElementById("driveDetail").textContent = "Loading...";
     document.getElementById("driveRefresh").textContent = "";
-    document.getElementById("driveNote").textContent = "";
     return;
   }
 

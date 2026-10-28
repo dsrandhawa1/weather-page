@@ -244,6 +244,20 @@ html, body {
 .hazy-sky::before { top: 11px; }
 .hazy-sky::after { bottom: 10px; background: rgba(150,150,150,.28); }
 
+/* BOX AROUND THE CURRENT WEATHER ICON (matches the forecast cards) */
+
+.icon-box {
+  display: inline-block;
+  padding: 24px;
+  border-radius: 16px;
+  box-sizing: border-box;
+  background: linear-gradient(to bottom,#dceeff 0%,#e8e8e8 100%);
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  line-height: 1;
+  text-align: center;
+  transition: background .3s ease;
+}
+
 /* METEOCONS WEATHER ICONS */
 
 .wx-icon {
@@ -253,25 +267,37 @@ html, body {
   height: auto;
 }
 
-.icon .wx-icon { width: 100px; }
+.icon .wx-icon { width: 88px; }
 .hour-icon .wx-icon { width: 58px; }
 .day-icon .wx-icon { width: 72px; }
 
 /* DAY / NIGHT HOURLY CARDS */
 
-.hour.sunny-day { background: linear-gradient(to bottom,#fff6a8 0%,#dff4ff 100%); }
-.hour.partly-cloudy-day { background: linear-gradient(to bottom,#dceeff 0%,#e8e8e8 100%); }
-.hour.cloudy-day { background: linear-gradient(to bottom,#d5d8dc 0%,#bfc3c7 100%); }
-.hour.rainy-day { background: linear-gradient(to bottom,#c3d2df 0%,#9aaab8 100%); }
-.hour.snowy-day { background: linear-gradient(to bottom,#eef7ff 0%,#d5e2ec 100%); }
-.hour.stormy-day { background: linear-gradient(to bottom,#999da3 0%,#686d73 100%); color: white; }
+.hour.sunny-day,
+.icon-box.sunny-day { background: linear-gradient(to bottom,#fff6a8 0%,#dff4ff 100%); }
+.hour.partly-cloudy-day,
+.icon-box.partly-cloudy-day { background: linear-gradient(to bottom,#dceeff 0%,#e8e8e8 100%); }
+.hour.cloudy-day,
+.icon-box.cloudy-day { background: linear-gradient(to bottom,#d5d8dc 0%,#bfc3c7 100%); }
+.hour.rainy-day,
+.icon-box.rainy-day { background: linear-gradient(to bottom,#c3d2df 0%,#9aaab8 100%); }
+.hour.snowy-day,
+.icon-box.snowy-day { background: linear-gradient(to bottom,#eef7ff 0%,#d5e2ec 100%); }
+.hour.stormy-day,
+.icon-box.stormy-day { background: linear-gradient(to bottom,#999da3 0%,#686d73 100%); color: white; }
 
-.hour.sunny-night { background: linear-gradient(to bottom,#394867 0%,#1d2940 100%); color: white; }
-.hour.partly-cloudy-night { background: linear-gradient(to bottom,#454f62 0%,#252d3b 100%); color: white; }
-.hour.cloudy-night { background: linear-gradient(to bottom,#4b4f55 0%,#2d3035 100%); color: white; }
-.hour.rainy-night { background: linear-gradient(to bottom,#3f5366 0%,#263440 100%); color: white; }
-.hour.snowy-night { background: linear-gradient(to bottom,#4e6070 0%,#303e49 100%); color: white; }
-.hour.stormy-night { background: linear-gradient(to bottom,#3a3b40 0%,#202125 100%); color: white; }
+.hour.sunny-night,
+.icon-box.sunny-night { background: linear-gradient(to bottom,#394867 0%,#1d2940 100%); color: white; }
+.hour.partly-cloudy-night,
+.icon-box.partly-cloudy-night { background: linear-gradient(to bottom,#454f62 0%,#252d3b 100%); color: white; }
+.hour.cloudy-night,
+.icon-box.cloudy-night { background: linear-gradient(to bottom,#4b4f55 0%,#2d3035 100%); color: white; }
+.hour.rainy-night,
+.icon-box.rainy-night { background: linear-gradient(to bottom,#3f5366 0%,#263440 100%); color: white; }
+.hour.snowy-night,
+.icon-box.snowy-night { background: linear-gradient(to bottom,#4e6070 0%,#303e49 100%); color: white; }
+.hour.stormy-night,
+.icon-box.stormy-night { background: linear-gradient(to bottom,#3a3b40 0%,#202125 100%); color: white; }
 
 /* DAILY FORECAST */
 
@@ -388,7 +414,7 @@ footer {
   .temp { font-size: 6rem; }
   .date { font-size: 1.6rem; }
   .clock { font-size: 3rem; }
-  .icon .wx-icon { width: 80px; }
+  .icon .wx-icon { width: 68px; }
   .day-icon .wx-icon { width: 60px; }
   .hilo { font-size: 1.7rem; }
 
@@ -436,7 +462,7 @@ footer {
 <table width="100%">
 <tr>
 <td width="10%">
-  <div class="icon" id="icon">🌡️</div>
+  <div class="icon icon-box" id="icon">🌡️</div>
 </td>
 
 <td width="15%">
@@ -918,7 +944,11 @@ function getDayCode(dateStr, fallbackCode) {
 function setCurrentIcon(code, isDay) {
   const el = document.getElementById("icon");
 
-  el.innerHTML = weatherIcon(code, Number(isDay) === 1);
+  const day = Number(isDay) === 1;
+
+  el.innerHTML = weatherIcon(code, day);
+  el.className = "icon icon-box " +
+    getHourlyWeatherClass(code) + (day ? "-day" : "-night");
 }
 
 /* LOAD WEATHER */

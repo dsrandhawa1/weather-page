@@ -244,6 +244,28 @@ html, body {
 .hazy-sky::before { top: 11px; }
 .hazy-sky::after { bottom: 10px; background: rgba(150,150,150,.28); }
 
+/* DRIVE TIME GRAPH */
+
+.graph-cell {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.graph-box {
+  background: rgba(255,255,255,.65);
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  padding: 4px;
+  box-sizing: border-box;
+  min-width: 250px;
+}
+
+.graph-box svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* BOX AROUND THE CURRENT WEATHER ICON (matches the forecast cards) */
 
 .icon-box {
@@ -267,7 +289,8 @@ html, body {
   height: auto;
 }
 
-.icon .wx-icon { width: 88px; }
+.icon .wx-icon { width: 132px; }
+.icon-box .wx-icon { max-width: none; }   /* keep the box from collapsing in narrow columns */
 .hour-icon .wx-icon { width: 58px; }
 .day-icon .wx-icon { width: 72px; }
 
@@ -410,11 +433,35 @@ footer {
   text-decoration: none;
 }
 
+/*
+ * While the graph is showing, shrink the rest of the top card to make room.
+ * On screens 960px wide or less there isn't room, so the graph is hidden.
+ */
+@media (min-width: 961px) {
+  .graph-on .temp { font-size: 6rem; }
+  .graph-on .hilo { font-size: 1.8rem; }
+  .graph-on .date { font-size: 1.5rem; }
+  .graph-on .clock { font-size: 2.8rem; white-space: nowrap; }
+  .graph-on .roeper-button { font-size: 1.1rem; padding: 14px 18px; }
+  .graph-on .icon-box { padding: 16px; }
+  .graph-on .icon .wx-icon { width: 100px; }
+}
+
+@media (min-width: 961px) and (max-width: 1100px) {
+  .graph-on .temp { font-size: 4.6rem; }
+  .graph-on .hilo { font-size: 1.4rem; }
+  .graph-on .date { font-size: 1.15rem; }
+  .graph-on .clock { font-size: 2.1rem; }
+  .graph-on .icon-box { padding: 12px; }
+  .graph-on .icon .wx-icon { width: 84px; }
+  .graph-box { min-width: 200px; }
+}
+
 @media (max-width: 1100px) {
   .temp { font-size: 6rem; }
   .date { font-size: 1.6rem; }
   .clock { font-size: 3rem; }
-  .icon .wx-icon { width: 68px; }
+  .icon .wx-icon { width: 102px; }
   .day-icon .wx-icon { width: 60px; }
   .hilo { font-size: 1.7rem; }
 
@@ -431,6 +478,12 @@ footer {
   }
 
   .day-condition { font-size: .9rem; }
+}
+
+@media (max-width: 960px) {
+  .graph-cell { display: none !important; }
+  .icon-box { padding: 12px; }
+  .icon .wx-icon { width: 80px; }
 }
 
 @media (max-width: 800px) {
@@ -458,18 +511,18 @@ footer {
 <div class="container">
 
 <!-- SECTION 1 - CURRENT WEATHER -->
-<div class="card section">
+<div class="card section" id="topCard">
 <table width="100%">
 <tr>
-<td width="10%">
+<td width="12%">
   <div class="icon icon-box" id="icon">🌡️</div>
 </td>
 
-<td width="15%">
+<td width="14%">
   <div class="temp" id="temp">--°</div>
 </td>
 
-<td width="20%">
+<td width="12%">
   <div class="hilo">
     <table width="100%">
       <tr>
@@ -484,7 +537,7 @@ footer {
   </div>
 </td>
 
-<td width="25%" class="roeper-button-cell">
+<td width="20%" class="roeper-button-cell">
   <button class="roeper-button" onclick="showRoeperMap()">
     Show time to Roeper
   </button>
@@ -496,7 +549,14 @@ footer {
   </div>
 </td>
 
-<td width="30%">
+<td width="18%" class="graph-cell" id="graphCell" style="display:none">
+  <div class="graph-box">
+    <svg id="driveGraph" viewBox="0 0 320 190" role="img"
+         aria-label="Drive time to Roeper between 6 AM and 10 AM"></svg>
+  </div>
+</td>
+
+<td width="24%">
   <div class="clock-wrap">
     <div class="date" id="date"></div>
     <div class="clock" id="clock"></div>
@@ -1186,6 +1246,9 @@ async function loadDriveTime() {
 
     refreshEl.textContent = `Last refreshed: ${lastDriveUpdate}`;
 
+    recordDrivePoint(s.travelTimeInSeconds);
+    renderDriveGraph();
+
   } catch (error) {
     console.error("Unable to load drive time:", error);
 
@@ -1195,6 +1258,142 @@ async function loadDriveTime() {
       : "Drive time unavailable - " +
         String(error && error.message || error).slice(0, 120);
   }
+}
+
+/*
+ * DRIVE TIME GRAPH
+ * The horizontal scale is fixed from 6 AM to 10 AM. One point is added every
+ * time the drive time refreshes (6-8 AM), so the line grows from the left
+ * across the fixed scale. Today's points are kept in the browser's storage so
+ * a page reload doesn't erase them, and a new day starts a new graph.
+ */
+const GRAPH_START_HOUR = 6;
+const GRAPH_END_HOUR = 10;
+const DRIVE_LOG_KEY = "roeperDriveLog";
+
+let driveLog = { date: "", points: [] };
+
+function detroitDateAndMinutes() {
+  const s = detroitNowString();   /* e.g. 2026-10-28T06:32 */
+
+  return {
+    date: s.slice(0, 10),
+    minutes: Number(s.slice(11, 13)) * 60 + Number(s.slice(14, 16))
+  };
+}
+
+function loadDriveLog() {
+  const today = detroitDateAndMinutes().date;
+  if (driveLog.date === today) return;
+
+  let saved = null;
+
+  try {
+    saved = JSON.parse(localStorage.getItem(DRIVE_LOG_KEY));
+  } catch (e) { /* storage unavailable; start with an empty log */ }
+
+  driveLog = (saved && saved.date === today && Array.isArray(saved.points))
+    ? saved
+    : { date: today, points: [] };
+}
+
+function recordDrivePoint(seconds) {
+  loadDriveLog();
+
+  const minutes = detroitDateAndMinutes().minutes;
+  const pts = driveLog.points;
+
+  if (pts.length && pts[pts.length - 1][0] === minutes) {
+    pts[pts.length - 1][1] = seconds;
+  } else {
+    pts.push([minutes, seconds]);
+  }
+
+  try {
+    localStorage.setItem(DRIVE_LOG_KEY, JSON.stringify(driveLog));
+  } catch (e) { /* keep going with in-memory data */ }
+}
+
+function hourLabel(h) {
+  return (h % 12 || 12) + (h < 12 ? " AM" : " PM");
+}
+
+function renderDriveGraph() {
+  const svg = document.getElementById("driveGraph");
+  loadDriveLog();
+
+  const W = 320, H = 190, L = 46, R = 14, T = 16, B = 28;
+  const pw = W - L - R;
+  const ph = H - T - B;
+  const x0 = GRAPH_START_HOUR * 60;
+  const x1 = GRAPH_END_HOUR * 60;
+
+  const pts = driveLog.points.filter(p => p[0] >= x0 && p[0] <= x1);
+
+  /* Vertical scale follows the data; the labels are round numbers. */
+  let lo = 15, hi = 45;
+
+  if (pts.length) {
+    const mins = pts.map(p => p[1] / 60);
+    lo = Math.max(0, Math.floor((Math.min(...mins) - 3) / 5) * 5);
+    const range = Math.max(10, Math.ceil((Math.max(...mins) + 3 - lo) / 10) * 10);
+    hi = lo + range;
+  }
+
+  const X = m => L + (m - x0) / (x1 - x0) * pw;
+  const Y = v => T + ph - (v - lo) / (hi - lo) * ph;
+
+  let out = "";
+
+  /* Horizontal gridlines with minute labels. */
+  [lo, (lo + hi) / 2, hi].forEach(v => {
+    out += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="#d2d2d2" stroke-width="1"/>` +
+           `<text x="${L - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="12" fill="#555">${Math.round(v)} min</text>`;
+  });
+
+  /* Fixed hour scale, 6 AM to 10 AM. */
+  for (let h = GRAPH_START_HOUR; h <= GRAPH_END_HOUR; h++) {
+    const x = X(h * 60);
+    const anchor = h === GRAPH_END_HOUR ? "end" : "middle";
+
+    out += `<line x1="${x}" x2="${x}" y1="${T}" y2="${T + ph}" stroke="#e1e1e1" stroke-width="1"/>` +
+           `<text x="${x}" y="${H - 8}" text-anchor="${anchor}" font-size="12" fill="#555">${hourLabel(h)}</text>`;
+  }
+
+  if (pts.length === 0) {
+    out += `<text x="${L + pw / 2}" y="${T + ph / 2 + 4}" text-anchor="middle" font-size="13" fill="#777">Collecting data...</text>`;
+  } else {
+    const coords = pts.map(p => `${X(p[0]).toFixed(1)},${Y(p[1] / 60).toFixed(1)}`);
+
+    if (pts.length > 1) {
+      out += `<polyline points="${coords.join(" ")}" fill="none" stroke="#4285f4" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+    }
+
+    pts.forEach((p, i) => {
+      const last = i === pts.length - 1;
+      out += `<circle cx="${X(p[0]).toFixed(1)}" cy="${Y(p[1] / 60).toFixed(1)}" r="${last ? 5 : 3}" fill="#4285f4"/>`;
+    });
+
+    const lp = pts[pts.length - 1];
+    const lx = X(lp[0]);
+    const ly = Y(lp[1] / 60);
+
+    out += `<text x="${lx}" y="${Math.max(12, ly - 10)}" text-anchor="${lx > W - 50 ? "end" : "middle"}" font-size="13" font-weight="600" fill="#1a1a1a">${Math.round(lp[1] / 60)} min</text>`;
+  }
+
+  svg.innerHTML = out;
+}
+
+function inGraphWindow() {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: TZ,
+      hour: "numeric",
+      hourCycle: "h23"
+    }).format(new Date())
+  );
+
+  return hour >= GRAPH_START_HOUR && hour < GRAPH_END_HOUR;
 }
 
 /*
@@ -1220,6 +1419,14 @@ function inDriveWindow() {
 
 function driveTick() {
   const box = document.getElementById("driveBox");
+  const graphCell = document.getElementById("graphCell");
+
+  /* The graph stays up from 6 AM to 10 AM so the finished curve is visible. */
+  const showGraph = inGraphWindow();
+  graphCell.style.display = showGraph ? "" : "none";
+  document.getElementById("topCard").classList.toggle("graph-on", showGraph);
+
+  if (showGraph) renderDriveGraph();
 
   if (!inDriveWindow()) {
     box.style.display = "none";
